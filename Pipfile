@@ -1,0 +1,18 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+graphenelib = ">=1.1.11"
+pycryptodome = "*"
+websockets = "*"
+appdirs = "*"
+scrypt = "*"
+Events = "*"
+PyYAML = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.6"
