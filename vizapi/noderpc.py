@@ -54,8 +54,8 @@ class NodeRPC(Original_Api):
         """ Identify the connected network. This call returns a
             dictionary with keys chain_id, core_symbol and prefix
         """
-        props = self.get_chain_properties()
-        chain_id = props["chain_id"]
+        props = self.get_config()
+        chain_id = props["CHAIN_ID"]
         for k, v in known_chains.items():
             if v["chain_id"] == chain_id:
                 return v
