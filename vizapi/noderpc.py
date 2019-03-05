@@ -14,6 +14,16 @@ from .consts import API
 
 
 class NodeRPC(Original_Api):
+    """ Redefine graphene Api class
+
+        API class inheritance:
+        viz.Client -> graphenecommon.chain.AbstractGrapheneChain -> vizapi.NodeRPC ->
+        grapheneapi.api.Api -> grapheneapi.api.Websocket -> grapheneapi.api.Rpc
+
+        We are overriding here locally Websocket and Rpc classes. We have to override
+        Websocket because we need it to inherit from our own Rpc class.
+    """
+
     def post_process_exception(self, e):
         msg = exceptions.decodeRPCErrorMsg(e).strip()
         if msg == "missing required active authority":
@@ -78,7 +88,13 @@ class NodeRPC(Original_Api):
         """
         return self.get_objects([o], **kwargs)[0]
 
+
 class Rpc(Original_Rpc):
+    """ This class is responsible for making RPC queries
+
+        Original graphene chains (like Bitshares) uses api_id in "params", while Golos
+        and VIZ uses api name here.
+    """
 
     def __init__(self, *args, **kwargs):
         super(Rpc, self).__init__(*args, **kwargs)
@@ -105,6 +121,7 @@ class Rpc(Original_Rpc):
 
         return method
 
+
 class Websocket(Original_Websocket, Rpc):
     def __init__(self, *args, **kwargs):
         super(Rpc, self).__init__(*args, **kwargs)
@@ -113,4 +130,3 @@ class Websocket(Original_Websocket, Rpc):
 
         # We need a lock to ensure thread-safty
         self.__lock = Lock()
-
