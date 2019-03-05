@@ -61,33 +61,6 @@ class NodeRPC(Original_Api):
                 return v
         raise Exception("Connecting to unknown network!")
 
-    def get_account(self, name, **kwargs):
-        """ Get full account details from account name or id
-
-            :param str name: Account name or account id
-        """
-        if len(name.split(".")) == 3:
-            return self.get_objects([name])[0]
-        else:
-            return self.get_account_by_name(name, **kwargs)
-
-    def get_asset(self, name, **kwargs):
-        """ Get full asset from name of id
-
-            :param str name: Symbol name or asset id (e.g. 1.3.0)
-        """
-        if len(name.split(".")) == 3:
-            return self.get_objects([name], **kwargs)[0]
-        else:
-            return self.lookup_asset_symbols([name], **kwargs)[0]
-
-    def get_object(self, o, **kwargs):
-        """ Get object with id ``o``
-
-            :param str o: Full object id
-        """
-        return self.get_objects([o], **kwargs)[0]
-
 
 class Rpc(Original_Rpc):
     """ This class is responsible for making RPC queries
