@@ -114,3 +114,41 @@ class Client(AbstractGrapheneChain):
         self.proposalbuilder_class = ProposalBuilder
         self.transactionbuilder_class = TransactionBuilder
         self.blockchainobject_class = BlockchainObject
+
+    def transfer(self, to, amount, asset, memo="", account=None, **kwargs):
+        """ Transfer an asset to another account.
+
+            :param str to: Recipient
+            :param float amount: Amount to transfer
+            :param str asset: Asset to transfer
+            :param str memo: (optional) Memo, may begin with `#` for encrypted
+                messaging
+            :param str account: (optional) the source account for the transfer
+                if not ``default_account``
+        """
+        if not account:
+            if "default_account" in self.config:
+                account = self.config["default_account"]
+        if not account:
+            raise ValueError("You need to provide an account")
+
+        #account = Account(account, blockchain_instance=self)
+        amount = Amount('{} {}'.format(amount, asset))
+        #to = Account(to, blockchain_instance=self)
+
+        if memo and memo[0] == "#":
+            from .memo import Memo
+            memoObj = Memo(from_account=account, to_account=to, blockchain_instance=self)
+            memo = memoObj.encrypt(memo)
+
+        op = operations.Transfer(
+            **{
+                "from": account,
+                "to": to,
+                "amount": '{}'.format(str(amount)),
+                "memo": memo
+            })
+        from pprint import pprint
+        pprint(op.json())
+
+        return self.finalizeOp(op, account, "active", **kwargs)
