@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+import hashlib
+import json
+
 from .block import Block
 from .instance import BlockchainInstance
 from vizbase import operationids
@@ -23,3 +26,9 @@ class Blockchain(GrapheneBlockchain):
     def define_classes(self):
         self.block_class = Block
         self.operationids = operationids
+
+    @staticmethod
+    def hash_op(event: dict):
+        """ This method generates a hash of blockchain operation. """
+        data = json.dumps(event, sort_keys=True)
+        return hashlib.sha1(bytes(data, 'utf-8')).hexdigest()
