@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
+import struct
 
 from collections import OrderedDict
 
@@ -23,6 +24,8 @@ from graphenebase.types import (
     Void,
     VoteId,
 )
+
+from vizbase.chains import PRECISIONS
 
 from .account import PublicKey
 from .objecttypes import object_type
@@ -55,6 +58,34 @@ def AssetId(asset):
 
 def AccountId(asset):
     return ObjectId(asset, "account")
+
+
+class Amount:
+    def __init__(self, d):
+        self.amount, self.asset = d.strip().split(" ")
+        self.amount = float(self.amount)
+
+        if self.asset in PRECISIONS:
+            self.precision = PRECISIONS[self.asset]
+        else:
+            raise Exception("Asset unknown")
+
+    def __bytes__(self):
+        # padding
+        asset = self.asset + "\x00" * (7 - len(self.asset))
+        amount = round(float(self.amount) * 10 ** self.precision)
+        return (
+                struct.pack("<q", amount) +
+                struct.pack("<b", self.precision) +
+                bytes(asset, "ascii")
+        )
+
+    def __str__(self):
+        return '{:.{}f} {}'.format(
+            self.amount,
+            self.precision,
+            self.asset
+        )
 
 
 class Memo(GrapheneObject):
