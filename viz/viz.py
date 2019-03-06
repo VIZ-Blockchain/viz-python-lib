@@ -4,9 +4,6 @@ import logging
 from datetime import datetime, timedelta
 
 from graphenecommon.chain import AbstractGrapheneChain
-from graphenecommon.account import Account
-from graphenecommon.amount import Amount
-from graphenecommon.asset import Asset
 
 from vizapi.noderpc import NodeRPC
 from vizbase import operations
@@ -17,6 +14,8 @@ from .instance import set_shared_blockchain_instance, shared_blockchain_instance
 from .storage import get_default_config_store
 from .transactionbuilder import ProposalBuilder, TransactionBuilder
 from .wallet import Wallet
+from .account import Account
+from .amount import Amount
 
 
 # from .utils import formatTime
