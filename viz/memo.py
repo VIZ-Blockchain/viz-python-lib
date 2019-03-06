@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
+import random
+
 from graphenecommon.memo import Memo as GrapheneMemo
 from vizbase.account import PrivateKey, PublicKey
+from vizbase import memo
 
 from .account import Account
 from .instance import BlockchainInstance
@@ -9,6 +12,8 @@ from .exceptions import (
     AccountDoesNotExistsException,
     WrongMemoKey,
     InvalidMessageSignature,
+    KeyNotFound,
+    MissingKeyError,
 )
 
 
@@ -57,3 +62,75 @@ class Memo(GrapheneMemo):
         self.account_class = Account
         self.privatekey_class = PrivateKey
         self.publickey_class = PublicKey
+
+    def encrypt(self, message):
+        """ Encrypt a memo
+
+            :param str message: clear text memo message
+            :returns: encrypted message
+            :rtype: str
+
+            This class overriden because upstream assumes memo key is in
+            account['options']['memo_key'], and bitshares memo format is different
+        """
+        if not message:
+            return None
+
+        nonce = str(random.getrandbits(64))
+        try:
+            memo_wif = self.blockchain.wallet.getPrivateKeyForPublicKey(
+                self.from_account["memo_key"]
+            )
+        except KeyNotFound:
+            # if all fails, raise exception
+            raise MissingKeyError(
+                "Memo private key {} for {} could not be found".format(
+                    self.from_account["memo_key"], self.from_account["name"]
+                )
+            )
+        if not memo_wif:
+            raise MissingKeyError(
+                "Memo key for %s missing!" % self.from_account["name"]
+            )
+
+        if not hasattr(self, "chain_prefix"):
+            self.chain_prefix = self.blockchain.prefix
+
+        enc = memo.encode_memo(
+            self.privatekey_class(memo_wif),
+            self.publickey_class(
+                self.to_account["memo_key"], prefix=self.chain_prefix
+            ),
+            nonce,
+            message,
+            prefix=self.chain_prefix
+        )
+
+        return enc
+
+    def decrypt(self, message):
+        """ Decrypt a message
+
+            :param dict message: encrypted memo message
+            :returns: decrypted message
+            :rtype: str
+        """
+        if not message:
+            return None
+
+        assert enc_memo[0] == "#", "decode memo requires memos to start with '#'"
+        keys = memo.involved_keys(enc_memo)
+        wif = None
+        for key in keys:
+            wif = self.blockchain.wallet.getPrivateKeyForPublicKey(str(key))
+            if wif:
+                break
+        if not wif:
+            raise MissingKeyError(
+                "None of the required memo keys are installed!"
+            )
+
+        if not hasattr(self, "chain_prefix"):
+            self.chain_prefix = self.blockchain.prefix
+
+        return memo.decode_memo(self.privatekey_class(wif), enc_memo)

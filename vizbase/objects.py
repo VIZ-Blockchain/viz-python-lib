@@ -95,20 +95,16 @@ class Memo(GrapheneObject):
         else:
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
+
             prefix = kwargs.pop("prefix", default_prefix)
-            if "message" in kwargs and kwargs["message"]:
-                super().__init__(
-                    OrderedDict(
-                        [
-                            ("from", PublicKey(kwargs["from"], prefix=prefix)),
-                            ("to", PublicKey(kwargs["to"], prefix=prefix)),
-                            ("nonce", Uint64(int(kwargs["nonce"]))),
-                            ("message", Bytes(kwargs["message"])),
-                        ]
-                    )
-                )
-            else:
-                super().__init__(None)
+
+            super().__init__(OrderedDict([
+                ('from', PublicKey(kwargs["from"], prefix=prefix)),
+                ('to', PublicKey(kwargs["to"], prefix=prefix)),
+                ('nonce', Uint64(int(kwargs["nonce"]))),
+                ('check', Uint32(int(kwargs["check"]))),
+                ('encrypted', Bytes(kwargs["encrypted"])),
+            ]))
 
 
 class Price(GrapheneObject):
