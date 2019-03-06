@@ -152,3 +152,11 @@ class Client(AbstractGrapheneChain):
         pprint(op.json())
 
         return self.finalizeOp(op, account, "active", **kwargs)
+
+
+    def decode_memo(self, enc_memo):
+        """ Try to decode an encrypted memo
+        """
+        from .memo import Memo
+        memoObj = Memo()
+        return memoObj.decrypt(enc_memo)
