@@ -105,7 +105,9 @@ class Rpc(Original_Rpc):
         def method(*args, **kwargs):
             api = kwargs.get('api', API.get(name))
             if not api:
-                raise exceptions.NoSuchAPI('Cannot find API for you request')
+                raise exceptions.NoSuchAPI(
+                    'Cannot find API for you request "{}"'.format(name)
+                )
 
             # let's be able to define the num_retries per query
             self.num_retries = kwargs.get("num_retries", self.num_retries)
