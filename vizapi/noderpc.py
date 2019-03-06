@@ -109,6 +109,10 @@ class Rpc(Original_Rpc):
                     'Cannot find API for you request "{}"'.format(name)
                 )
 
+            # Fix wrong api name hardcoded in graphenecommon.TransactionBuilder
+            if api == 'network_broadcast':
+                api = 'network_broadcast_api'
+
             # let's be able to define the num_retries per query
             self.num_retries = kwargs.get("num_retries", self.num_retries)
 
