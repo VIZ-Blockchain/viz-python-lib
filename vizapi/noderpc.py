@@ -1,4 +1,5 @@
 import re
+import logging
 
 from threading import Lock
 
@@ -12,6 +13,8 @@ from grapheneapi.http import Http as Original_Http
 from . import exceptions
 from .consts import API
 
+log = logging.getLogger(__name__)
+
 
 class NodeRPC(Original_Api):
     """ Redefine graphene Api class
@@ -22,6 +25,15 @@ class NodeRPC(Original_Api):
 
         We are overriding here locally Websocket and Rpc classes. We have to override
         Websocket because we need it to inherit from our own Rpc class.
+
+        To enable RPC debugging:
+
+        .. code-block:: python
+
+            log = logging.getLogger('vizapi')
+            log.setLevel(logging.DEBUG)
+            log.addHandler(logging.StreamHandler())
+
     """
 
     def post_process_exception(self, e):
@@ -90,6 +102,7 @@ class Rpc(Original_Rpc):
                 "jsonrpc": "2.0",
                 "id": self.get_request_id(),
             }
+            log.debug(query)
             r = self.rpcexec(query)
             message = self.parse_response(r)
             return message
