@@ -36,6 +36,10 @@ class NodeRPC(Original_Api):
 
     """
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._network = None
+
     def post_process_exception(self, e):
         msg = exceptions.decodeRPCErrorMsg(e).strip()
         if msg == "missing required active authority":
@@ -63,6 +67,16 @@ class NodeRPC(Original_Api):
             raise ValueError("Only support http(s) and ws(s) connections!")
 
     def get_network(self):
+        """ Cache connected network info
+
+            This avoids multiple calls of self.get_config()
+        """
+        if self._network:
+            return self._network
+        self._network = self._get_network()
+        return self._network
+
+    def _get_network(self):
         """ Identify the connected network. This call returns a
             dictionary with keys chain_id, core_symbol and prefix
         """
