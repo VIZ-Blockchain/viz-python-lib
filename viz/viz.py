@@ -25,7 +25,7 @@ log = logging.getLogger(__name__)
 
 
 class Client(AbstractGrapheneChain):
-    """ Connect to the Client network.
+    """ Blockchain network client
 
         :param str node: Node to connect to *(optional)*
         :param str rpcuser: RPC user *(optional)*
@@ -53,7 +53,7 @@ class Client(AbstractGrapheneChain):
 
         Three wallet operation modes are possible:
 
-        * **Wallet Database**: Here, the vizlibs load the keys from the
+        * **Wallet Database**: Here, the libs load the keys from the
           locally stored wallet SQLite database (see ``storage.py``).
           To use this mode, simply call ``Client()`` without the
           ``keys`` parameter
