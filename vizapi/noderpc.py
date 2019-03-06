@@ -3,7 +3,7 @@ import logging
 
 from threading import Lock
 
-from vizbase.chains import known_chains
+from vizbase.chains import KNOWN_CHAINS
 from grapheneapi.api import Api as Original_Api
 
 from grapheneapi.websocket import Websocket as Original_Websocket
@@ -68,7 +68,7 @@ class NodeRPC(Original_Api):
         """
         props = self.get_config()
         chain_id = props["CHAIN_ID"]
-        for k, v in known_chains.items():
+        for k, v in KNOWN_CHAINS.items():
             if v["chain_id"] == chain_id:
                 return v
         raise Exception("Connecting to unknown network!")

@@ -3,7 +3,7 @@ from graphenebase.signedtransactions import (
     Signed_Transaction as GrapheneSigned_Transaction,
 )
 
-from .chains import known_chains
+from .chains import KNOWN_CHAINS
 from .operations import Operation
 
 
@@ -17,6 +17,6 @@ class Signed_Transaction(GrapheneSigned_Transaction):
         :param Array operations:  array of operations
     """
 
-    known_chains = known_chains
+    known_chains = KNOWN_CHAINS
     default_prefix = "VIZ"
     operation_klass = Operation

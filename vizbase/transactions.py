@@ -4,7 +4,7 @@
 from graphenebase.transactions import formatTimeFromNow, getBlockParams, timeformat
 
 from .account import PublicKey
-from .chains import known_chains
+from .chains import KNOWN_CHAINS
 from .objects import Asset
 from .operations import (
     #Op_wrapper,
