@@ -1,7 +1,7 @@
 import math
 
-from viz.amount import Amount
-from viz.instance import shared_blockchain_instance
+from .amount import Amount
+from .instance import shared_blockchain_instance
 
 
 class Converter(object):
