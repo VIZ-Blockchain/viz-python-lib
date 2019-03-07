@@ -10,6 +10,7 @@ def decodeRPCErrorMsg(e):
     found = re.search(
         (
             "(10 assert_exception: Assert Exception\n|"
+            "Assert Exception \(10\)\n|"
             "3030000 tx_missing_posting_auth)"
             ".*: (.*)\n"
         ),
