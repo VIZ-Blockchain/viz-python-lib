@@ -4,7 +4,7 @@ from graphenecommon.transactionbuilder import (
     ProposalBuilder as GrapheneProposalBuilder,
 )
 
-from vizbase import operations, transactions
+from vizbase import operations
 from vizbase.account import PrivateKey, PublicKey
 from vizbase.objects import Operation
 from vizbase.signedtransactions import Signed_Transaction
