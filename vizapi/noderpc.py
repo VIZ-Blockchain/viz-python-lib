@@ -63,7 +63,7 @@ class NodeRPC(Original_Api):
             # Use own Websocket class
             return Websocket(self.url, **self._kwargs)
         elif self.url[:4] == "http":
-            return Original_Http(self.url, **self._kwargs)
+            return Http(self.url, **self._kwargs)
         else:
             raise ValueError("Only support http(s) and ws(s) connections!")
 
@@ -141,3 +141,7 @@ class Websocket(Original_Websocket, Rpc):
 
         # We need a lock to ensure thread-safty
         self.__lock = Lock()
+
+class Http(Original_Http, Rpc):
+    def __init__(self, *args, **kwargs):
+        super(Rpc, self).__init__(*args, **kwargs)
