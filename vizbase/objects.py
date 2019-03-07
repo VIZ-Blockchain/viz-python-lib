@@ -28,7 +28,6 @@ from graphenebase.types import (
 from vizbase.chains import PRECISIONS
 
 from .account import PublicKey
-from .objecttypes import object_type
 from .operationids import operations
 
 
