@@ -48,6 +48,8 @@ default_prefix = "VIZ"
 class_idmap = {}
 class_namemap = {}
 
+# You can find operations definitions in
+# libraries/protocol/include/graphene/protocol/chain_operations.hpp
 
 def fill_classmaps():
     for name, ind in operations.items():
@@ -295,6 +297,7 @@ class AccountWitnessVote(GrapheneObject):
             ]))
 
 
+# TODO: make sure this is working
 class ProposalCreate(GrapheneObject):
     def __init__(self, *args, **kwargs):
         if isArgsThisClass(self, args):
@@ -368,5 +371,56 @@ class ProposalDelete(GrapheneObject):
                 ('requester', String(kwargs['requester'])),
                 ('extensions', Array(kwargs.get('extensions') or []))
             ]))
+
+
+class AccountMetadata(GrapheneObject):
+    def __init__(self, *args, **kwargs):
+        if isArgsThisClass(self, args):
+            self.data = args[0].data
+        else:
+            if len(args) == 1 and len(kwargs) == 0:
+                kwargs = args[0]
+
+            meta = ""
+            if kwargs.get('json_metadata'):
+                if isinstance(kwargs["json_metadata"], dict):
+                    meta = json.dumps(kwargs["json_metadata"])
+                else:
+                    meta = kwargs["json_metadata"]
+
+            super().__init__(OrderedDict([
+                ('account', String(kwargs["account"])),
+                ('json_metadata', String(meta)),
+            ]))
+
+
+class Custom(GrapheneObject):
+    def __init__(self, *args, **kwargs):
+        if isArgsThisClass(self, args):
+            self.data = args[0].data
+        else:
+            if len(args) == 1 and len(kwargs) == 0:
+                kwargs = args[0]
+            if "json" in kwargs and kwargs["json"]:
+                if (isinstance(kwargs["json"], dict) or
+                        isinstance(kwargs["json"], list)):
+                    js = json.dumps(kwargs["json"])
+                else:
+                    js = kwargs["json"]
+
+            if len(kwargs["id"]) > 32:
+                raise Exception("'id' too long")
+
+            super().__init__(OrderedDict([
+                ('required_auths',
+                 Array([String(o) for o in kwargs["required_auths"]])),
+                ('required_posting_auths',
+                 Array([String(o) for o in kwargs["required_posting_auths"]])),
+                ('id', String(kwargs["id"])),
+                ('json', String(js)),
+            ]))
+
+# TODO: versioned_chain_properties op
+
 
 fill_classmaps()
