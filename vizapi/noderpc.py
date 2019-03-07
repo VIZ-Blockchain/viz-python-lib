@@ -39,6 +39,7 @@ class NodeRPC(Original_Api):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._network = None
+        self.config = None
 
     def post_process_exception(self, e):
         msg = exceptions.decodeRPCErrorMsg(e).strip()
@@ -80,8 +81,10 @@ class NodeRPC(Original_Api):
         """ Identify the connected network. This call returns a
             dictionary with keys chain_id, core_symbol and prefix
         """
-        props = self.get_config()
-        chain_id = props["CHAIN_ID"]
+        # Cache config into self.config to be accesible as
+        # blockchain_instance.rpc.config
+        self.config = self.get_config()
+        chain_id = self.config["CHAIN_ID"]
         for k, v in KNOWN_CHAINS.items():
             if v["chain_id"] == chain_id:
                 return v
