@@ -132,13 +132,14 @@ class Client(AbstractGrapheneChain):
         if not account:
             raise ValueError("You need to provide an account")
 
-        #account = Account(account, blockchain_instance=self)
         amount = Amount('{} {}'.format(amount, asset))
-        #to = Account(to, blockchain_instance=self)
 
         if memo and memo[0] == "#":
             from .memo import Memo
-            memoObj = Memo(from_account=account, to_account=to, blockchain_instance=self)
+
+            memoObj = Memo(
+                from_account=account, to_account=to, blockchain_instance=self
+            )
             memo = memoObj.encrypt(memo)
 
         op = operations.Transfer(
@@ -146,17 +147,16 @@ class Client(AbstractGrapheneChain):
                 "from": account,
                 "to": to,
                 "amount": '{}'.format(str(amount)),
-                "memo": memo
-            })
-        from pprint import pprint
-        pprint(op.json())
+                "memo": memo,
+            }
+        )
 
         return self.finalizeOp(op, account, "active", **kwargs)
-
 
     def decode_memo(self, enc_memo):
         """ Try to decode an encrypted memo
         """
         from .memo import Memo
+
         memoObj = Memo()
         return memoObj.decrypt(enc_memo)
