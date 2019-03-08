@@ -51,3 +51,7 @@ class AccountCouldntBeFoundException(Exception):
 
 class InvalidAccountNameException(Exception):
     pass
+
+
+class ReadLockFail(Exception):
+    pass

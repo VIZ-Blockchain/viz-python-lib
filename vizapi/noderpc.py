@@ -45,6 +45,8 @@ class NodeRPC(Original_Api):
         msg = exceptions.decodeRPCErrorMsg(e).strip()
         if msg == "missing required active authority":
             raise exceptions.MissingRequiredActiveAuthority
+        elif msg == "Internal error: Unable to acquire READ lock":
+            raise exceptions.ReadLockFail(msg)
         elif re.match(
             "current_account_itr == acnt_indx.indices().get<by_name>().end()", msg
         ):
@@ -126,8 +128,14 @@ class Rpc(Original_Rpc):
                 "id": self.get_request_id(),
             }
             log.debug(query)
-            r = self.rpcexec(query)
-            message = self.parse_response(r)
+            while True:
+                try:
+                    r = self.rpcexec(query)
+                    message = self.parse_response(r)
+                except exceptions.ReadLockFail:
+                    pass
+                else:
+                    break
             return message
 
         return method
