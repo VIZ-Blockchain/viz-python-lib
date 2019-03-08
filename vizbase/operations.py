@@ -35,6 +35,7 @@ from .account import PublicKey
 from .objects import (
     Amount,
     Asset,
+    Beneficiary,
     GrapheneObject,
     Memo,
     Operation,
@@ -162,6 +163,25 @@ class AccountMetadata(GrapheneObject):
                 ('json_metadata', String(meta)),
             ]))
 
+
+class Award(GrapheneObject):
+    def __init__(self, *args, **kwargs):
+        if isArgsThisClass(self, args):
+            self.data = args[0].data
+        else:
+            if len(args) == 1 and len(kwargs) == 0:
+                kwargs = args[0]
+            if "custom_sequence" not in kwargs:
+                kwargs["custom_sequence"] = 0
+
+            super().__init__(OrderedDict([
+                ('initiator', String(kwargs["initiator"])),
+                ('receiver', String(kwargs["receiver"])),
+                ('energy', Uint16(kwargs["energy"])),
+                ('custom_sequence', Uint64(kwargs["custom_sequence"])),
+                ('memo', String(kwargs["memo"])),
+                ('beneficiaries', Array([Beneficiary(o) for o in kwargs["beneficiaries"]]))
+            ]))
 
 class Transfer(GrapheneObject):
     def __init__(self, *args, **kwargs):
