@@ -52,6 +52,7 @@ class_namemap = {}
 # You can find operations definitions in
 # libraries/protocol/include/graphene/protocol/chain_operations.hpp
 
+
 def fill_classmaps():
     for name, ind in operations.items():
         classname = name[0:1].upper() + name[1:]
@@ -92,7 +93,9 @@ class AccountCreateWithDelegation(GrapheneObject):
                 kwargs = args[0]
             prefix = kwargs.pop("prefix", default_prefix)
 
-            assert len(kwargs["new_account_name"]) <= 16, "Account name must be at most 16 chars long"
+            assert (
+                len(kwargs["new_account_name"]) <= 16
+            ), "Account name must be at most 16 chars long"
 
             meta = ""
             if "json_metadata" in kwargs and kwargs["json_metadata"]:
@@ -100,18 +103,22 @@ class AccountCreateWithDelegation(GrapheneObject):
                     meta = json.dumps(kwargs["json_metadata"])
                 else:
                     meta = kwargs["json_metadata"]
-            super().__init__(OrderedDict([
-                ('fee', Amount(kwargs["fee"])),
-                ('delegation', Amount(kwargs["delegation"])),
-                ('creator', String(kwargs["creator"])),
-                ('new_account_name', String(kwargs["new_account_name"])),
-                ('owner', Permission(kwargs["owner"], prefix=prefix)),
-                ('active', Permission(kwargs["active"], prefix=prefix)),
-                ('posting', Permission(kwargs["posting"], prefix=prefix)),
-                ('memo_key', PublicKey(kwargs["memo_key"], prefix=prefix)),
-                ('json_metadata', String(meta)),
-                ('extensions', Array([])),
-            ]))
+            super().__init__(
+                OrderedDict(
+                    [
+                        ("fee", Amount(kwargs["fee"])),
+                        ("delegation", Amount(kwargs["delegation"])),
+                        ("creator", String(kwargs["creator"])),
+                        ("new_account_name", String(kwargs["new_account_name"])),
+                        ("owner", Permission(kwargs["owner"], prefix=prefix)),
+                        ("active", Permission(kwargs["active"], prefix=prefix)),
+                        ("posting", Permission(kwargs["posting"], prefix=prefix)),
+                        ("memo_key", PublicKey(kwargs["memo_key"], prefix=prefix)),
+                        ("json_metadata", String(meta)),
+                        ("extensions", Array([])),
+                    ]
+                )
+            )
 
 
 class AccountUpdate(GrapheneObject):
@@ -130,18 +137,35 @@ class AccountUpdate(GrapheneObject):
                 else:
                     meta = kwargs["json_metadata"]
 
-            owner = Permission(kwargs["owner"], prefix=prefix) if "owner" in kwargs else None
-            active = Permission(kwargs["active"], prefix=prefix) if "active" in kwargs else None
-            posting = Permission(kwargs["posting"], prefix=prefix) if "posting" in kwargs else None
+            owner = (
+                Permission(kwargs["owner"], prefix=prefix)
+                if "owner" in kwargs
+                else None
+            )
+            active = (
+                Permission(kwargs["active"], prefix=prefix)
+                if "active" in kwargs
+                else None
+            )
+            posting = (
+                Permission(kwargs["posting"], prefix=prefix)
+                if "posting" in kwargs
+                else None
+            )
 
-            super().__init__(OrderedDict([
-                ('account', String(kwargs["account"])),
-                ('owner', Optional(owner)),
-                ('active', Optional(active)),
-                ('posting', Optional(posting)),
-                ('memo_key', PublicKey(kwargs["memo_key"], prefix=prefix)),
-                ('json_metadata', String(meta)),
-            ]))
+            super().__init__(
+                OrderedDict(
+                    [
+                        ("account", String(kwargs["account"])),
+                        ("owner", Optional(owner)),
+                        ("active", Optional(active)),
+                        ("posting", Optional(posting)),
+                        ("memo_key", PublicKey(kwargs["memo_key"], prefix=prefix)),
+                        ("json_metadata", String(meta)),
+                    ]
+                )
+            )
+
 
 class AccountMetadata(GrapheneObject):
     def __init__(self, *args, **kwargs):
@@ -152,16 +176,20 @@ class AccountMetadata(GrapheneObject):
                 kwargs = args[0]
 
             meta = ""
-            if kwargs.get('json_metadata'):
+            if kwargs.get("json_metadata"):
                 if isinstance(kwargs["json_metadata"], dict):
                     meta = json.dumps(kwargs["json_metadata"])
                 else:
                     meta = kwargs["json_metadata"]
 
-            super().__init__(OrderedDict([
-                ('account', String(kwargs["account"])),
-                ('json_metadata', String(meta)),
-            ]))
+            super().__init__(
+                OrderedDict(
+                    [
+                        ("account", String(kwargs["account"])),
+                        ("json_metadata", String(meta)),
+                    ]
+                )
+            )
 
 
 class Award(GrapheneObject):
@@ -174,14 +202,22 @@ class Award(GrapheneObject):
             if "custom_sequence" not in kwargs:
                 kwargs["custom_sequence"] = 0
 
-            super().__init__(OrderedDict([
-                ('initiator', String(kwargs["initiator"])),
-                ('receiver', String(kwargs["receiver"])),
-                ('energy', Uint16(kwargs["energy"])),
-                ('custom_sequence', Uint64(kwargs["custom_sequence"])),
-                ('memo', String(kwargs["memo"])),
-                ('beneficiaries', Array([Beneficiary(o) for o in kwargs["beneficiaries"]]))
-            ]))
+            super().__init__(
+                OrderedDict(
+                    [
+                        ("initiator", String(kwargs["initiator"])),
+                        ("receiver", String(kwargs["receiver"])),
+                        ("energy", Uint16(kwargs["energy"])),
+                        ("custom_sequence", Uint64(kwargs["custom_sequence"])),
+                        ("memo", String(kwargs["memo"])),
+                        (
+                            "beneficiaries",
+                            Array([Beneficiary(o) for o in kwargs["beneficiaries"]]),
+                        ),
+                    ]
+                )
+            )
+
 
 class Transfer(GrapheneObject):
     def __init__(self, *args, **kwargs):
@@ -192,12 +228,16 @@ class Transfer(GrapheneObject):
                 kwargs = args[0]
             if "memo" not in kwargs:
                 kwargs["memo"] = ""
-            super().__init__(OrderedDict([
-                ('from', String(kwargs["from"])),
-                ('to', String(kwargs["to"])),
-                ('amount', Amount(kwargs["amount"])),
-                ('memo', String(kwargs["memo"])),
-            ]))
+            super().__init__(
+                OrderedDict(
+                    [
+                        ("from", String(kwargs["from"])),
+                        ("to", String(kwargs["to"])),
+                        ("amount", Amount(kwargs["amount"])),
+                        ("memo", String(kwargs["memo"])),
+                    ]
+                )
+            )
 
 
 class TransferToVesting(GrapheneObject):
@@ -207,11 +247,15 @@ class TransferToVesting(GrapheneObject):
         else:
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
-            super().__init__(OrderedDict([
-                ('from', String(kwargs["from"])),
-                ('to', String(kwargs["to"])),
-                ('amount', Amount(kwargs["amount"])),
-            ]))
+            super().__init__(
+                OrderedDict(
+                    [
+                        ("from", String(kwargs["from"])),
+                        ("to", String(kwargs["to"])),
+                        ("amount", Amount(kwargs["amount"])),
+                    ]
+                )
+            )
 
 
 class WithdrawVesting(GrapheneObject):
@@ -221,10 +265,14 @@ class WithdrawVesting(GrapheneObject):
         else:
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
-            super().__init__(OrderedDict([
-                ('account', String(kwargs["account"])),
-                ('vesting_shares', Amount(kwargs["vesting_shares"])),
-            ]))
+            super().__init__(
+                OrderedDict(
+                    [
+                        ("account", String(kwargs["account"])),
+                        ("vesting_shares", Amount(kwargs["vesting_shares"])),
+                    ]
+                )
+            )
 
 
 class DelegateVestingShares(GrapheneObject):
@@ -234,11 +282,16 @@ class DelegateVestingShares(GrapheneObject):
         else:
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
-            super().__init__(OrderedDict([
-                ('delegator', String(kwargs["delegator"])),
-                ('delegatee', String(kwargs["delegatee"])),
-                ('vesting_shares', Amount(kwargs["vesting_shares"])),
-            ]))
+            super().__init__(
+                OrderedDict(
+                    [
+                        ("delegator", String(kwargs["delegator"])),
+                        ("delegatee", String(kwargs["delegatee"])),
+                        ("vesting_shares", Amount(kwargs["vesting_shares"])),
+                    ]
+                )
+            )
+
 
 class SetWithdrawVestingRoute(GrapheneObject):
     def __init__(self, *args, **kwargs):
@@ -247,12 +300,17 @@ class SetWithdrawVestingRoute(GrapheneObject):
         else:
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
-            super().__init__(OrderedDict([
-                ('from_account', String(kwargs["from_account"])),
-                ('to_account', String(kwargs["to_account"])),
-                ('percent', Uint16((kwargs["percent"]))),
-                ('auto_vest', Bool(kwargs["auto_vest"])),
-            ]))
+            super().__init__(
+                OrderedDict(
+                    [
+                        ("from_account", String(kwargs["from_account"])),
+                        ("to_account", String(kwargs["to_account"])),
+                        ("percent", Uint16((kwargs["percent"]))),
+                        ("auto_vest", Bool(kwargs["auto_vest"])),
+                    ]
+                )
+            )
+
 
 class WitnessUpdate(GrapheneObject):
     def __init__(self, *args, **kwargs):
@@ -264,14 +322,24 @@ class WitnessUpdate(GrapheneObject):
             prefix = kwargs.pop("prefix", default_prefix)
 
             if not kwargs["block_signing_key"]:
-                kwargs["block_signing_key"] = "{}1111111111111111111111111111111114T1Anm".format(prefix)
-            super().__init__(OrderedDict([
-                ('owner', String(kwargs["owner"])),
-                ('url', String(kwargs["url"])),
-                ('block_signing_key', PublicKey(kwargs["block_signing_key"], prefix=prefix)),
-                ('props', ChainProperties(kwargs["props"])),
-                ('fee', Amount(kwargs["fee"])),
-            ]))
+                kwargs[
+                    "block_signing_key"
+                ] = "{}1111111111111111111111111111111114T1Anm".format(prefix)
+            super().__init__(
+                OrderedDict(
+                    [
+                        ("owner", String(kwargs["owner"])),
+                        ("url", String(kwargs["url"])),
+                        (
+                            "block_signing_key",
+                            PublicKey(kwargs["block_signing_key"], prefix=prefix),
+                        ),
+                        ("props", ChainProperties(kwargs["props"])),
+                        ("fee", Amount(kwargs["fee"])),
+                    ]
+                )
+            )
+
 
 # TODO: VersionedChainPropertiesUpdate
 class ChainPropertiesUpdate(GrapheneObject):
@@ -290,18 +358,18 @@ class ChainPropertiesUpdate(GrapheneObject):
 
             if props and type(props) == dict:
                 type_id = 0
-                if 'min_delegation' in props:
+                if "min_delegation" in props:
                     type_id = 1
-                if 'auction_window_size' in props:
+                if "auction_window_size" in props:
                     type_id = 2
 
-                obj = [type_id, {'props': props}]
+                obj = [type_id, {"props": props}]
                 props = Props(obj)
 
-            super().__init__(OrderedDict([
-                ('owner', String(kwargs["owner"])),
-                ('props', props),
-            ]))
+            super().__init__(
+                OrderedDict([("owner", String(kwargs["owner"])), ("props", props)])
+            )
+
 
 class AccountWitnessVote(GrapheneObject):
     def __init__(self, *args, **kwargs):
@@ -310,11 +378,15 @@ class AccountWitnessVote(GrapheneObject):
         else:
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
-            super().__init__(OrderedDict([
-                ('account', String(kwargs["account"])),
-                ('witness', String(kwargs["witness"])),
-                ('approve', Bool(bool(kwargs["approve"]))),
-            ]))
+            super().__init__(
+                OrderedDict(
+                    [
+                        ("account", String(kwargs["account"])),
+                        ("witness", String(kwargs["witness"])),
+                        ("approve", Bool(bool(kwargs["approve"]))),
+                    ]
+                )
+            )
 
 
 # TODO: make sure this is working
@@ -326,24 +398,38 @@ class ProposalCreate(GrapheneObject):
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
 
-            assert kwargs['proposed_operations'], 'proposed_operations cannot be empty!'
+            assert kwargs["proposed_operations"], "proposed_operations cannot be empty!"
 
-            if isinstance(kwargs['proposed_operations'][0], GrapheneObject):
-                proposed_operations = [OperationWrapper(Operation(op)) for op in kwargs['proposed_operations']]
+            if isinstance(kwargs["proposed_operations"][0], GrapheneObject):
+                proposed_operations = [
+                    OperationWrapper(Operation(op))
+                    for op in kwargs["proposed_operations"]
+                ]
             else:
-                proposed_operations = [OperationWrapper(Operation(op['op'])) for op in kwargs['proposed_operations']]
+                proposed_operations = [
+                    OperationWrapper(Operation(op["op"]))
+                    for op in kwargs["proposed_operations"]
+                ]
 
-            review_period_time = PointInTime(kwargs['review_period_time']) if kwargs.get('review_period_time') else None
+            review_period_time = (
+                PointInTime(kwargs["review_period_time"])
+                if kwargs.get("review_period_time")
+                else None
+            )
 
-            super().__init__(OrderedDict([
-                ('author', String(kwargs['author'])),
-                ('title', String(kwargs['title'])),
-                ('memo', String(kwargs.get('memo', ''))),
-                ('expiration_time', PointInTime(kwargs['expiration_time'])),
-                ('proposed_operations', Array(proposed_operations)),
-                ('review_period_time', Optional(review_period_time)),
-                ('extensions', Array(kwargs.get('extensions') or [])),
-            ]))
+            super().__init__(
+                OrderedDict(
+                    [
+                        ("author", String(kwargs["author"])),
+                        ("title", String(kwargs["title"])),
+                        ("memo", String(kwargs.get("memo", ""))),
+                        ("expiration_time", PointInTime(kwargs["expiration_time"])),
+                        ("proposed_operations", Array(proposed_operations)),
+                        ("review_period_time", Optional(review_period_time)),
+                        ("extensions", Array(kwargs.get("extensions") or [])),
+                    ]
+                )
+            )
 
 
 class ProposalUpdate(GrapheneObject):
@@ -354,28 +440,54 @@ class ProposalUpdate(GrapheneObject):
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
 
-            active_approvals_to_add = [String(str(x)) for x in kwargs.get('active_approvals_to_add') or []]
-            active_approvals_to_remove = [String(str(x)) for x in kwargs.get('active_approvals_to_remove') or []]
-            owner_approvals_to_add = [String(str(x)) for x in kwargs.get('owner_approvals_to_add') or []]
-            owner_approvals_to_remove = [String(str(x)) for x in kwargs.get('owner_approvals_to_remove') or []]
-            posting_approvals_to_add = [String(str(x)) for x in kwargs.get('posting_approvals_to_add') or []]
-            posting_approvals_to_remove = [String(str(x)) for x in kwargs.get('posting_approvals_to_remove') or []]
-            key_approvals_to_add = [String(str(x)) for x in kwargs.get('key_approvals_to_add') or []]
-            key_approvals_to_remove = [String(str(x)) for x in kwargs.get('key_approvals_to_remove') or []]
+            active_approvals_to_add = [
+                String(str(x)) for x in kwargs.get("active_approvals_to_add") or []
+            ]
+            active_approvals_to_remove = [
+                String(str(x)) for x in kwargs.get("active_approvals_to_remove") or []
+            ]
+            owner_approvals_to_add = [
+                String(str(x)) for x in kwargs.get("owner_approvals_to_add") or []
+            ]
+            owner_approvals_to_remove = [
+                String(str(x)) for x in kwargs.get("owner_approvals_to_remove") or []
+            ]
+            posting_approvals_to_add = [
+                String(str(x)) for x in kwargs.get("posting_approvals_to_add") or []
+            ]
+            posting_approvals_to_remove = [
+                String(str(x)) for x in kwargs.get("posting_approvals_to_remove") or []
+            ]
+            key_approvals_to_add = [
+                String(str(x)) for x in kwargs.get("key_approvals_to_add") or []
+            ]
+            key_approvals_to_remove = [
+                String(str(x)) for x in kwargs.get("key_approvals_to_remove") or []
+            ]
 
-            super().__init__(OrderedDict([
-                ('author', String(kwargs['author'])),
-                ('title', String(kwargs['title'])),
-                ('active_approvals_to_add', Array(active_approvals_to_add)),
-                ('active_approvals_to_remove', Array(active_approvals_to_remove)),
-                ('owner_approvals_to_add', Array(owner_approvals_to_add)),
-                ('owner_approvals_to_remove', Array(owner_approvals_to_remove)),
-                ('posting_approvals_to_add', Array(posting_approvals_to_add)),
-                ('posting_approvals_to_remove', Array(posting_approvals_to_remove)),
-                ('key_approvals_to_add', Array(key_approvals_to_add)),
-                ('key_approvals_to_remove', Array(key_approvals_to_remove)),
-                ('extensions', Array(kwargs.get('extensions') or [])),
-            ]))
+            super().__init__(
+                OrderedDict(
+                    [
+                        ("author", String(kwargs["author"])),
+                        ("title", String(kwargs["title"])),
+                        ("active_approvals_to_add", Array(active_approvals_to_add)),
+                        (
+                            "active_approvals_to_remove",
+                            Array(active_approvals_to_remove),
+                        ),
+                        ("owner_approvals_to_add", Array(owner_approvals_to_add)),
+                        ("owner_approvals_to_remove", Array(owner_approvals_to_remove)),
+                        ("posting_approvals_to_add", Array(posting_approvals_to_add)),
+                        (
+                            "posting_approvals_to_remove",
+                            Array(posting_approvals_to_remove),
+                        ),
+                        ("key_approvals_to_add", Array(key_approvals_to_add)),
+                        ("key_approvals_to_remove", Array(key_approvals_to_remove)),
+                        ("extensions", Array(kwargs.get("extensions") or [])),
+                    ]
+                )
+            )
 
 
 class ProposalDelete(GrapheneObject):
@@ -385,12 +497,16 @@ class ProposalDelete(GrapheneObject):
         else:
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
-            super().__init__(OrderedDict([
-                ('author', String(kwargs['author'])),
-                ('title', String(kwargs['title'])),
-                ('requester', String(kwargs['requester'])),
-                ('extensions', Array(kwargs.get('extensions') or []))
-            ]))
+            super().__init__(
+                OrderedDict(
+                    [
+                        ("author", String(kwargs["author"])),
+                        ("title", String(kwargs["title"])),
+                        ("requester", String(kwargs["requester"])),
+                        ("extensions", Array(kwargs.get("extensions") or [])),
+                    ]
+                )
+            )
 
 
 class AccountMetadata(GrapheneObject):
@@ -402,16 +518,20 @@ class AccountMetadata(GrapheneObject):
                 kwargs = args[0]
 
             meta = ""
-            if kwargs.get('json_metadata'):
+            if kwargs.get("json_metadata"):
                 if isinstance(kwargs["json_metadata"], dict):
                     meta = json.dumps(kwargs["json_metadata"])
                 else:
                     meta = kwargs["json_metadata"]
 
-            super().__init__(OrderedDict([
-                ('account', String(kwargs["account"])),
-                ('json_metadata', String(meta)),
-            ]))
+            super().__init__(
+                OrderedDict(
+                    [
+                        ("account", String(kwargs["account"])),
+                        ("json_metadata", String(meta)),
+                    ]
+                )
+            )
 
 
 class Custom(GrapheneObject):
@@ -422,8 +542,7 @@ class Custom(GrapheneObject):
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
             if "json" in kwargs and kwargs["json"]:
-                if (isinstance(kwargs["json"], dict) or
-                        isinstance(kwargs["json"], list)):
+                if isinstance(kwargs["json"], dict) or isinstance(kwargs["json"], list):
                     js = json.dumps(kwargs["json"])
                 else:
                     js = kwargs["json"]
@@ -431,14 +550,25 @@ class Custom(GrapheneObject):
             if len(kwargs["id"]) > 32:
                 raise Exception("'id' too long")
 
-            super().__init__(OrderedDict([
-                ('required_auths',
-                 Array([String(o) for o in kwargs["required_auths"]])),
-                ('required_posting_auths',
-                 Array([String(o) for o in kwargs["required_posting_auths"]])),
-                ('id', String(kwargs["id"])),
-                ('json', String(js)),
-            ]))
+            super().__init__(
+                OrderedDict(
+                    [
+                        (
+                            "required_auths",
+                            Array([String(o) for o in kwargs["required_auths"]]),
+                        ),
+                        (
+                            "required_posting_auths",
+                            Array(
+                                [String(o) for o in kwargs["required_posting_auths"]]
+                            ),
+                        ),
+                        ("id", String(kwargs["id"])),
+                        ("json", String(js)),
+                    ]
+                )
+            )
+
 
 # TODO: versioned_chain_properties op
 

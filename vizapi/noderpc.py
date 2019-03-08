@@ -108,15 +108,15 @@ class Rpc(Original_Rpc):
         """
 
         def method(*args, **kwargs):
-            api = kwargs.get('api', API.get(name))
+            api = kwargs.get("api", API.get(name))
             if not api:
                 raise exceptions.NoSuchAPI(
                     'Cannot find API for you request "{}"'.format(name)
                 )
 
             # Fix wrong api name hardcoded in graphenecommon.TransactionBuilder
-            if api == 'network_broadcast':
-                api = 'network_broadcast_api'
+            if api == "network_broadcast":
+                api = "network_broadcast_api"
 
             # let's be able to define the num_retries per query
             self.num_retries = kwargs.get("num_retries", self.num_retries)
@@ -149,6 +149,7 @@ class Websocket(Original_Websocket, Rpc):
 
         # We need a lock to ensure thread-safty
         self.__lock = Lock()
+
 
 class Http(Original_Http, Rpc):
     def __init__(self, *args, **kwargs):

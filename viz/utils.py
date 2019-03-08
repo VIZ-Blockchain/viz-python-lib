@@ -17,7 +17,7 @@ from graphenecommon.utils import (
 )
 
 
-def json_expand(json_op, key_name='json'):
+def json_expand(json_op, key_name="json"):
     """ Convert a string json object to Python dict in an op. """
     if type(json_op) == dict and key_name in json_op and json_op[key_name]:
         try:

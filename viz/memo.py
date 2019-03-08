@@ -98,12 +98,10 @@ class Memo(GrapheneMemo):
 
         enc = memo.encode_memo(
             self.privatekey_class(memo_wif),
-            self.publickey_class(
-                self.to_account["memo_key"], prefix=self.chain_prefix
-            ),
+            self.publickey_class(self.to_account["memo_key"], prefix=self.chain_prefix),
             nonce,
             message,
-            prefix=self.chain_prefix
+            prefix=self.chain_prefix,
         )
 
         return enc
@@ -126,9 +124,7 @@ class Memo(GrapheneMemo):
             if wif:
                 break
         if not wif:
-            raise MissingKeyError(
-                "None of the required memo keys are installed!"
-            )
+            raise MissingKeyError("None of the required memo keys are installed!")
 
         if not hasattr(self, "chain_prefix"):
             self.chain_prefix = self.blockchain.prefix

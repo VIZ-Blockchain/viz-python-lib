@@ -133,4 +133,3 @@ class TransactionBuilder(GrapheneTransactionBuilder):
                         self.appendWif(x[0])
 
                 self.signing_accounts.append(account)
-

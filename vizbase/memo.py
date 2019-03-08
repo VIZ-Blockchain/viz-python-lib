@@ -31,6 +31,7 @@ def init_aes(shared_secret, nonce):
     iv = unhexlify(encryption_key[64:96])
     return AES.new(key, AES.MODE_CBC, iv), check
 
+
 def encode_memo(priv, pub, nonce, message, **kwargs):
     """ Encode a message with a shared secret between Alice and Bob
 
@@ -44,21 +45,21 @@ def encode_memo(priv, pub, nonce, message, **kwargs):
     """
     shared_secret = get_shared_secret(priv, pub)
     aes, check = init_aes(shared_secret, nonce)
-    raw = bytes(message, 'utf8')
+    raw = bytes(message, "utf8")
 
     " Padding "
     BS = 16
     if len(raw) % BS:
         raw = _pad(raw, BS)
     " Encryption "
-    cipher = hexlify(aes.encrypt(raw)).decode('ascii')
+    cipher = hexlify(aes.encrypt(raw)).decode("ascii")
     prefix = kwargs.pop("prefix")
     s = {
-            "from": format(priv.pubkey, prefix),
-            "to": format(pub, prefix),
-            "nonce": nonce,
-            "check": check,
-            "encrypted": cipher,
+        "from": format(priv.pubkey, prefix),
+        "to": format(pub, prefix),
+        "nonce": nonce,
+        "check": check,
+        "encrypted": cipher,
     }
 
     tx = Memo(**s)
@@ -105,9 +106,9 @@ def decode_memo(priv, message):
     " Encryption "
     # remove the varint prefix (FIXME, long messages!)
     message = cipher[2:]
-    message = aes.decrypt(unhexlify(bytes(message, 'ascii')))
+    message = aes.decrypt(unhexlify(bytes(message, "ascii")))
     try:
-        return _unpad(message.decode('utf8'), 16)
+        return _unpad(message.decode("utf8"), 16)
     except:
         raise ValueError(message)
 

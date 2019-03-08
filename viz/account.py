@@ -44,7 +44,7 @@ class Account(dict):
             raise AccountDoesNotExistsException
 
         # load json_metadata
-        account = json_expand(account, 'json_metadata')
+        account = json_expand(account, "json_metadata")
         super(Account, self).__init__(account)
 
     def __getitem__(self, key):
@@ -62,11 +62,11 @@ class Account(dict):
     @property
     def profile(self):
         with suppress(TypeError):
-            return get_in(self, ['json_metadata', 'profile'], default={})
+            return get_in(self, ["json_metadata", "profile"], default={})
 
     @property
     def shares_as_core(self):
-        shares = Amount(self['vesting_shares']).amount
+        shares = Amount(self["vesting_shares"]).amount
         # TODO: round or use Decimal in Converter
         return self.converter.shares_to_core(shares)
 
@@ -75,17 +75,17 @@ class Account(dict):
         return self.get_balances()
 
     def get_balances(self):
-        balance = Amount(self['balance'])
-        vesting = Amount(self['vesting_shares'])
+        balance = Amount(self["balance"])
+        vesting = Amount(self["vesting_shares"])
         return {balance.symbol: balance.amount, vesting.symbol: vesting.amount}
 
     def energy(self):
-        return self['energy'] / 100
+        return self["energy"] / 100
 
     def get_followers(self, limit: int = None, offset: str = None):
         # TODO: is this needed?
         return [
-            x['follower']
+            x["follower"]
             for x in self._get_followers(
                 direction="follower", limit=limit, offset=offset
             )
@@ -94,19 +94,19 @@ class Account(dict):
     def get_following(self, limit: int = None, offset: str = None):
         # TODO: is this needed?
         return [
-            x['following']
+            x["following"]
             for x in self._get_followers(
                 direction="following", limit=limit, offset=offset
             )
         ]
 
-    def _get_followers(self, direction='follower', limit=None, offset=''):
+    def _get_followers(self, direction="follower", limit=None, offset=""):
         # TODO: is this needed?
         users = []
 
         get_users = {
-            'follower': self.blockchain_instance.get_followers,
-            'following': self.blockchain_instance.get_following,
+            "follower": self.blockchain_instance.get_followers,
+            "following": self.blockchain_instance.get_following,
         }[direction]
 
         limit = limit or 10 ** 6
@@ -115,7 +115,7 @@ class Account(dict):
 
         while left_number > 0:
             select_limit = min(left_number, max_request_limit)
-            result = get_users(self.name, offset, 'blog', select_limit)
+            result = get_users(self.name, offset, "blog", select_limit)
             users.extend(result)
 
             has_next = len(users) < limit and len(result) >= select_limit
@@ -141,7 +141,7 @@ class Account(dict):
             return last_item
 
     def get_withdraw_routes(self):
-        return self.blockchain_instance.rpc.get_withdraw_routes(self.name, 'all')
+        return self.blockchain_instance.rpc.get_withdraw_routes(self.name, "all")
 
     @staticmethod
     def filter_by_date(items, start_time, end_time=None):
@@ -154,10 +154,10 @@ class Account(dict):
         filtered_items = []
         for item in items:
             item_time = None
-            if 'time' in item:
-                item_time = item['time']
-            elif 'timestamp' in item:
-                item_time = item['timestamp']
+            if "time" in item:
+                item_time = item["time"]
+            elif "timestamp" in item:
+                item_time = item["timestamp"]
 
             if item_time:
                 timestamp = parse_time(item_time).timestamp()
@@ -203,8 +203,8 @@ class Account(dict):
             if stop and index > stop:
                 return
 
-            op_type, op = event['op']
-            block_props = dissoc(event, 'op')
+            op_type, op = event["op"]
+            block_props = dissoc(event, "op")
 
             def construct_op(account_name):
                 # verbatim output from steemd
@@ -215,9 +215,9 @@ class Account(dict):
                 # future hard-forks. Thus we cannot take it for granted.
                 immutable = op.copy()
                 immutable.update(block_props)
-                immutable.update({'account': account_name, 'type': op_type})
+                immutable.update({"account": account_name, "type": op_type})
                 _id = Blockchain.hash_op(immutable)
-                immutable.update({'_id': _id, 'index': index})
+                immutable.update({"_id": _id, "index": index})
                 return immutable
 
             if filter_by is None:

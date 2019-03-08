@@ -30,8 +30,10 @@ class MissingRequiredActiveAuthority(RPCError):
 class NoMethodWithName(RPCError):
     pass
 
+
 class NoSuchAPI(RPCError):
     pass
+
 
 class UnhandledRPCError(RPCError):
     pass

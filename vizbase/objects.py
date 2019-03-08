@@ -58,17 +58,13 @@ class Amount:
         asset = self.asset + "\x00" * (7 - len(self.asset))
         amount = round(float(self.amount) * 10 ** self.precision)
         return (
-                struct.pack("<q", amount) +
-                struct.pack("<b", self.precision) +
-                bytes(asset, "ascii")
+            struct.pack("<q", amount)
+            + struct.pack("<b", self.precision)
+            + bytes(asset, "ascii")
         )
 
     def __str__(self):
-        return '{:.{}f} {}'.format(
-            self.amount,
-            self.precision,
-            self.asset
-        )
+        return "{:.{}f} {}".format(self.amount, self.precision, self.asset)
 
 
 class Beneficiary(GrapheneObject):
@@ -78,10 +74,14 @@ class Beneficiary(GrapheneObject):
         else:
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
-            super().__init__(OrderedDict([
-                ('account', String(kwargs["account"])),
-                ('weight', Int16(kwargs["weight"])),
-            ]))
+            super().__init__(
+                OrderedDict(
+                    [
+                        ("account", String(kwargs["account"])),
+                        ("weight", Int16(kwargs["weight"])),
+                    ]
+                )
+            )
 
 
 class Memo(GrapheneObject):
@@ -94,13 +94,17 @@ class Memo(GrapheneObject):
 
             prefix = kwargs.pop("prefix", default_prefix)
 
-            super().__init__(OrderedDict([
-                ('from', PublicKey(kwargs["from"], prefix=prefix)),
-                ('to', PublicKey(kwargs["to"], prefix=prefix)),
-                ('nonce', Uint64(int(kwargs["nonce"]))),
-                ('check', Uint32(int(kwargs["check"]))),
-                ('encrypted', Bytes(kwargs["encrypted"])),
-            ]))
+            super().__init__(
+                OrderedDict(
+                    [
+                        ("from", PublicKey(kwargs["from"], prefix=prefix)),
+                        ("to", PublicKey(kwargs["to"], prefix=prefix)),
+                        ("nonce", Uint64(int(kwargs["nonce"]))),
+                        ("check", Uint32(int(kwargs["check"]))),
+                        ("encrypted", Bytes(kwargs["encrypted"])),
+                    ]
+                )
+            )
 
 
 class Permission(GrapheneObject):
@@ -117,14 +121,15 @@ class Permission(GrapheneObject):
                 key=lambda x: PublicKey(x[0], prefix=prefix),
                 reverse=False,
             )
-            accountAuths = Map([
-                [String(e[0]), Uint16(e[1])]
-                for e in kwargs["account_auths"]
-            ])
-            keyAuths = Map([
-                [PublicKey(e[0], prefix=prefix), Uint16(e[1])]
-                for e in kwargs["key_auths"]
-            ])
+            accountAuths = Map(
+                [[String(e[0]), Uint16(e[1])] for e in kwargs["account_auths"]]
+            )
+            keyAuths = Map(
+                [
+                    [PublicKey(e[0], prefix=prefix), Uint16(e[1])]
+                    for e in kwargs["key_auths"]
+                ]
+            )
             super().__init__(
                 OrderedDict(
                     [

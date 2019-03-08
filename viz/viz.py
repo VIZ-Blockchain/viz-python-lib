@@ -132,7 +132,7 @@ class Client(AbstractGrapheneChain):
         if not account:
             raise ValueError("You need to provide an account")
 
-        amount = Amount('{} {}'.format(amount, asset))
+        amount = Amount("{} {}".format(amount, asset))
 
         if memo and memo[0] == "#":
             from .memo import Memo
@@ -146,7 +146,7 @@ class Client(AbstractGrapheneChain):
             **{
                 "from": account,
                 "to": to,
-                "amount": '{}'.format(str(amount)),
+                "amount": "{}".format(str(amount)),
                 "memo": memo,
             }
         )
