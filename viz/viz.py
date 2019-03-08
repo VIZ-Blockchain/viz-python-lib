@@ -160,3 +160,33 @@ class Client(AbstractGrapheneChain):
 
         memoObj = Memo()
         return memoObj.decrypt(enc_memo)
+
+    def award(
+        self, receiver, energy, memo="", beneficiaries=[], account=None, **kwargs
+    ):
+        """ Award someone
+
+            :param str receiver: account name of award receiver
+            :param int energy: energy as 0-10000 integer where 10000 is 100%
+            :param str memo: optional comment
+            :param list beneficiaries: list of dicts, example [{'account': 'vvk', 'weight': 50}]
+            :param str account: initiator account name
+        """
+        if not account:
+            if "default_account" in self.config:
+                account = self.config["default_account"]
+        if not account:
+            raise ValueError("You need to provide an account")
+
+        op = operations.Award(
+            **{
+                "initiator": account,
+                "receiver": receiver,
+                "energy": int(energy),
+                "custom_sequence": kwargs.get("custom_sequence", 0),
+                "memo": memo,
+                "beneficiaries": beneficiaries,
+            }
+        )
+
+        return self.finalizeOp(op, account, "posting")
