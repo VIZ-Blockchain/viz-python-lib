@@ -190,3 +190,25 @@ class Client(AbstractGrapheneChain):
         )
 
         return self.finalizeOp(op, account, "posting")
+
+    # TODO: Methods to implement:
+    # - custom
+    # - create_account
+    # - withdraw_vesting
+    # - transfer_to_vesting
+    # - delegate_vesting_shares
+    # - witness_update
+    # - chain_properties_update
+    # - set_withdraw_vesting_route
+    # - allow / disallow
+    # - update_memo_key
+    # - approve_witness / disapprove_witness
+    # - update_account_profile
+    # - account_metadata
+    # - proposal_create / proposal_update / proposal_delete
+    # - witness_proxy
+    # - recover-related methods
+    # - escrow-related methods
+    # - worker create / cancel / vote
+    # - invite-related: create_invite, claim_invite_balance, invite_registration
+    # - paid subscrives related: set_paid_subscription / paid_subscribe
