@@ -61,6 +61,7 @@ OPS = [
 ]
 operations = {o: OPS.index(o) for o in OPS}
 
+# libraries/protocol/include/graphene/protocol/chain_virtual_operations.hpp
 VIRTUAL_OPS = [
     "author_reward",
     "curation_reward",
@@ -76,6 +77,8 @@ VIRTUAL_OPS = [
     "committee_payout_request",
     "committee_pay_request",
     "witness_reward",
+    "receive_award",
+    "benefactor_award",
     "paid_subscription_action",
     "cancel_paid_subscription",
 ]
