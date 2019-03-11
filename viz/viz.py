@@ -191,8 +191,35 @@ class Client(AbstractGrapheneChain):
 
         return self.finalizeOp(op, account, "posting")
 
+    def custom(self, id, json, required_auths=[], required_posting_auths=[]):
+        """ Create a custom operation
+
+            :param str id: identifier for the custom (max length 32 bytes)
+            :param json json: the json data to put into the custom operation
+            :param list required_auths: (optional) required active auths
+            :param list required_posting_auths: (optional) posting auths
+        """
+        account = None
+        requred_key_type = "posting"
+        if len(required_auths):
+            account = required_auths[0]
+            requred_key_type = "active"
+        elif len(required_posting_auths):
+            account = required_posting_auths[0]
+        else:
+            raise Exception("At least one account needs to be specified")
+
+        op = operations.Custom(
+            **{
+                "json": json,
+                "required_auths": required_auths,
+                "required_posting_auths": required_posting_auths,
+                "id": id,
+            }
+        )
+        return self.finalizeOp(op, account, requred_key_type)
+
     # TODO: Methods to implement:
-    # - custom
     # - create_account
     # - withdraw_vesting
     # - transfer_to_vesting
