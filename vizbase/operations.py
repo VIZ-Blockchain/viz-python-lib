@@ -43,9 +43,9 @@ from .objects import (
     isArgsThisClass,
 )
 from .operationids import operations
+from .chains import DEFAULT_PREFIX
 
 
-default_prefix = "VIZ"
 class_idmap = {}
 class_namemap = {}
 
@@ -91,7 +91,7 @@ class AccountCreateWithDelegation(GrapheneObject):
         else:
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
-            prefix = kwargs.pop("prefix", default_prefix)
+            prefix = kwargs.pop("prefix", DEFAULT_PREFIX)
 
             assert (
                 len(kwargs["new_account_name"]) <= 16
@@ -128,7 +128,7 @@ class AccountUpdate(GrapheneObject):
         else:
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
-            prefix = kwargs.pop("prefix", default_prefix)
+            prefix = kwargs.pop("prefix", DEFAULT_PREFIX)
 
             meta = ""
             if "json_metadata" in kwargs and kwargs["json_metadata"]:
@@ -319,7 +319,7 @@ class WitnessUpdate(GrapheneObject):
         else:
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
-            prefix = kwargs.pop("prefix", default_prefix)
+            prefix = kwargs.pop("prefix", DEFAULT_PREFIX)
 
             if not kwargs["block_signing_key"]:
                 kwargs[

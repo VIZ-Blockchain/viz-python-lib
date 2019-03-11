@@ -3,7 +3,7 @@ from graphenebase.signedtransactions import (
     Signed_Transaction as GrapheneSigned_Transaction,
 )
 
-from .chains import KNOWN_CHAINS
+from .chains import KNOWN_CHAINS, DEFAULT_PREFIX
 from .operations import Operation
 
 
@@ -18,5 +18,5 @@ class Signed_Transaction(GrapheneSigned_Transaction):
     """
 
     known_chains = KNOWN_CHAINS
-    default_prefix = "VIZ"
+    default_prefix = DEFAULT_PREFIX
     operation_klass = Operation

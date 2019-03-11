@@ -11,8 +11,7 @@ from graphenebase.account import PrivateKey as GPHPrivateKey
 from graphenebase.account import PublicKey as GPHPublicKey
 from graphenebase.account import Prefix
 
-# TODO: why we need to hardcode prefix? Why not take from chain_params?
-default_prefix = "VIZ"
+from .chains import DEFAULT_PREFIX
 
 
 class PasswordKey(GPHPasswordKey):
@@ -22,7 +21,7 @@ class PasswordKey(GPHPasswordKey):
         passphrase only.
     """
 
-    prefix = default_prefix
+    prefix = DEFAULT_PREFIX
 
 
 class BrainKey(GPHBrainKey):
@@ -44,7 +43,7 @@ class BrainKey(GPHBrainKey):
         regenerated given the brain key.
     """
 
-    prefix = default_prefix
+    prefix = DEFAULT_PREFIX
 
 
 class Address(GPHAddress):
@@ -62,7 +61,7 @@ class Address(GPHAddress):
 
     """
 
-    prefix = default_prefix
+    prefix = DEFAULT_PREFIX
 
 
 class PublicKey(GPHPublicKey):
@@ -83,7 +82,7 @@ class PublicKey(GPHPublicKey):
 
     """
 
-    prefix = default_prefix
+    prefix = DEFAULT_PREFIX
 
 
 class PrivateKey(GPHPrivateKey):
@@ -110,4 +109,4 @@ class PrivateKey(GPHPrivateKey):
 
     """
 
-    prefix = default_prefix
+    prefix = DEFAULT_PREFIX

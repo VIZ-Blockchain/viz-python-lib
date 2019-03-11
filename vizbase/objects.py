@@ -25,13 +25,9 @@ from graphenebase.types import (
     VoteId,
 )
 
-from vizbase.chains import PRECISIONS
-
+from .chains import PRECISIONS, DEFAULT_PREFIX
 from .account import PublicKey
 from .operationids import operations
-
-
-default_prefix = "VIZ"
 
 
 class Operation(GrapheneOperation):
@@ -92,7 +88,7 @@ class Memo(GrapheneObject):
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
 
-            prefix = kwargs.pop("prefix", default_prefix)
+            prefix = kwargs.pop("prefix", DEFAULT_PREFIX)
 
             super().__init__(
                 OrderedDict(
@@ -112,7 +108,7 @@ class Permission(GrapheneObject):
         if isArgsThisClass(self, args):
             self.data = args[0].data
         else:
-            prefix = kwargs.pop("prefix", default_prefix)
+            prefix = kwargs.pop("prefix", DEFAULT_PREFIX)
 
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
