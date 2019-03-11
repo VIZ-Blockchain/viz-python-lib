@@ -8,6 +8,7 @@ from graphenecommon.chain import AbstractGrapheneChain
 from vizapi.noderpc import NodeRPC
 from vizbase import operations
 from vizbase.account import PublicKey
+from vizbase.chains import PRECISIONS
 
 from .exceptions import AccountExistsException
 from .instance import set_shared_blockchain_instance, shared_blockchain_instance
@@ -17,6 +18,8 @@ from .wallet import Wallet
 from .account import Account
 from .amount import Amount
 
+CHAIN_100_PERCENT = 10000
+CHAIN_1_PERCENT = CHAIN_100_PERCENT / 100
 
 # from .utils import formatTime
 
@@ -218,6 +221,97 @@ class Client(AbstractGrapheneChain):
             }
         )
         return self.finalizeOp(op, account, requred_key_type)
+
+    def withdraw_vesting(self, amount, account=None):
+        """ Withdraw SHARES from the vesting account.
+
+            :param float amount: number of SHARES to withdraw over a period
+            :param str account: (optional) the source account for the transfer if not ``default_account``
+        """
+        if not account:
+            account = configStorage.get("default_account")
+        if not account:
+            raise ValueError("You need to provide an account")
+
+        op = operations.Withdraw_vesting(
+            **{
+                "account": account,
+                "vesting_shares": "{:.{prec}f} {asset}".format(
+                    float(amount),
+                    prec=PRECISIONS.get(self.rpc.chain_params["shares_symbol"]),
+                    asset=self.rpc.chain_params["shares_symbol"],
+                ),
+            }
+        )
+
+        return self.finalizeOp(op, account, "active")
+
+    def transfer_to_vesting(self, amount, to=None, account=None):
+        """ Vest free CORE into vesting
+
+            :param float amount: number of CORE to vest
+            :param str to: (optional) the source account for the transfer if not ``default_account``
+            :param str account: (optional) the source account for the transfer if not ``default_account``
+        """
+        if not account:
+            account = configStorage.get("default_account")
+        if not account:
+            raise ValueError("You need to provide an account")
+
+        if not to:
+            to = account  # powerup on the same account
+
+        op = operations.Transfer_to_vesting(
+            **{
+                "from": account,
+                "to": to,
+                "amount": "{:.{prec}f} {asset}".format(
+                    float(amount),
+                    prec=PRECISIONS.get(self.rpc.chain_params["core_symbol"]),
+                    asset=self.rpc.chain_params["core_symbol"],
+                ),
+            }
+        )
+
+        return self.finalizeOp(op, account, "active")
+
+    def set_withdraw_vesting_route(
+        self, to, percentage=100, account=None, auto_vest=False
+    ):
+        """ Set up a vesting withdraw route. When vesting shares are
+            withdrawn, they will be routed to these accounts based on the
+            specified weights.
+
+            To obtain existing withdraw routes, use the following example:
+
+            .. code-block:: python
+
+                a = Account('vvk', blockchain_instance=viz)
+                pprint(a.get_withdraw_routes())
+
+            :param str to: Recipient of the vesting withdrawal
+            :param float percentage: The percent of the withdraw to go
+                to the 'to' account.
+            :param str account: (optional) the vesting account
+            :param bool auto_vest: Set to true if the from account
+                should receive the SHARES as SHARES, or false if it should
+                receive them as CORE. (defaults to ``False``)
+        """
+        if not account:
+            account = configStorage.get("default_account")
+        if not account:
+            raise ValueError("You need to provide an account")
+
+        op = operations.Set_withdraw_vesting_route(
+            **{
+                "from_account": account,
+                "to_account": to,
+                "percent": int(percentage * CHAIN_1_PERCENT),
+                "auto_vest": auto_vest,
+            }
+        )
+
+        return self.finalizeOp(op, account, "active")
 
     # TODO: Methods to implement:
     # - create_account
