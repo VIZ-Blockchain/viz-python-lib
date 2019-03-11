@@ -84,7 +84,7 @@ def getOperationNameForId(i):
     return "Unknown Operation ID %d" % i
 
 
-class AccountCreateWithDelegation(GrapheneObject):
+class Account_create_with_delegation(GrapheneObject):
     def __init__(self, *args, **kwargs):
         if isArgsThisClass(self, args):
             self.data = args[0].data
@@ -121,7 +121,7 @@ class AccountCreateWithDelegation(GrapheneObject):
             )
 
 
-class AccountUpdate(GrapheneObject):
+class Account_update(GrapheneObject):
     def __init__(self, *args, **kwargs):
         if isArgsThisClass(self, args):
             self.data = args[0].data
@@ -167,7 +167,7 @@ class AccountUpdate(GrapheneObject):
             )
 
 
-class AccountMetadata(GrapheneObject):
+class Account_metadata(GrapheneObject):
     def __init__(self, *args, **kwargs):
         if isArgsThisClass(self, args):
             self.data = args[0].data
@@ -240,7 +240,7 @@ class Transfer(GrapheneObject):
             )
 
 
-class TransferToVesting(GrapheneObject):
+class Transfer_to_vesting(GrapheneObject):
     def __init__(self, *args, **kwargs):
         if isArgsThisClass(self, args):
             self.data = args[0].data
@@ -258,7 +258,7 @@ class TransferToVesting(GrapheneObject):
             )
 
 
-class WithdrawVesting(GrapheneObject):
+class Withdraw_vesting(GrapheneObject):
     def __init__(self, *args, **kwargs):
         if isArgsThisClass(self, args):
             self.data = args[0].data
@@ -275,7 +275,7 @@ class WithdrawVesting(GrapheneObject):
             )
 
 
-class DelegateVestingShares(GrapheneObject):
+class Delegate_vesting_shares(GrapheneObject):
     def __init__(self, *args, **kwargs):
         if isArgsThisClass(self, args):
             self.data = args[0].data
@@ -293,7 +293,7 @@ class DelegateVestingShares(GrapheneObject):
             )
 
 
-class SetWithdrawVestingRoute(GrapheneObject):
+class Set_withdraw_vesting_route(GrapheneObject):
     def __init__(self, *args, **kwargs):
         if isArgsThisClass(self, args):
             self.data = args[0].data
@@ -312,7 +312,7 @@ class SetWithdrawVestingRoute(GrapheneObject):
             )
 
 
-class WitnessUpdate(GrapheneObject):
+class Witness_update(GrapheneObject):
     def __init__(self, *args, **kwargs):
         if isArgsThisClass(self, args):
             self.data = args[0].data
@@ -342,7 +342,7 @@ class WitnessUpdate(GrapheneObject):
 
 
 # TODO: VersionedChainPropertiesUpdate
-class ChainPropertiesUpdate(GrapheneObject):
+class Chain_properties_update(GrapheneObject):
     def __init__(self, *args, **kwargs):
         if isArgsThisClass(self, args):
             self.data = args[0].data
@@ -371,7 +371,7 @@ class ChainPropertiesUpdate(GrapheneObject):
             )
 
 
-class AccountWitnessVote(GrapheneObject):
+class Account_witness_vote(GrapheneObject):
     def __init__(self, *args, **kwargs):
         if isArgsThisClass(self, args):
             self.data = args[0].data
@@ -390,7 +390,7 @@ class AccountWitnessVote(GrapheneObject):
 
 
 # TODO: make sure this is working
-class ProposalCreate(GrapheneObject):
+class Proposal_create(GrapheneObject):
     def __init__(self, *args, **kwargs):
         if isArgsThisClass(self, args):
             self.data = args[0].data
@@ -432,7 +432,7 @@ class ProposalCreate(GrapheneObject):
             )
 
 
-class ProposalUpdate(GrapheneObject):
+class Proposal_update(GrapheneObject):
     def __init__(self, *args, **kwargs):
         if isArgsThisClass(self, args):
             self.data = args[0].data
@@ -490,7 +490,7 @@ class ProposalUpdate(GrapheneObject):
             )
 
 
-class ProposalDelete(GrapheneObject):
+class Proposal_delete(GrapheneObject):
     def __init__(self, *args, **kwargs):
         if isArgsThisClass(self, args):
             self.data = args[0].data
@@ -509,7 +509,7 @@ class ProposalDelete(GrapheneObject):
             )
 
 
-class AccountMetadata(GrapheneObject):
+class Account_metadata(GrapheneObject):
     def __init__(self, *args, **kwargs):
         if isArgsThisClass(self, args):
             self.data = args[0].data
