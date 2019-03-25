@@ -55,41 +55,10 @@ class TransactionBuilder(GrapheneTransactionBuilder):
         self.signed_transaction_class = Signed_Transaction
         self.amount_class = Amount
 
-    def constructTx(self):
-        # TODO: propose to control add_required_fees via variable into upstream?
-        """ Construct the actual transaction and store it in the class's dict
-            store
-
-            We're overriding this method because we don't need to call
-            self.add_required_fees()
+    def add_required_fees(self, ops, **kwargs):
+        """ Override this method because steem-like chains doesn't have transaction feed
         """
-        ops = list()
-        for op in self.ops:
-            if isinstance(op, ProposalBuilder):
-                # This operation is a proposal an needs to be deal with
-                # differently
-                proposals = op.get_raw()
-                if proposals:
-                    ops.append(proposals)
-            else:
-                # otherwise, we simply wrap ops into Operations
-                ops.extend([self.operation_class(op)])
-
-        # We now wrap everything into an actual transaction
-        expiration = formatTimeFromNow(
-            self.expiration
-            or self.blockchain.expiration
-            or 30  # defaults to 30 seconds
-        )
-        ref_block_num, ref_block_prefix = self.get_block_params()
-        self.tx = self.signed_transaction_class(
-            ref_block_num=ref_block_num,
-            ref_block_prefix=ref_block_prefix,
-            expiration=expiration,
-            operations=ops,
-        )
-        dict.update(self, self.tx.json())
-        self._unset_require_reconstruction()
+        return ops
 
     def appendSigner(self, accounts, permission):
         """ Try to obtain the wif key from the wallet by telling which account
