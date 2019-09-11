@@ -14,7 +14,7 @@ $ git clone https://github.com/VIZ-Blockchain/viz-python-lib
 $ cd viz-python-lib/
 ```
 
-Basic read query:
+**Basic read query:**
 
 ```python
 from viz import Client
