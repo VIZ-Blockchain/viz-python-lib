@@ -11,6 +11,7 @@ $ sudo apt-get install g++ libboost-all-dev libssl-dev python3-pip
 $ pip3 install setuptools
 $ pip3 install graphenelib pycryptodome websockets appdirs Events scrypt pyyaml toolz funcy
 $ git clone https://github.com/VIZ-Blockchain/viz-python-lib
+$ cd viz-python-lib/
 ```
 
 **Basic read query:**
