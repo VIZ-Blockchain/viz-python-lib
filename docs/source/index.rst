@@ -10,7 +10,7 @@
 README
 ======
 
-.. include:: ../../README.md
+.. include:: ../../README.rst
 
 
 viz package

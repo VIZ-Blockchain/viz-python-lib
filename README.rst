@@ -1,9 +1,8 @@
-Python Library for VIZ_
------------------------
-.. _VIZ: https://github.com/VIZ-Blockchain/
+Python Library for `VIZ`_
+-----------------------------------------------------------
+.. _VIZ: https://github.com/VIZ-Blockchain
 
-
-This library is built on top of python-graphenelib_
+This library is built on top of `python-graphenelib`_
 
 .. _python-graphenelib: https://github.com/xeroc/python-graphenelib/
 
