@@ -1,0 +1,15 @@
+graphenelib>=1.1.11
+pycryptodome
+websockets
+appdirs
+Events
+scrypt
+pyyaml
+toolz
+funcy
+
+
+# sphinx autodoc
+Sphinx>=3.0.1
+rst2pdf>=0.96
+sphinx-rtd-theme>=0.4.3
