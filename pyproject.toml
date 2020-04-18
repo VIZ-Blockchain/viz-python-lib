@@ -4,6 +4,11 @@ version = "0.1.0"
 description = "python library for VIZ blockchain"
 authors = ["Vladimir Kamarzin <vvk@vvk.pp.ru>"]
 license = "MIT"
+packages = [
+    { include = "viz" },
+    { include = "vizapi" },
+    { include = "vizbase" },
+]
 
 [tool.poetry.dependencies]
 python = "^3.6.1"
