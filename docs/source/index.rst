@@ -7,12 +7,6 @@
    :maxdepth: 2
 
    
-README
-======
-
-.. include:: ../../README.md
-
-
 viz package
 ===========
 
