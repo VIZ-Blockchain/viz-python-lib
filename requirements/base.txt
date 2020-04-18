@@ -1,5 +1,5 @@
 graphenelib>=1.1.11
-pycryptodome
+pycryptodome==3.8.2
 websockets
 appdirs
 Events
@@ -7,3 +7,4 @@ scrypt
 pyyaml
 toolz
 funcy
+pre-commit>=2.2.0

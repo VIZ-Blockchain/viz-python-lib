@@ -1,0 +1,4 @@
+[flake8]
+max-line-length = 120
+application-import-names = viz, vizapi, vizbase
+exclude = .git,__pycache__,build,dist
