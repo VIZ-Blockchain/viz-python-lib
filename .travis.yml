@@ -4,11 +4,11 @@ language: python
 matrix:
     include:
         - python: 3.8
-          env: TOXENV=py38
+          env: TOX_ENV=py38
         - python: 3.7
-          env: TOXENV=py37
+          env: TOX_ENV=py37
         - python: 3.6
-          env: TOXENV=py36
+          env: TOX_ENV=py36
 
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install: pip install -r requirements/test.txt
