@@ -66,7 +66,7 @@ class Client(AbstractGrapheneChain):
         * **Force keys**: This more is for advanced users and
           requires that you know what you are doing. Here, the
           ``keys`` parameter is a dictionary that overwrite the
-          ``active``, ``owner``, or ``memo`` keys for
+          ``active``, ``master``, or ``memo`` keys for
           any account. This mode is only used for *foreign*
           signatures!
 
@@ -192,23 +192,23 @@ class Client(AbstractGrapheneChain):
             }
         )
 
-        return self.finalizeOp(op, account, "posting")
+        return self.finalizeOp(op, account, "regular")
 
-    def custom(self, id, json, required_auths=[], required_posting_auths=[]):
+    def custom(self, id, json, required_auths=[], required_regular_auths=[]):
         """ Create a custom operation
 
             :param str id: identifier for the custom (max length 32 bytes)
             :param json json: the json data to put into the custom operation
             :param list required_auths: (optional) required active auths
-            :param list required_posting_auths: (optional) posting auths
+            :param list required_regular_auths: (optional) regular auths
         """
         account = None
-        requred_key_type = "posting"
+        requred_key_type = "regular"
         if len(required_auths):
             account = required_auths[0]
             requred_key_type = "active"
-        elif len(required_posting_auths):
-            account = required_posting_auths[0]
+        elif len(required_regular_auths):
+            account = required_regular_auths[0]
         else:
             raise Exception("At least one account needs to be specified")
 
@@ -216,7 +216,7 @@ class Client(AbstractGrapheneChain):
             **{
                 "json": json,
                 "required_auths": required_auths,
-                "required_posting_auths": required_posting_auths,
+                "required_regular_auths": required_regular_auths,
                 "id": id,
             }
         )

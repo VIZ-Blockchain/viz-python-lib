@@ -110,9 +110,9 @@ class Account_create_with_delegation(GrapheneObject):
                         ("delegation", Amount(kwargs["delegation"])),
                         ("creator", String(kwargs["creator"])),
                         ("new_account_name", String(kwargs["new_account_name"])),
-                        ("owner", Permission(kwargs["owner"], prefix=prefix)),
+                        ("master", Permission(kwargs["master"], prefix=prefix)),
                         ("active", Permission(kwargs["active"], prefix=prefix)),
-                        ("posting", Permission(kwargs["posting"], prefix=prefix)),
+                        ("regular", Permission(kwargs["regular"], prefix=prefix)),
                         ("memo_key", PublicKey(kwargs["memo_key"], prefix=prefix)),
                         ("json_metadata", String(meta)),
                         ("extensions", Array([])),
@@ -137,9 +137,9 @@ class Account_update(GrapheneObject):
                 else:
                     meta = kwargs["json_metadata"]
 
-            owner = (
-                Permission(kwargs["owner"], prefix=prefix)
-                if "owner" in kwargs
+            master = (
+                Permission(kwargs["master"], prefix=prefix)
+                if "master" in kwargs
                 else None
             )
             active = (
@@ -147,9 +147,9 @@ class Account_update(GrapheneObject):
                 if "active" in kwargs
                 else None
             )
-            posting = (
-                Permission(kwargs["posting"], prefix=prefix)
-                if "posting" in kwargs
+            regular = (
+                Permission(kwargs["regular"], prefix=prefix)
+                if "regular" in kwargs
                 else None
             )
 
@@ -157,9 +157,9 @@ class Account_update(GrapheneObject):
                 OrderedDict(
                     [
                         ("account", String(kwargs["account"])),
-                        ("owner", Optional(owner)),
+                        ("master", Optional(master)),
                         ("active", Optional(active)),
-                        ("posting", Optional(posting)),
+                        ("regular", Optional(regular)),
                         ("memo_key", PublicKey(kwargs["memo_key"], prefix=prefix)),
                         ("json_metadata", String(meta)),
                     ]
@@ -328,7 +328,7 @@ class Witness_update(GrapheneObject):
             super().__init__(
                 OrderedDict(
                     [
-                        ("owner", String(kwargs["owner"])),
+                        ("master", String(kwargs["master"])),
                         ("url", String(kwargs["url"])),
                         (
                             "block_signing_key",
@@ -367,7 +367,7 @@ class Chain_properties_update(GrapheneObject):
                 props = Props(obj)
 
             super().__init__(
-                OrderedDict([("owner", String(kwargs["owner"])), ("props", props)])
+                OrderedDict([("master", String(kwargs["master"])), ("props", props)])
             )
 
 
@@ -446,17 +446,17 @@ class Proposal_update(GrapheneObject):
             active_approvals_to_remove = [
                 String(str(x)) for x in kwargs.get("active_approvals_to_remove") or []
             ]
-            owner_approvals_to_add = [
-                String(str(x)) for x in kwargs.get("owner_approvals_to_add") or []
+            master_approvals_to_add = [
+                String(str(x)) for x in kwargs.get("master_approvals_to_add") or []
             ]
-            owner_approvals_to_remove = [
-                String(str(x)) for x in kwargs.get("owner_approvals_to_remove") or []
+            master_approvals_to_remove = [
+                String(str(x)) for x in kwargs.get("master_approvals_to_remove") or []
             ]
-            posting_approvals_to_add = [
-                String(str(x)) for x in kwargs.get("posting_approvals_to_add") or []
+            regular_approvals_to_add = [
+                String(str(x)) for x in kwargs.get("regular_approvals_to_add") or []
             ]
-            posting_approvals_to_remove = [
-                String(str(x)) for x in kwargs.get("posting_approvals_to_remove") or []
+            regular_approvals_to_remove = [
+                String(str(x)) for x in kwargs.get("regular_approvals_to_remove") or []
             ]
             key_approvals_to_add = [
                 String(str(x)) for x in kwargs.get("key_approvals_to_add") or []
@@ -475,12 +475,12 @@ class Proposal_update(GrapheneObject):
                             "active_approvals_to_remove",
                             Array(active_approvals_to_remove),
                         ),
-                        ("owner_approvals_to_add", Array(owner_approvals_to_add)),
-                        ("owner_approvals_to_remove", Array(owner_approvals_to_remove)),
-                        ("posting_approvals_to_add", Array(posting_approvals_to_add)),
+                        ("master_approvals_to_add", Array(master_approvals_to_add)),
+                        ("master_approvals_to_remove", Array(master_approvals_to_remove)),
+                        ("regular_approvals_to_add", Array(regular_approvals_to_add)),
                         (
-                            "posting_approvals_to_remove",
-                            Array(posting_approvals_to_remove),
+                            "regular_approvals_to_remove",
+                            Array(regular_approvals_to_remove),
                         ),
                         ("key_approvals_to_add", Array(key_approvals_to_add)),
                         ("key_approvals_to_remove", Array(key_approvals_to_remove)),
@@ -558,9 +558,9 @@ class Custom(GrapheneObject):
                             Array([String(o) for o in kwargs["required_auths"]]),
                         ),
                         (
-                            "required_posting_auths",
+                            "required_regular_auths",
                             Array(
-                                [String(o) for o in kwargs["required_posting_auths"]]
+                                [String(o) for o in kwargs["required_regular_auths"]]
                             ),
                         ),
                         ("id", String(kwargs["id"])),

@@ -11,7 +11,7 @@ def decodeRPCErrorMsg(e):
         (
             "(10 assert_exception: Assert Exception\n|"
             "Assert Exception \(10\)\n|"
-            "3030000 tx_missing_posting_auth)"
+            "3030000 tx_missing_regular_auth)"
             ".*: (.*)\n"
         ),
         str(e),

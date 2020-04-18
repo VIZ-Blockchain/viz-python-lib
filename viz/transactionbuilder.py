@@ -45,7 +45,7 @@ class TransactionBuilder(GrapheneTransactionBuilder):
         operations and signers.
     """
 
-    permission_types = ["active", "owner", "posting"]
+    permission_types = ["master", "active", "regular"]
 
     def define_classes(self):
         self.account_class = Account
