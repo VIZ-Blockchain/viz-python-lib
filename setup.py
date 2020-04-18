@@ -21,7 +21,7 @@ def get_version(*file_paths):
     raise RuntimeError('Unable to find version string.')
 
 
-version = get_version("viz-python-lib", "__init__.py")
+version = '0.1.0'
 
 
 if sys.argv[-1] == 'publish':
@@ -53,7 +53,9 @@ setup(
     # author_email='On1x',
     url='https://github.com/VIZ-Blockchain/viz-cookbook.git',
     packages=[
-        'viz-python-lib',
+        'viz',
+        'vizapi',
+        'vizbase',
     ],
     include_package_data=True,
     install_requires=[
@@ -74,11 +76,10 @@ setup(
         'Development Status :: 3 - Alpha',
         'Framework :: graphenelib :: 1.1.11',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: BSD License',
+        'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
     ],
 )
