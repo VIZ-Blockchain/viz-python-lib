@@ -49,9 +49,9 @@ setup(
     version=version,
     description="""Python Library for VIZ""",
     long_description=readme + '\n\n', # + history,
-    author='On1x',
+    author='Vladimir Kamarzin',
     # author_email='On1x',
-    url='https://github.com/VIZ-Blockchain/viz-cookbook.git',
+    url='https://github.com/VIZ-Blockchain/viz-python-lib.git',
     packages=[
         'viz',
         'vizapi',
@@ -61,7 +61,6 @@ setup(
     install_requires=[
         'graphenelib>=1.1.11',
         'pycryptodome',
-        'websockets',
         'appdirs',
         'Events',
         'scrypt',
@@ -71,7 +70,7 @@ setup(
     ],
     license="MIT",
     zip_safe=False,
-    keywords='viz-python-lib',
+    keywords='viz blockchain python library',
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Framework :: graphenelib :: 1.1.11',
