@@ -111,7 +111,7 @@ html_theme = "alabaster"
 # documentation.
 html_theme_options = {
     "sidebar_collapse": False,
-    "show_powered_by": False,
+    "show_powered_by": True,
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
