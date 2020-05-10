@@ -65,3 +65,5 @@ target/
 .ropeproject/
 .pytest_cache/
 .scannerwork/
+
+.mypy_cache/
