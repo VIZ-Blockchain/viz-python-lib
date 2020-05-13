@@ -53,7 +53,7 @@ extensions = [
     "sphinx.ext.doctest",
     "sphinx.ext.todo",
     "sphinx.ext.coverage",
-    "sphinx.ext.viewcode",
+    # "sphinx.ext.viewcode",  # disabled due to error in combination with 'inherited-members'
     "sphinx.ext.intersphinx",
     # Used to write beautiful docstrings:
     "sphinx.ext.napoleon",
@@ -65,6 +65,14 @@ extensions = [
 
 autoapi_type = "python"
 autoapi_dirs = ["../viz", "../vizbase", "../vizapi"]
+autoapi_options = [
+    "members",
+    "undoc-members",
+    "private-members",
+    "show-inheritance",
+    "special-members",
+    "inherited-members",
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
