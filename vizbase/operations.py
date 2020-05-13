@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
-
 from collections import OrderedDict
-from binascii import hexlify, unhexlify
 
 from graphenebase.types import (
     Array,
@@ -15,7 +13,10 @@ from graphenebase.types import (
     Map,
     Optional,
     PointInTime,
+    Ripemd160,
     Set,
+    Sha1,
+    Sha256,
     Signature,
     Static_variant,
     String,
@@ -26,25 +27,12 @@ from graphenebase.types import (
     Varint32,
     Void,
     VoteId,
-    Ripemd160,
-    Sha1,
-    Sha256,
 )
 
 from .account import PublicKey
-from .objects import (
-    Amount,
-    Asset,
-    Beneficiary,
-    GrapheneObject,
-    Memo,
-    Operation,
-    Permission,
-    isArgsThisClass,
-)
-from .operationids import operations
 from .chains import DEFAULT_PREFIX
-
+from .objects import Amount, Beneficiary, GrapheneObject, Operation, Permission, isArgsThisClass
+from .operationids import operations
 
 class_idmap = {}
 class_namemap = {}
@@ -64,20 +52,17 @@ def fill_classmaps():
 
 
 def getOperationClassForId(op_id):
-    """ Convert an operation id into the corresponding class
-    """
+    """Convert an operation id into the corresponding class."""
     return class_idmap[op_id] if op_id in class_idmap else None
 
 
 def getOperationIdForClass(name):
-    """ Convert an operation classname into the corresponding id
-    """
+    """Convert an operation classname into the corresponding id."""
     return class_namemap[name] if name in class_namemap else None
 
 
 def getOperationNameForId(i):
-    """ Convert an operation id into the corresponding string
-    """
+    """Convert an operation id into the corresponding string."""
     for key in operations:
         if int(operations[key]) is int(i):
             return key
@@ -93,9 +78,7 @@ class Account_create_with_delegation(GrapheneObject):
                 kwargs = args[0]
             prefix = kwargs.pop("prefix", DEFAULT_PREFIX)
 
-            assert (
-                len(kwargs["new_account_name"]) <= 16
-            ), "Account name must be at most 16 chars long"
+            assert len(kwargs["new_account_name"]) <= 16, "Account name must be at most 16 chars long"
 
             meta = ""
             if "json_metadata" in kwargs and kwargs["json_metadata"]:
@@ -137,21 +120,9 @@ class Account_update(GrapheneObject):
                 else:
                     meta = kwargs["json_metadata"]
 
-            master = (
-                Permission(kwargs["master"], prefix=prefix)
-                if "master" in kwargs
-                else None
-            )
-            active = (
-                Permission(kwargs["active"], prefix=prefix)
-                if "active" in kwargs
-                else None
-            )
-            regular = (
-                Permission(kwargs["regular"], prefix=prefix)
-                if "regular" in kwargs
-                else None
-            )
+            master = Permission(kwargs["master"], prefix=prefix) if "master" in kwargs else None
+            active = Permission(kwargs["active"], prefix=prefix) if "active" in kwargs else None
+            regular = Permission(kwargs["regular"], prefix=prefix) if "regular" in kwargs else None
 
             super().__init__(
                 OrderedDict(
@@ -182,14 +153,7 @@ class Account_metadata(GrapheneObject):
                 else:
                     meta = kwargs["json_metadata"]
 
-            super().__init__(
-                OrderedDict(
-                    [
-                        ("account", String(kwargs["account"])),
-                        ("json_metadata", String(meta)),
-                    ]
-                )
-            )
+            super().__init__(OrderedDict([("account", String(kwargs["account"])), ("json_metadata", String(meta)),]))
 
 
 class Award(GrapheneObject):
@@ -210,10 +174,7 @@ class Award(GrapheneObject):
                         ("energy", Uint16(kwargs["energy"])),
                         ("custom_sequence", Uint64(kwargs["custom_sequence"])),
                         ("memo", String(kwargs["memo"])),
-                        (
-                            "beneficiaries",
-                            Array([Beneficiary(o) for o in kwargs["beneficiaries"]]),
-                        ),
+                        ("beneficiaries", Array([Beneficiary(o) for o in kwargs["beneficiaries"]]),),
                     ]
                 )
             )
@@ -267,10 +228,7 @@ class Withdraw_vesting(GrapheneObject):
                 kwargs = args[0]
             super().__init__(
                 OrderedDict(
-                    [
-                        ("account", String(kwargs["account"])),
-                        ("vesting_shares", Amount(kwargs["vesting_shares"])),
-                    ]
+                    [("account", String(kwargs["account"])), ("vesting_shares", Amount(kwargs["vesting_shares"])),]
                 )
             )
 
@@ -322,18 +280,13 @@ class Witness_update(GrapheneObject):
             prefix = kwargs.pop("prefix", DEFAULT_PREFIX)
 
             if not kwargs["block_signing_key"]:
-                kwargs[
-                    "block_signing_key"
-                ] = "{}1111111111111111111111111111111114T1Anm".format(prefix)
+                kwargs["block_signing_key"] = "{}1111111111111111111111111111111114T1Anm".format(prefix)
             super().__init__(
                 OrderedDict(
                     [
                         ("master", String(kwargs["master"])),
                         ("url", String(kwargs["url"])),
-                        (
-                            "block_signing_key",
-                            PublicKey(kwargs["block_signing_key"], prefix=prefix),
-                        ),
+                        ("block_signing_key", PublicKey(kwargs["block_signing_key"], prefix=prefix),),
                         ("props", ChainProperties(kwargs["props"])),
                         ("fee", Amount(kwargs["fee"])),
                     ]
@@ -366,9 +319,7 @@ class Chain_properties_update(GrapheneObject):
                 obj = [type_id, {"props": props}]
                 props = Props(obj)
 
-            super().__init__(
-                OrderedDict([("master", String(kwargs["master"])), ("props", props)])
-            )
+            super().__init__(OrderedDict([("master", String(kwargs["master"])), ("props", props)]))
 
 
 class Account_witness_vote(GrapheneObject):
@@ -401,21 +352,11 @@ class Proposal_create(GrapheneObject):
             assert kwargs["proposed_operations"], "proposed_operations cannot be empty!"
 
             if isinstance(kwargs["proposed_operations"][0], GrapheneObject):
-                proposed_operations = [
-                    OperationWrapper(Operation(op))
-                    for op in kwargs["proposed_operations"]
-                ]
+                proposed_operations = [OperationWrapper(Operation(op)) for op in kwargs["proposed_operations"]]
             else:
-                proposed_operations = [
-                    OperationWrapper(Operation(op["op"]))
-                    for op in kwargs["proposed_operations"]
-                ]
+                proposed_operations = [OperationWrapper(Operation(op["op"])) for op in kwargs["proposed_operations"]]
 
-            review_period_time = (
-                PointInTime(kwargs["review_period_time"])
-                if kwargs.get("review_period_time")
-                else None
-            )
+            review_period_time = PointInTime(kwargs["review_period_time"]) if kwargs.get("review_period_time") else None
 
             super().__init__(
                 OrderedDict(
@@ -440,30 +381,14 @@ class Proposal_update(GrapheneObject):
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
 
-            active_approvals_to_add = [
-                String(str(x)) for x in kwargs.get("active_approvals_to_add") or []
-            ]
-            active_approvals_to_remove = [
-                String(str(x)) for x in kwargs.get("active_approvals_to_remove") or []
-            ]
-            master_approvals_to_add = [
-                String(str(x)) for x in kwargs.get("master_approvals_to_add") or []
-            ]
-            master_approvals_to_remove = [
-                String(str(x)) for x in kwargs.get("master_approvals_to_remove") or []
-            ]
-            regular_approvals_to_add = [
-                String(str(x)) for x in kwargs.get("regular_approvals_to_add") or []
-            ]
-            regular_approvals_to_remove = [
-                String(str(x)) for x in kwargs.get("regular_approvals_to_remove") or []
-            ]
-            key_approvals_to_add = [
-                String(str(x)) for x in kwargs.get("key_approvals_to_add") or []
-            ]
-            key_approvals_to_remove = [
-                String(str(x)) for x in kwargs.get("key_approvals_to_remove") or []
-            ]
+            active_approvals_to_add = [String(str(x)) for x in kwargs.get("active_approvals_to_add") or []]
+            active_approvals_to_remove = [String(str(x)) for x in kwargs.get("active_approvals_to_remove") or []]
+            master_approvals_to_add = [String(str(x)) for x in kwargs.get("master_approvals_to_add") or []]
+            master_approvals_to_remove = [String(str(x)) for x in kwargs.get("master_approvals_to_remove") or []]
+            regular_approvals_to_add = [String(str(x)) for x in kwargs.get("regular_approvals_to_add") or []]
+            regular_approvals_to_remove = [String(str(x)) for x in kwargs.get("regular_approvals_to_remove") or []]
+            key_approvals_to_add = [String(str(x)) for x in kwargs.get("key_approvals_to_add") or []]
+            key_approvals_to_remove = [String(str(x)) for x in kwargs.get("key_approvals_to_remove") or []]
 
             super().__init__(
                 OrderedDict(
@@ -471,17 +396,11 @@ class Proposal_update(GrapheneObject):
                         ("author", String(kwargs["author"])),
                         ("title", String(kwargs["title"])),
                         ("active_approvals_to_add", Array(active_approvals_to_add)),
-                        (
-                            "active_approvals_to_remove",
-                            Array(active_approvals_to_remove),
-                        ),
+                        ("active_approvals_to_remove", Array(active_approvals_to_remove),),
                         ("master_approvals_to_add", Array(master_approvals_to_add)),
                         ("master_approvals_to_remove", Array(master_approvals_to_remove)),
                         ("regular_approvals_to_add", Array(regular_approvals_to_add)),
-                        (
-                            "regular_approvals_to_remove",
-                            Array(regular_approvals_to_remove),
-                        ),
+                        ("regular_approvals_to_remove", Array(regular_approvals_to_remove),),
                         ("key_approvals_to_add", Array(key_approvals_to_add)),
                         ("key_approvals_to_remove", Array(key_approvals_to_remove)),
                         ("extensions", Array(kwargs.get("extensions") or [])),
@@ -524,14 +443,7 @@ class Account_metadata(GrapheneObject):
                 else:
                     meta = kwargs["json_metadata"]
 
-            super().__init__(
-                OrderedDict(
-                    [
-                        ("account", String(kwargs["account"])),
-                        ("json_metadata", String(meta)),
-                    ]
-                )
-            )
+            super().__init__(OrderedDict([("account", String(kwargs["account"])), ("json_metadata", String(meta)),]))
 
 
 class Custom(GrapheneObject):
@@ -553,16 +465,8 @@ class Custom(GrapheneObject):
             super().__init__(
                 OrderedDict(
                     [
-                        (
-                            "required_auths",
-                            Array([String(o) for o in kwargs["required_auths"]]),
-                        ),
-                        (
-                            "required_regular_auths",
-                            Array(
-                                [String(o) for o in kwargs["required_regular_auths"]]
-                            ),
-                        ),
+                        ("required_auths", Array([String(o) for o in kwargs["required_auths"]]),),
+                        ("required_regular_auths", Array([String(o) for o in kwargs["required_regular_auths"]]),),
                         ("id", String(kwargs["id"])),
                         ("json", String(js)),
                     ]

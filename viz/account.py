@@ -1,25 +1,24 @@
-import datetime
-import math
 import time
-
 from contextlib import suppress
-from toolz import dissoc
+
 from funcy import get_in
+from toolz import dissoc
 
 from .amount import Amount
 from .blockchain import Blockchain
 from .converter import Converter
-from .instance import shared_blockchain_instance
-from .utils import parse_time, json_expand
 from .exceptions import AccountDoesNotExistsException
+from .instance import shared_blockchain_instance
+from .utils import json_expand, parse_time
 
 
 class Account(dict):
-    """ This class allows to easily access Account data
+    """
+    This class allows to easily access Account data.
 
-        :param str account_name: Name of the account
-        :param viz.viz.Client blockchain_instance: Client
-                 instance
+    :param str account_name: Name of the account
+    :param viz.viz.Client blockchain_instance: Client
+             instance
     """
 
     def __init__(self, account_name, blockchain_instance=None):
@@ -32,9 +31,10 @@ class Account(dict):
         self.refresh()
 
     def _get_account(self, name, **kwargs):
-        """ Get full account details from account name
+        """
+        Get full account details from account name.
 
-            :param str name: Account name
+        :param str name: Account name
         """
         return self.blockchain_instance.rpc.get_accounts([name])[0]
 
@@ -84,21 +84,11 @@ class Account(dict):
 
     def get_followers(self, limit: int = None, offset: str = None):
         # TODO: is this needed?
-        return [
-            x["follower"]
-            for x in self._get_followers(
-                direction="follower", limit=limit, offset=offset
-            )
-        ]
+        return [x["follower"] for x in self._get_followers(direction="follower", limit=limit, offset=offset)]
 
     def get_following(self, limit: int = None, offset: str = None):
         # TODO: is this needed?
-        return [
-            x["following"]
-            for x in self._get_followers(
-                direction="following", limit=limit, offset=offset
-            )
-        ]
+        return [x["following"] for x in self._get_followers(direction="following", limit=limit, offset=offset)]
 
     def _get_followers(self, direction="follower", limit=None, offset=""):
         # TODO: is this needed?
@@ -132,9 +122,7 @@ class Account(dict):
 
     def virtual_op_count(self):
         try:
-            last_item = self.blockchain_instance.rpc.get_account_history(
-                self.name, -1, 0
-            )[0][0]
+            last_item = self.blockchain_instance.rpc.get_account_history(self.name, -1, 0)[0][0]
         except IndexError:
             return 0
         else:
@@ -167,16 +155,10 @@ class Account(dict):
         return filtered_items
 
     def get_account_history(
-        self,
-        index,
-        limit,
-        start=None,
-        stop=None,
-        order=-1,
-        filter_by=None,
-        raw_output=False,
+        self, index, limit, start=None, stop=None, order=-1, filter_by=None, raw_output=False,
     ):
-        """ A generator over steemd.get_account_history.
+        """
+        A generator over steemd.get_account_history.
 
         It offers serialization, filtering and fine grained iteration control.
 
@@ -190,9 +172,7 @@ class Account(dict):
             raw_output (bool): (Defaults to False). If True, return history in
                 steemd format (unchanged).
         """
-        history = self.blockchain_instance.rpc.get_account_history(
-            self.name, index, limit
-        )
+        history = self.blockchain_instance.rpc.get_account_history(self.name, index, limit)
         for item in history[::order]:
             index, event = item
 
@@ -232,8 +212,7 @@ class Account(dict):
                         yield construct_op(self.name)
 
     def history(self, filter_by=None, start=0, batch_size=1000, raw_output=False):
-        """ Stream account history in chronological order.
-        """
+        """Stream account history in chronological order."""
         max_index = self.virtual_op_count()
         if not max_index:
             return
@@ -253,8 +232,7 @@ class Account(dict):
             i += batch_size + 1
 
     def history_reverse(self, filter_by=None, batch_size=1000, raw_output=False):
-        """ Stream account history in reverse chronological order.
-        """
+        """Stream account history in reverse chronological order."""
         start_index = self.virtual_op_count()
         if not start_index:
             return
@@ -264,23 +242,19 @@ class Account(dict):
             if i - batch_size < 0:
                 batch_size = i
             yield from self.get_account_history(
-                index=i,
-                limit=batch_size,
-                order=-1,
-                filter_by=filter_by,
-                raw_output=raw_output,
+                index=i, limit=batch_size, order=-1, filter_by=filter_by, raw_output=raw_output,
             )
             i -= batch_size + 1
 
     def rawhistory(self, first=99999999999, limit=-1, only_ops=[], exclude_ops=[]):
-        """ Returns a generator for individual account transactions. The
-            latest operation will be first. This call can be used in a
-            ``for`` loop.
+        """
+        Returns a generator for individual account transactions. The latest operation will be first. This call can be
+        used in a ``for`` loop.
 
-            :param str account: account name to get history for
-            :param int first: sequence number of the first transaction to return
-            :param int limit: limit number of filtered operations to return
-            :param array only_ops: Limit generator by these operations
+        :param str account: account name to get history for
+        :param int first: sequence number of the first transaction to return
+        :param int limit: limit number of filtered operations to return
+        :param array only_ops: Limit generator by these operations
         """
         cnt = 0
         _limit = 100
@@ -288,9 +262,7 @@ class Account(dict):
             _limit = first
         while first > 0:
             # RPC call
-            txs = self.blockchain_instance.rpc.get_account_history(
-                self.name, first, _limit
-            )
+            txs = self.blockchain_instance.rpc.get_account_history(self.name, first, _limit)
             for i in txs[::-1]:
                 if exclude_ops and i[1]["op"][0] in exclude_ops:
                     continue

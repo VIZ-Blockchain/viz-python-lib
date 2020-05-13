@@ -4,9 +4,7 @@ from grapheneapi.exceptions import RPCError
 
 
 def decodeRPCErrorMsg(e):
-    """ Helper function to decode the raised Exception and give it a
-        python Exception class
-    """
+    """Helper function to decode the raised Exception and give it a python Exception class."""
     found = re.search(
         (
             "(10 assert_exception: Assert Exception\n|"

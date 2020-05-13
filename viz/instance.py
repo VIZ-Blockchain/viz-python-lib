@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
-from graphenecommon.instance import AbstractBlockchainInstanceProvider, SharedInstance
+from graphenecommon.instance import AbstractBlockchainInstanceProvider
 
 
 class BlockchainInstance(AbstractBlockchainInstanceProvider):
-    """ This is a class that allows compatibility with previous
-        naming conventions
-    """
+    """This is a class that allows compatibility with previous naming conventions."""
 
     def __init__(self, *args, **kwargs):
         # Also allow 'instance'
@@ -14,16 +12,14 @@ class BlockchainInstance(AbstractBlockchainInstanceProvider):
         AbstractBlockchainInstanceProvider.__init__(self, *args, **kwargs)
 
     def get_instance_class(self):
-        """ Should return the Chain instance class, e.g. `viz.Client`
-        """
+        """Should return the Chain instance class, e.g. `viz.Client`"""
         import viz
 
         return viz.Client
 
     @property
     def viz(self):
-        """ Alias for the specific blockchain
-        """
+        """Alias for the specific blockchain."""
         return self.blockchain
 
 

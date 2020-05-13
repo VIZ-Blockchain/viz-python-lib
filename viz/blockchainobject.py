@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
+from graphenecommon.blockchainobject import BlockchainObject as GrapheneBlockchainObject
+from graphenecommon.blockchainobject import Object as GrapheneChainObject
+
 from .instance import BlockchainInstance
-from graphenecommon.blockchainobject import (
-    BlockchainObject as GrapheneBlockchainObject,
-    Object as GrapheneChainObject,
-    ObjectCache,
-)
 
 
 @BlockchainInstance.inject

@@ -2,28 +2,29 @@
 import hashlib
 import json
 import time
-
 from typing import Union
+
+from graphenecommon.blockchain import Blockchain as GrapheneBlockchain
+
+from vizbase import operationids
 
 from .block import Block
 from .instance import BlockchainInstance
-from vizbase import operationids
-from graphenecommon.blockchain import Blockchain as GrapheneBlockchain
 
 
 @BlockchainInstance.inject
 class Blockchain(GrapheneBlockchain):
-    """ This class allows to access the blockchain and read data
-        from it
+    """
+    This class allows to access the blockchain and read data from it.
 
-        :param viz.viz.Client blockchain_instance: Client
-                 instance
-        :param str mode: (default) Irreversible block (``irreversible``) or
-                 actual head block (``head``)
-        :param int max_block_wait_repetition: (default) 3 maximum wait time for
-            next block ismax_block_wait_repetition * block_interval
+    :param viz.viz.Client blockchain_instance: Client
+             instance
+    :param str mode: (default) Irreversible block (``irreversible``) or
+             actual head block (``head``)
+    :param int max_block_wait_repetition: (default) 3 maximum wait time for
+        next block ismax_block_wait_repetition * block_interval
 
-        This class let's you deal with blockchain related data and methods.
+    This class let's you deal with blockchain related data and methods.
     """
 
     def define_classes(self):
@@ -32,13 +33,12 @@ class Blockchain(GrapheneBlockchain):
 
     @staticmethod
     def hash_op(event: dict):
-        """ This method generates a hash of blockchain operation. """
+        """This method generates a hash of blockchain operation."""
         data = json.dumps(event, sort_keys=True)
         return hashlib.sha1(bytes(data, "utf-8")).hexdigest()
 
     def get_block_interval(self):
-        """ Override class from graphenelib because our API is different
-        """
+        """Override class from graphenelib because our API is different."""
         return self.blockchain.rpc.config.get("CHAIN_BLOCK_INTERVAL")
 
     def stream_from(
@@ -50,8 +50,8 @@ class Blockchain(GrapheneBlockchain):
         only_virtual_ops=False,
         **kwargs
     ):
-        """ This call yields raw blocks or operations depending on
-        ``full_blocks`` param.
+        """
+        This call yields raw blocks or operations depending on ``full_blocks`` param.
 
         By default, this generator will yield operations, one by one.
         You can choose to yield lists of operations, batched to contain
@@ -95,13 +95,9 @@ class Blockchain(GrapheneBlockchain):
                     block.update({"block_num": block_num})
                     yield block
                 elif batch_operations:
-                    yield self.blockchain.rpc.get_ops_in_block(
-                        block_num, only_virtual_ops
-                    )
+                    yield self.blockchain.rpc.get_ops_in_block(block_num, only_virtual_ops)
                 else:
-                    ops = self.blockchain.rpc.get_ops_in_block(
-                        block_num, only_virtual_ops
-                    )
+                    ops = self.blockchain.rpc.get_ops_in_block(block_num, only_virtual_ops)
                     for op in ops:
                         # avoid yielding empty ops
                         if op:
@@ -112,23 +108,24 @@ class Blockchain(GrapheneBlockchain):
             time.sleep(block_interval)
 
     def stream(self, filter_by: Union[str, list] = list(), *args, **kwargs):
-        """ Yield a stream of specific operations, starting with current head block.
+        """
+        Yield a stream of specific operations, starting with current head block.
 
-            This method can work in 2 modes:
-            1. Whether only real operations are requested, it will use get_block() API call, so you don't need to have
-            neigher operation_history nor accunt_history plugins enabled.
-            2. Whether you're requesting any of the virtual operations, your node should have operation_history or
-            accunt_history plugins enabled and appropriate settings for the history-related params should be set
-            (history-start-block, history-whitelist-ops or history-blacklist-ops).
+        This method can work in 2 modes:
+        1. Whether only real operations are requested, it will use get_block() API call, so you don't need to have
+        neigher operation_history nor accunt_history plugins enabled.
+        2. Whether you're requesting any of the virtual operations, your node should have operation_history or
+        accunt_history plugins enabled and appropriate settings for the history-related params should be set
+        (history-start-block, history-whitelist-ops or history-blacklist-ops).
 
-            The dict output is formated such that ``type`` caries the operation type, timestamp and block_num are taken
-            from the block the operation was stored in and the other key depend on the actual operation.
+        The dict output is formated such that ``type`` caries the operation type, timestamp and block_num are taken
+        from the block the operation was stored in and the other key depend on the actual operation.
 
-            Note: you can pass all stream_from() params too.
+        Note: you can pass all stream_from() params too.
 
-            :param int start_block: Block to start with. If not provided, current (head) block is used.
-            :param int end_block: Stop iterating at this block. If not provided, this generator will run forever (streaming mode).
-            :param str,list filter_by: List of operations to filter for
+        :param int start_block: Block to start with. If not provided, current (head) block is used.
+        :param int end_block: Stop iterating at this block. If not provided, this generator will run forever (streaming mode).
+        :param str,list filter_by: List of operations to filter for
         """
         if isinstance(filter_by, str):
             filter_by = [filter_by]
@@ -148,9 +145,7 @@ class Blockchain(GrapheneBlockchain):
                             yield r
         else:
             # uses get_ops_in_block
-            kwargs["only_virtual_ops"] = not bool(
-                set(filter_by).difference(operationids.VIRTUAL_OPS)
-            )
+            kwargs["only_virtual_ops"] = not bool(set(filter_by).difference(operationids.VIRTUAL_OPS))
             for op in self.stream_from(full_blocks=False, *args, **kwargs):
                 if kwargs.get("raw_output"):
                     yield op

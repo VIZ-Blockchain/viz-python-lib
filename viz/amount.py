@@ -2,9 +2,10 @@ from vizbase.chains import PRECISIONS
 
 
 class Amount(dict):
-    """ This class helps deal and calculate with the different assets on the chain.
+    """
+    This class helps deal and calculate with the different assets on the chain.
 
-        :param str amountString: Amount string as used by the backend (e.g. "10 GBG")
+    :param str amountString: Amount string as used by the backend (e.g. "10 GBG")
     """
 
     def __init__(self, amount_string="0 GBG"):
@@ -14,9 +15,7 @@ class Amount(dict):
         elif isinstance(amount_string, str):
             self["amount"], self["asset"] = amount_string.split(" ")
         else:
-            raise ValueError(
-                "Need an instance of 'Amount' or a string with amount and asset"
-            )
+            raise ValueError("Need an instance of 'Amount' or a string with amount and asset")
 
         self["amount"] = float(self["amount"])
 

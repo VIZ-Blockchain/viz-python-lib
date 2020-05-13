@@ -1,5 +1,3 @@
-from graphenebase.operationids import getOperationNameForId
-
 #: Operation ids
 # Note: take operations from libraries/protocol/include/graphene/protocol/operations.hpp
 # Beware to keep operations order!

@@ -2,22 +2,22 @@
 import hashlib
 import struct
 from binascii import hexlify, unhexlify
-from Crypto.Cipher import AES
 
-from graphenebase.base58 import base58encode, base58decode
-from graphenebase.memo import get_shared_secret, _unpad, _pad
+from Crypto.Cipher import AES
+from graphenebase.base58 import base58decode, base58encode
+from graphenebase.memo import _pad, _unpad, get_shared_secret
 
 from .objects import Memo
 
 
 def init_aes(shared_secret, nonce):
-    """ Initialize AES instance
+    """
+    Initialize AES instance.
 
-        :param hex shared_secret: Shared Secret to use as encryption key
-        :param int nonce: Random nonce
-        :return: AES instance and checksum of the encryption key
-        :rtype: length 2 tuple
-
+    :param hex shared_secret: Shared Secret to use as encryption key
+    :param int nonce: Random nonce
+    :return: AES instance and checksum of the encryption key
+    :rtype: length 2 tuple
     """
     " Seed "
     ss = unhexlify(shared_secret)
@@ -33,15 +33,15 @@ def init_aes(shared_secret, nonce):
 
 
 def encode_memo(priv, pub, nonce, message, **kwargs):
-    """ Encode a message with a shared secret between Alice and Bob
+    """
+    Encode a message with a shared secret between Alice and Bob.
 
-        :param PrivateKey priv: Private Key (of Alice)
-        :param PublicKey pub: Public Key (of Bob)
-        :param int nonce: Random nonce
-        :param str message: Memo message
-        :return: Encrypted message
-        :rtype: hex
-
+    :param PrivateKey priv: Private Key (of Alice)
+    :param PublicKey pub: Public Key (of Bob)
+    :param int nonce: Random nonce
+    :param str message: Memo message
+    :return: Encrypted message
+    :rtype: hex
     """
     shared_secret = get_shared_secret(priv, pub)
     aes, check = init_aes(shared_secret, nonce)
@@ -68,15 +68,15 @@ def encode_memo(priv, pub, nonce, message, **kwargs):
 
 
 def decode_memo(priv, message):
-    """ Decode a message with a shared secret between Alice and Bob
+    """
+    Decode a message with a shared secret between Alice and Bob.
 
-        :param PrivateKey priv: Private Key (of Bob)
-        :param base58encoded message: Encrypted Memo message
-        :return: Decrypted message
-        :rtype: str
-        :raise ValueError: if message cannot be decoded as valid UTF-8
-               string
-
+    :param PrivateKey priv: Private Key (of Bob)
+    :param base58encoded message: Encrypted Memo message
+    :return: Decrypted message
+    :rtype: str
+    :raise ValueError: if message cannot be decoded as valid UTF-8
+           string
     """
     " decode structure "
     raw = base58decode(message[1:])
@@ -114,7 +114,7 @@ def decode_memo(priv, message):
 
 
 def involved_keys(message):
-    """ decode structure """
+    """decode structure."""
     raw = base58decode(message[1:])
     from_key = PublicKey(raw[:66])
     raw = raw[66:]

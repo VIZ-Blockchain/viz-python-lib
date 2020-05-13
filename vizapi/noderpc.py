@@ -1,14 +1,13 @@
-import re
 import logging
-
+import re
 from threading import Lock
 
-from vizbase.chains import KNOWN_CHAINS
 from grapheneapi.api import Api as Original_Api
-
-from grapheneapi.websocket import Websocket as Original_Websocket
-from grapheneapi.rpc import Rpc as Original_Rpc
 from grapheneapi.http import Http as Original_Http
+from grapheneapi.rpc import Rpc as Original_Rpc
+from grapheneapi.websocket import Websocket as Original_Websocket
+
+from vizbase.chains import KNOWN_CHAINS
 
 from . import exceptions
 from .consts import API
@@ -17,23 +16,23 @@ log = logging.getLogger(__name__)
 
 
 class NodeRPC(Original_Api):
-    """ Redefine graphene Api class
+    """
+    Redefine graphene Api class.
 
-        API class inheritance:
-        viz.Client -> graphenecommon.chain.AbstractGrapheneChain -> vizapi.NodeRPC ->
-        grapheneapi.api.Api -> grapheneapi.api.Websocket -> grapheneapi.api.Rpc
+    API class inheritance:
+    viz.Client -> graphenecommon.chain.AbstractGrapheneChain -> vizapi.NodeRPC ->
+    grapheneapi.api.Api -> grapheneapi.api.Websocket -> grapheneapi.api.Rpc
 
-        We are overriding here locally Websocket and Rpc classes. We have to override
-        Websocket because we need it to inherit from our own Rpc class.
+    We are overriding here locally Websocket and Rpc classes. We have to override
+    Websocket because we need it to inherit from our own Rpc class.
 
-        To enable RPC debugging:
+    To enable RPC debugging:
 
-        .. code-block:: python
+    .. code-block:: python
 
-            log = logging.getLogger('vizapi')
-            log.setLevel(logging.DEBUG)
-            log.addHandler(logging.StreamHandler())
-
+        log = logging.getLogger('vizapi')
+        log.setLevel(logging.DEBUG)
+        log.addHandler(logging.StreamHandler())
     """
 
     def __init__(self, *args, **kwargs):
@@ -47,9 +46,7 @@ class NodeRPC(Original_Api):
             raise exceptions.MissingRequiredActiveAuthority
         elif msg == "Internal error: Unable to acquire READ lock":
             raise exceptions.ReadLockFail(msg)
-        elif re.match(
-            "current_account_itr == acnt_indx.indices().get<by_name>().end()", msg
-        ):
+        elif re.match("current_account_itr == acnt_indx.indices().get<by_name>().end()", msg):
             raise exceptions.AccountCouldntBeFoundException(msg)
         elif re.match("Assert Exception: is_valid_name( name )", msg):
             raise exceptions.InvalidAccountNameException(msg)
@@ -70,9 +67,10 @@ class NodeRPC(Original_Api):
             raise ValueError("Only support http(s) and ws(s) connections!")
 
     def get_network(self):
-        """ Cache connected network info
+        """
+        Cache connected network info.
 
-            This avoids multiple calls of self.get_config()
+        This avoids multiple calls of self.get_config()
         """
         if self._network:
             return self._network
@@ -80,8 +78,10 @@ class NodeRPC(Original_Api):
         return self._network
 
     def _get_network(self):
-        """ Identify the connected network. This call returns a
-            dictionary with keys chain_id, core_symbol and prefix
+        """
+        Identify the connected network.
+
+        This call returns a dictionary with keys chain_id, core_symbol and prefix
         """
         # Cache config into self.config to be accesible as
         # blockchain_instance.rpc.config
@@ -94,25 +94,22 @@ class NodeRPC(Original_Api):
 
 
 class Rpc(Original_Rpc):
-    """ This class is responsible for making RPC queries
+    """
+    This class is responsible for making RPC queries.
 
-        Original graphene chains (like Bitshares) uses api_id in "params", while Golos
-        and VIZ uses api name here.
+    Original graphene chains (like Bitshares) uses api_id in "params", while Golos and VIZ uses api name here.
     """
 
     def __init__(self, *args, **kwargs):
         super(Rpc, self).__init__(*args, **kwargs)
 
     def __getattr__(self, name):
-        """ Map all methods to RPC calls and pass through the arguments
-        """
+        """Map all methods to RPC calls and pass through the arguments."""
 
         def method(*args, **kwargs):
             api = kwargs.get("api", API.get(name))
             if not api:
-                raise exceptions.NoSuchAPI(
-                    'Cannot find API for you request "{}"'.format(name)
-                )
+                raise exceptions.NoSuchAPI('Cannot find API for you request "{}"'.format(name))
 
             # Fix wrong api name hardcoded in graphenecommon.TransactionBuilder
             if api == "network_broadcast":

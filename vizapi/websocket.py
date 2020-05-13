@@ -1,99 +1,94 @@
 # -*- coding: utf-8 -*-
 import json
 import logging
-import ssl
 import threading
 import time
 import traceback
-
 from itertools import cycle
-from threading import Thread
 
 import websocket
-
 from events import Events
 
 from .exceptions import NumRetriesReached
-
 
 log = logging.getLogger(__name__)
 # logging.basicConfig(level=logging.DEBUG)
 
 
 class ChainWebsocket(Events):
-    """ Create a websocket connection and request push notifications
+    """
+    Create a websocket connection and request push notifications.
 
-        :param str urls: Either a single Websocket URL, or a list of URLs
-        :param str user: Username for Authentication
-        :param str password: Password for Authentication
-        :param list accounts: list of account names or ids to get push notifications for
-        :param list markets: list of asset_ids, e.g. ``[['1.3.0', '1.3.121']]``
-        :param list objects: list of objects id's you'd like to be notified when changing
-        :param int keep_alive: seconds between a ping to the backend (defaults to 25seconds)
+    :param str urls: Either a single Websocket URL, or a list of URLs
+    :param str user: Username for Authentication
+    :param str password: Password for Authentication
+    :param list accounts: list of account names or ids to get push notifications for
+    :param list markets: list of asset_ids, e.g. ``[['1.3.0', '1.3.121']]``
+    :param list objects: list of objects id's you'd like to be notified when changing
+    :param int keep_alive: seconds between a ping to the backend (defaults to 25seconds)
 
-        After instanciating this class, you can add event slots for:
+    After instanciating this class, you can add event slots for:
 
-        * ``on_tx``
-        * ``on_object``
-        * ``on_block``
-        * ``on_account``
-        * ``on_market``
+    * ``on_tx``
+    * ``on_object``
+    * ``on_block``
+    * ``on_account``
+    * ``on_market``
 
-        which will be called accordingly with the notification
-        message received from the Client node:
+    which will be called accordingly with the notification
+    message received from the Client node:
 
-        .. code-block:: python
+    .. code-block:: python
 
-            ws = ChainWebsocket(
-                "wss://node.testnet.viz.eu",
-                objects=["2.0.x", "2.1.x", "1.3.x"]
-            )
-            ws.on_object += print
-            ws.run_forever()
+        ws = ChainWebsocket(
+            "wss://node.testnet.viz.eu",
+            objects=["2.0.x", "2.1.x", "1.3.x"]
+        )
+        ws.on_object += print
+        ws.run_forever()
 
-        Notices:
+    Notices:
 
-        * ``on_account``:
+    * ``on_account``:
 
-            .. code-block:: js
+        .. code-block:: js
 
-                {'id': '2.6.29',
-                 'lifetime_fees_paid': '44257768405',
-                 'most_recent_op': '2.9.1195638',
-                 'owner': '1.2.29',
-                 'pending_fees': 0,
-                 'pending_vested_fees': 100,
-                 'total_core_in_orders': '6788960277634',
-                 'total_ops': 505865}
+            {'id': '2.6.29',
+             'lifetime_fees_paid': '44257768405',
+             'most_recent_op': '2.9.1195638',
+             'owner': '1.2.29',
+             'pending_fees': 0,
+             'pending_vested_fees': 100,
+             'total_core_in_orders': '6788960277634',
+             'total_ops': 505865}
 
-        * ``on_block``:
+    * ``on_block``:
 
-            .. code-block:: js
+        .. code-block:: js
 
-                '0062f19df70ecf3a478a84b4607d9ad8b3e3b607'
+            '0062f19df70ecf3a478a84b4607d9ad8b3e3b607'
 
-        * ``on_tx``:
+    * ``on_tx``:
 
-            .. code-block:: js
+        .. code-block:: js
 
-                {'expiration': '2017-02-23T09:33:22',
-                 'extensions': [],
-                 'operations': [[0,
-                                 {'amount': {'amount': 100000, 'asset_id': '1.3.0'},
-                                  'extensions': [],
-                                  'fee': {'amount': 100, 'asset_id': '1.3.0'},
-                                  'from': '1.2.29',
-                                  'to': '1.2.17'}]],
-                 'ref_block_num': 62001,
-                 'ref_block_prefix': 390951726,
-                 'signatures': ['20784246dc1064ed5f87dbbb9aaff3fcce052135269a8653fb500da46e7068bec56e85ea997b8d250a9cc926777c700eed41e34ba1cabe65940965ebe133ff9098']}
+            {'expiration': '2017-02-23T09:33:22',
+             'extensions': [],
+             'operations': [[0,
+                             {'amount': {'amount': 100000, 'asset_id': '1.3.0'},
+                              'extensions': [],
+                              'fee': {'amount': 100, 'asset_id': '1.3.0'},
+                              'from': '1.2.29',
+                              'to': '1.2.17'}]],
+             'ref_block_num': 62001,
+             'ref_block_prefix': 390951726,
+             'signatures': ['20784246dc1064ed5f87dbbb9aaff3fcce052135269a8653fb500da46e7068bec56e85ea997b8d250a9cc926777c700eed41e34ba1cabe65940965ebe133ff9098']}
 
-        * ``on_market``:
+    * ``on_market``:
 
-            .. code-block:: js
+        .. code-block:: js
 
-                ['1.7.68612']
-
+            ['1.7.68612']
     """
 
     __events__ = ["on_tx", "on_object", "on_block", "on_account", "on_market"]
@@ -156,13 +151,13 @@ class ChainWebsocket(Events):
         self.cancel_all_subscriptions()
 
     def on_open(self, *args, **kwargs):
-        """ This method will be called once the websocket connection is
-            established. It will
+        """
+        This method will be called once the websocket connection is established. It will.
 
-            * login,
-            * register to the database api, and
-            * subscribe to the objects defined if there is a
-              callback/slot available for callbacks
+        * login,
+        * register to the database api, and
+        * subscribe to the objects defined if there is a
+          callback/slot available for callbacks
         """
         self.login(self.user, self.password, api_id=1)
         self.database(api_id=1)
@@ -196,9 +191,7 @@ class ChainWebsocket(Events):
             for market in self.subscription_markets:
                 # Technially, every market could have it's own
                 # callback number
-                self.subscribe_to_market(
-                    self.__events__.index("on_market"), market[0], market[1]
-                )
+                self.subscribe_to_market(self.__events__.index("on_market"), market[0], market[1])
         if len(self.on_tx):
             self.set_pending_transaction_callback(self.__events__.index("on_tx"))
         if len(self.on_block):
@@ -211,8 +204,10 @@ class ChainWebsocket(Events):
             self.get_objects(["2.8.0"])
 
     def process_notice(self, notice):
-        """ This method is called on notices that need processing. Here,
-            we call ``on_object`` and ``on_account`` slots.
+        """
+        This method is called on notices that need processing.
+
+        Here, we call ``on_object`` and ``on_account`` slots.
         """
         id = notice["id"]
 
@@ -229,10 +224,10 @@ class ChainWebsocket(Events):
             self.on_account(notice)
 
     def on_message(self, reply, *args, **kwargs):
-        """ This method is called by the websocket connection on every
-            message that is received. If we receive a ``notice``, we
-            hand over post-processing and signalling of events to
-            ``process_notice``.
+        """
+        This method is called by the websocket connection on every message that is received.
+
+        If we receive a ``notice``, we hand over post-processing and signalling of events to ``process_notice``.
         """
         log.debug("Received message: %s" % str(reply))
         data = {}
@@ -260,37 +255,28 @@ class ChainWebsocket(Events):
                                 if "id" in obj:
                                     self.process_notice(obj)
                     except Exception as e:
-                        log.critical(
-                            "Error in process_notice: {}\n\n{}".format(
-                                str(e), traceback.format_exc
-                            )
-                        )
+                        log.critical("Error in process_notice: {}\n\n{}".format(str(e), traceback.format_exc))
             else:
                 try:
                     callbackname = self.__events__[id]
                     log.debug("Patching through to call %s" % callbackname)
                     [getattr(self.events, callbackname)(x) for x in data["params"][1]]
                 except Exception as e:
-                    log.critical(
-                        "Error in {}: {}\n\n{}".format(
-                            callbackname, str(e), traceback.format_exc()
-                        )
-                    )
+                    log.critical("Error in {}: {}\n\n{}".format(callbackname, str(e), traceback.format_exc()))
 
     def on_error(self, error, *args, **kwargs):
-        """ Called on websocket errors
-        """
+        """Called on websocket errors."""
         log.exception(error)
 
     def on_close(self, *args, **kwargs):
-        """ Called when websocket connection is closed
-        """
+        """Called when websocket connection is closed."""
         log.debug("Closing WebSocket connection with {}".format(self.url))
 
     def run_forever(self, *args, **kwargs):
-        """ This method is used to run the websocket app continuously.
-            It will execute callbacks as defined and try to stay
-            connected with the provided APIs
+        """
+        This method is used to run the websocket app continuously.
+
+        It will execute callbacks as defined and try to stay connected with the provided APIs
         """
         cnt = 0
         while not self.run_event.is_set():
@@ -314,8 +300,7 @@ class ChainWebsocket(Events):
                 sleeptime = (cnt - 1) * 2 if cnt < 10 else 10
                 if sleeptime:
                     log.warning(
-                        "Lost connection to node during wsconnect(): %s (%d/%d) "
-                        % (self.url, cnt, self.num_retries)
+                        "Lost connection to node during wsconnect(): %s (%d/%d) " % (self.url, cnt, self.num_retries)
                         + "Retrying in %d seconds" % sleeptime
                     )
                     time.sleep(sleeptime)
@@ -328,8 +313,7 @@ class ChainWebsocket(Events):
                 log.critical("{}\n\n{}".format(str(e), traceback.format_exc()))
 
     def close(self, *args, **kwargs):
-        """ Closes the websocket connection and waits for the ping thread to close
-        """
+        """Closes the websocket connection and waits for the ping thread to close."""
         self.run_event.set()
         self.ws.close()
 
@@ -344,18 +328,18 @@ class ChainWebsocket(Events):
     """
 
     def rpcexec(self, payload):
-        """ Execute a call by sending the payload
+        """
+        Execute a call by sending the payload.
 
-            :param dict payload: Payload data
-            :raises ValueError: if the server does not respond in proper JSON format
-            :raises RPCError: if the server returns an error
+        :param dict payload: Payload data
+        :raises ValueError: if the server does not respond in proper JSON format
+        :raises RPCError: if the server returns an error
         """
         log.debug(json.dumps(payload))
         self.ws.send(json.dumps(payload, ensure_ascii=False).encode("utf8"))
 
     def __getattr__(self, name):
-        """ Map all methods to RPC calls and pass through the arguments
-        """
+        """Map all methods to RPC calls and pass through the arguments."""
         if name in self.__events__:
             return getattr(self.events, name)
 
@@ -367,10 +351,7 @@ class ChainWebsocket(Events):
                     if kwargs["api"] in self.api_id and self.api_id[kwargs["api"]]:
                         api_id = self.api_id[kwargs["api"]]
                     else:
-                        raise ValueError(
-                            "Unknown API! "
-                            "Verify that you have registered to %s" % kwargs["api"]
-                        )
+                        raise ValueError("Unknown API! " "Verify that you have registered to %s" % kwargs["api"])
                 else:
                     api_id = 0
             else:

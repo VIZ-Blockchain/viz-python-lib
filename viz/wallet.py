@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from vizbase.account import PrivateKey
-from graphenecommon.wallet import Wallet as GrapheneWallet
 from graphenecommon.exceptions import (
     InvalidWifError,
     KeyAlreadyInStoreException,
@@ -10,6 +8,10 @@ from graphenecommon.exceptions import (
     WalletExists,
     WalletLocked,
 )
+from graphenecommon.wallet import Wallet as GrapheneWallet
+
+from vizbase.account import PrivateKey
+
 from .instance import BlockchainInstance
 
 

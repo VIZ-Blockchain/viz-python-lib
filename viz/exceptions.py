@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-from graphenestorage.exceptions import WrongMasterPasswordException
 from graphenecommon.exceptions import (
     AccountDoesNotExistsException,
     AssetDoesNotExistsException,
     BlockDoesNotExistsException,
     CommitteeMemberDoesNotExistsException,
+    GenesisBalanceDoesNotExistsException,
     InvalidAssetException,
     InvalidMemoKeyException,
     InvalidMessageSignature,
@@ -21,33 +21,20 @@ from graphenecommon.exceptions import (
     WitnessDoesNotExistsException,
     WorkerDoesNotExistsException,
     WrongMemoKey,
-    GenesisBalanceDoesNotExistsException,
 )
 
 
 class RPCConnectionRequired(Exception):
-    """ An RPC connection is required
-    """
-
-    pass
+    """An RPC connection is required."""
 
 
 class AccountExistsException(Exception):
-    """ The requested account already exists
-    """
-
-    pass
+    """The requested account already exists."""
 
 
 class ObjectNotInProposalBuffer(Exception):
-    """ Object was not found in proposal
-    """
-
-    pass
+    """Object was not found in proposal."""
 
 
 class HtlcDoesNotExistException(Exception):
-    """ HTLC object does not exist
-    """
-
-    pass
+    """HTLC object does not exist."""

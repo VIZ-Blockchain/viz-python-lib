@@ -11,7 +11,6 @@ from graphenestorage import (
 
 from vizbase.chains import DEFAULT_PREFIX
 
-
 url = "wss://ws.viz.ropox.app"
 SqliteConfigurationStore.setdefault("node", url)
 appname = DEFAULT_PREFIX.lower()
