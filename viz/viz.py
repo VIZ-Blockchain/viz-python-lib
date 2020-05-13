@@ -189,10 +189,10 @@ class Client(AbstractGrapheneChain):
         :param list required_regular_auths: (optional) regular auths
         """
         account = None
-        requred_key_type = "regular"
+        required_key_type = "regular"
         if len(required_auths):
             account = required_auths[0]
-            requred_key_type = "active"
+            required_key_type = "active"
         elif len(required_regular_auths):
             account = required_regular_auths[0]
         else:
@@ -206,7 +206,7 @@ class Client(AbstractGrapheneChain):
                 "id": id,
             }
         )
-        return self.finalizeOp(op, account, requred_key_type)
+        return self.finalizeOp(op, account, required_key_type)
 
     def withdraw_vesting(self, amount, account=None):
         """
