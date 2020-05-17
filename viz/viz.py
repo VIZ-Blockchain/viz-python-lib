@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
-from typing import Any, Optional
+from typing import Any, Dict, List, Optional, Union
 
 from graphenecommon.chain import AbstractGrapheneChain
 
@@ -109,7 +109,7 @@ class Client(AbstractGrapheneChain):
         if not account:
             raise ValueError("You need to provide an account")
 
-        amount = Amount("{} {}".format(amount, asset))
+        _amount = Amount("{} {}".format(amount, asset))
 
         if memo and memo[0] == "#":
             from .memo import Memo
@@ -117,18 +117,26 @@ class Client(AbstractGrapheneChain):
             memo_obj = Memo(from_account=account, to_account=to, blockchain_instance=self)
             memo = memo_obj.encrypt(memo)
 
-        op = operations.Transfer(**{"from": account, "to": to, "amount": "{}".format(str(amount)), "memo": memo})
+        op = operations.Transfer(**{"from": account, "to": to, "amount": "{}".format(str(_amount)), "memo": memo})
 
         return self.finalizeOp(op, account, "active", **kwargs)
 
-    def decode_memo(self, enc_memo):
+    def decode_memo(self, enc_memo: str) -> str:
         """Try to decode an encrypted memo."""
         from .memo import Memo
 
         memo_obj = Memo()
         return memo_obj.decrypt(enc_memo)
 
-    def award(self, receiver, energy, memo="", beneficiaries=None, account=None, **kwargs):
+    def award(
+        self,
+        receiver: str,
+        energy: int,
+        memo: str = "",
+        beneficiaries: Optional[List[Dict[str, Union[str, int]]]] = None,
+        account: str = None,
+        **kwargs: Any
+    ) -> dict:
         """
         Award someone.
 
@@ -160,36 +168,52 @@ class Client(AbstractGrapheneChain):
 
         return self.finalizeOp(op, account, "regular")
 
-    def custom(self, id_, json, required_auths=None, required_regular_auths=None):
+    def custom(
+        self,
+        id_: str,
+        json: Union[Dict, List],
+        required_active_auths: Optional[List[str]] = None,
+        required_regular_auths: Optional[List[str]] = None,
+    ) -> dict:
         """
         Create a custom operation.
 
         :param str id_: identifier for the custom (max length 32 bytes)
-        :param json json: the json data to put into the custom operation
-        :param list required_auths: (optional) required active auths
-        :param list required_regular_auths: (optional) regular auths
+        :param dict,list json: the json data to put into the custom operation
+        :param list required_active_auths: (optional) require signatures from these active auths to make this operation
+            valid
+        :param list required_regular_auths: (optional) require signatures from these regular auths
         """
+        if required_active_auths is None:
+            required_active_auths = []
+        if required_regular_auths is None:
+            required_regular_auths = []
+
+        if not isinstance(required_active_auths, list) or not isinstance(required_regular_auths, list):
+            raise ValueError("Expected list for required_active_auths or required_regular_auths")
+
         account = None
         required_key_type = "regular"
-        if len(required_auths):
-            account = required_auths[0]
+
+        if len(required_active_auths):
+            account = required_active_auths[0]
             required_key_type = "active"
         elif len(required_regular_auths):
             account = required_regular_auths[0]
         else:
-            raise Exception("At least one account needs to be specified")
+            raise ValueError("At least one account needs to be specified")
 
         op = operations.Custom(
             **{
                 "json": json,
-                "required_auths": required_auths,
+                "required_active_auths": required_active_auths,
                 "required_regular_auths": required_regular_auths,
                 "id": id_,
             }
         )
         return self.finalizeOp(op, account, required_key_type)
 
-    def withdraw_vesting(self, amount, account=None):
+    def withdraw_vesting(self, amount: float, account: str = None) -> dict:
         """
         Withdraw SHARES from the vesting account.
 
@@ -215,11 +239,11 @@ class Client(AbstractGrapheneChain):
 
         return self.finalizeOp(op, account, "active")
 
-    def transfer_to_vesting(self, amount, to=None, account=None):
+    def transfer_to_vesting(self, amount: float, to: str = None, account: str = None) -> dict:
         """
-        Vest free CORE into vesting.
+        Vest free VIZ into vesting.
 
-        :param float amount: number of CORE to vest
+        :param float amount: number of VIZ to vest
         :param str to: (optional) the source account for the transfer if not ``default_account``
         :param str account: (optional) the source account for the transfer if not ``default_account``
         """
@@ -246,7 +270,9 @@ class Client(AbstractGrapheneChain):
 
         return self.finalizeOp(op, account, "active")
 
-    def set_withdraw_vesting_route(self, to, percentage=100, account=None, auto_vest=False):
+    def set_withdraw_vesting_route(
+        self, to: str, percentage: float = 100, account: str = None, auto_vest: bool = False
+    ) -> dict:
         """
         Set up a vesting withdraw route. When vesting shares are withdrawn, they will be routed to these accounts based
         on the specified weights.
