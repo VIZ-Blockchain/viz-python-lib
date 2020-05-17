@@ -139,8 +139,8 @@ class Client(AbstractGrapheneChain):
         if memo and memo[0] == "#":
             from .memo import Memo
 
-            memoObj = Memo(from_account=account, to_account=to, blockchain_instance=self)
-            memo = memoObj.encrypt(memo)
+            memo_obj = Memo(from_account=account, to_account=to, blockchain_instance=self)
+            memo = memo_obj.encrypt(memo)
 
         op = operations.Transfer(**{"from": account, "to": to, "amount": "{}".format(str(amount)), "memo": memo})
 
@@ -150,10 +150,10 @@ class Client(AbstractGrapheneChain):
         """Try to decode an encrypted memo."""
         from .memo import Memo
 
-        memoObj = Memo()
-        return memoObj.decrypt(enc_memo)
+        memo_obj = Memo()
+        return memo_obj.decrypt(enc_memo)
 
-    def award(self, receiver, energy, memo="", beneficiaries=[], account=None, **kwargs):
+    def award(self, receiver, energy, memo="", beneficiaries=None, account=None, **kwargs):
         """
         Award someone.
 
@@ -169,6 +169,9 @@ class Client(AbstractGrapheneChain):
         if not account:
             raise ValueError("You need to provide an account")
 
+        if beneficiaries is None:
+            beneficiaries = []
+
         op = operations.Award(
             **{
                 "initiator": account,
@@ -182,11 +185,11 @@ class Client(AbstractGrapheneChain):
 
         return self.finalizeOp(op, account, "regular")
 
-    def custom(self, id, json, required_auths=[], required_regular_auths=[]):
+    def custom(self, id_, json, required_auths=None, required_regular_auths=None):
         """
         Create a custom operation.
 
-        :param str id: identifier for the custom (max length 32 bytes)
+        :param str id_: identifier for the custom (max length 32 bytes)
         :param json json: the json data to put into the custom operation
         :param list required_auths: (optional) required active auths
         :param list required_regular_auths: (optional) regular auths
@@ -206,7 +209,7 @@ class Client(AbstractGrapheneChain):
                 "json": json,
                 "required_auths": required_auths,
                 "required_regular_auths": required_regular_auths,
-                "id": id,
+                "id": id_,
             }
         )
         return self.finalizeOp(op, account, required_key_type)
@@ -219,7 +222,8 @@ class Client(AbstractGrapheneChain):
         :param str account: (optional) the source account for the transfer if not ``default_account``
         """
         if not account:
-            account = configStorage.get("default_account")
+            if "default_account" in self.config:
+                account = self.config["default_account"]
         if not account:
             raise ValueError("You need to provide an account")
 
@@ -245,7 +249,8 @@ class Client(AbstractGrapheneChain):
         :param str account: (optional) the source account for the transfer if not ``default_account``
         """
         if not account:
-            account = configStorage.get("default_account")
+            if "default_account" in self.config:
+                account = self.config["default_account"]
         if not account:
             raise ValueError("You need to provide an account")
 
@@ -287,7 +292,8 @@ class Client(AbstractGrapheneChain):
             receive them as CORE. (defaults to ``False``)
         """
         if not account:
-            account = configStorage.get("default_account")
+            if "default_account" in self.config:
+                account = self.config["default_account"]
         if not account:
             raise ValueError("You need to provide an account")
 
