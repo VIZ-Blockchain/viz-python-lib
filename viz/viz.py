@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+from typing import Any, Optional
 
 from graphenecommon.chain import AbstractGrapheneChain
 
@@ -113,7 +114,9 @@ class Client(AbstractGrapheneChain):
         self.transactionbuilder_class = TransactionBuilder
         self.blockchainobject_class = BlockchainObject
 
-    def transfer(self, to, amount, asset, memo="", account=None, **kwargs):
+    def transfer(
+        self, to: str, amount: float, asset: str, memo: str = "", account: Optional[str] = None, **kwargs: Any
+    ) -> dict:
         """
         Transfer an asset to another account.
 
@@ -139,7 +142,7 @@ class Client(AbstractGrapheneChain):
             memoObj = Memo(from_account=account, to_account=to, blockchain_instance=self)
             memo = memoObj.encrypt(memo)
 
-        op = operations.Transfer(**{"from": account, "to": to, "amount": "{}".format(str(amount)), "memo": memo,})
+        op = operations.Transfer(**{"from": account, "to": to, "amount": "{}".format(str(amount)), "memo": memo})
 
         return self.finalizeOp(op, account, "active", **kwargs)
 
