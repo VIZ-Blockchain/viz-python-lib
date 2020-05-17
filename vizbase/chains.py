@@ -6,7 +6,13 @@ KNOWN_CHAINS = {
         "core_symbol": "VIZ",
         "shares_symbol": "SHARES",
         "prefix": "VIZ",
-    }
+    },
+    "VIZTEST": {
+        "chain_id": "441adba730c2a8dab953abd87d452bb356627b8a7d181f46b2aaa2c053af2112",
+        "core_symbol": "VIZ",
+        "shares_symbol": "SHARES",
+        "prefix": "VIZ",
+    },
 }
 
 PRECISIONS = {"VIZ": 3, "SHARES": 6}
