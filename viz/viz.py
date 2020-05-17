@@ -25,7 +25,7 @@ class Client(AbstractGrapheneChain):
     """
     Blockchain network client.
 
-    :param str node: Node to connect to *(optional)*
+    :param str node: Node to connect to
     :param str rpcuser: RPC user *(optional)*
     :param str rpcpassword: RPC password *(optional)*
     :param bool nobroadcast: Do **not** broadcast a transaction!
@@ -66,18 +66,8 @@ class Client(AbstractGrapheneChain):
       any account. This mode is only used for *foreign*
       signatures!
 
-    If no node is provided, it will connect to the node of
-    http://uptick.rocks. It is **highly** recommended that you
-    pick your own node instead. Default settings can be changed with:
-
-    .. code-block:: python
-
-        uptick set node <host>
-
-    where ``<host>`` starts with ``ws://`` or ``wss://``.
-
     The purpose of this class it to simplify interaction with
-    Client.
+    blockchain by providing high-level methods instead of forcing user to use RPC methods directly.
 
     The idea is to have a class that allows to do this:
 
@@ -86,21 +76,6 @@ class Client(AbstractGrapheneChain):
         from viz import Client
         viz = Client()
         print(viz.info())
-
-    All that is requires is for the user to have added a key with
-    ``uptick``
-
-    .. code-block:: bash
-
-        uptick addkey
-
-    and setting a default author:
-
-    .. code-block:: bash
-
-        uptick set default_account xeroc
-
-    This class also deals with edits, votes and reading content.
     """
 
     def define_classes(self):
