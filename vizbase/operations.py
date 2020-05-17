@@ -460,12 +460,12 @@ class Custom(GrapheneObject):
                     js = kwargs["json"]
 
             if len(kwargs["id"]) > 32:
-                raise Exception("'id' too long")
+                raise ValueError("'id' is too long")
 
             super().__init__(
                 OrderedDict(
                     [
-                        ("required_auths", Array([String(o) for o in kwargs["required_auths"]]),),
+                        ("required_active_auths", Array([String(o) for o in kwargs["required_active_auths"]]),),
                         ("required_regular_auths", Array([String(o) for o in kwargs["required_regular_auths"]]),),
                         ("id", String(kwargs["id"])),
                         ("json", String(js)),
