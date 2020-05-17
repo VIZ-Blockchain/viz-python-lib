@@ -1,3 +1,4 @@
+import logging
 import socket
 import uuid
 
@@ -6,6 +7,9 @@ import pytest
 
 from viz import Client
 from viz.instance import set_shared_chain_instance
+
+log = logging.getLogger("vizapi")
+log.setLevel(logging.DEBUG)
 
 
 @pytest.fixture(scope="session")
