@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 # We don't have own Asset class because it is unneeded
+import struct
+from binascii import unhexlify
+
 from graphenecommon.asset import Asset
 from graphenecommon.exceptions import WalletLocked
 from graphenecommon.transactionbuilder import ProposalBuilder as GrapheneProposalBuilder
@@ -90,3 +93,15 @@ class TransactionBuilder(GrapheneTransactionBuilder):
                         self.appendWif(x[0])
 
                 self.signing_accounts.append(account)
+
+    def get_block_params(self):
+        """
+        Auxiliary method to obtain ``ref_block_num`` and ``ref_block_prefix``.
+
+        Requires a websocket connection to a witness node!
+        """
+        ws = self.blockchain.rpc
+        props = ws.get_dynamic_global_properties()
+        ref_block_num = props["head_block_number"] & 0xFFFF
+        ref_block_prefix = struct.unpack_from("<I", unhexlify(props["head_block_id"]), 4)[0]
+        return ref_block_num, ref_block_prefix
