@@ -17,6 +17,7 @@ def private_keys():
     return [
         "5JabcrvaLnBTCkCVFX5r4rmeGGfuJuVp4NAKRNLTey6pxhRQmf4",
         "5Hw9YPABaFxa2LooiANLrhUK5TPryy8f7v9Y1rk923PuYqbYdfC",
+        "5J9DBCRX5D2ZUUuy9qV2ef9p5sfA3ydHsDs2G531bob7wbEigDJ",
     ]
 
 
