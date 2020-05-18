@@ -1,7 +1,6 @@
 # Python Library for [VIZ](https://github.com/VIZ-Blockchain/)
 
-[![Documentation
-Status](https://readthedocs.org/projects/viz-python-lib/badge/?version=latest)](https://viz-python-lib.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/viz-python-lib/badge/?version=latest)](https://viz-python-lib.readthedocs.io/en/latest/?badge=latest)
 
 **This library is in alpha state, API unstable**
 
