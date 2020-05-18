@@ -5,10 +5,10 @@ class Amount(dict):
     """
     This class helps deal and calculate with the different assets on the chain.
 
-    :param str amountString: Amount string as used by the backend (e.g. "10 GBG")
+    :param str amountString: Amount string as used by the backend (e.g. "10 VIZ")
     """
 
-    def __init__(self, amount_string="0 GBG"):
+    def __init__(self, amount_string="0 VIZ"):
         if isinstance(amount_string, Amount):
             self["amount"] = amount_string["amount"]
             self["asset"] = amount_string["asset"]
