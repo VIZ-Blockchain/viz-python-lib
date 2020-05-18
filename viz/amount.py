@@ -42,62 +42,62 @@ class Amount(dict):
         return int(self["amount"])
 
     def __add__(self, other):
-        a = Amount(self)
+        am = Amount(self)
         if isinstance(other, Amount):
             assert other["asset"] == self["asset"]
-            a["amount"] += other["amount"]
+            am["amount"] += other["amount"]
         else:
-            a["amount"] += float(other)
-        return a
+            am["amount"] += float(other)
+        return am
 
     def __sub__(self, other):
-        a = Amount(self)
+        am = Amount(self)
         if isinstance(other, Amount):
             assert other["asset"] == self["asset"]
-            a["amount"] -= other["amount"]
+            am["amount"] -= other["amount"]
         else:
-            a["amount"] -= float(other)
-        return a
+            am["amount"] -= float(other)
+        return am
 
     def __mul__(self, other):
-        a = Amount(self)
+        am = Amount(self)
         if isinstance(other, Amount):
-            a["amount"] *= other["amount"]
+            am["amount"] *= other["amount"]
         else:
-            a["amount"] *= other
-        return a
+            am["amount"] *= other
+        return am
 
     def __floordiv__(self, other):
-        a = Amount(self)
+        am = Amount(self)
         if isinstance(other, Amount):
             raise Exception("Cannot divide two Amounts")
         else:
-            a["amount"] //= other
-        return a
+            am["amount"] //= other
+        return am
 
     def __div__(self, other):
-        a = Amount(self)
+        am = Amount(self)
         if isinstance(other, Amount):
             raise Exception("Cannot divide two Amounts")
         else:
-            a["amount"] /= other
-        return a
+            am["amount"] /= other
+        return am
 
     def __mod__(self, other):
-        a = Amount(self)
+        am = Amount(self)
         if isinstance(other, Amount):
-            a["amount"] %= other["amount"]
+            am["amount"] %= other["amount"]
         else:
-            a["amount"] %= other
-        return a
+            am["amount"] %= other
+        return am
 
     def __pow__(self, other):
-        a = Amount(self)
+        am = Amount(self)
         if isinstance(other, Amount):
-            a["amount"] **= other["amount"]
+            am["amount"] **= other["amount"]
         else:
-            a["amount"] **= other
-        return a
+            am["amount"] **= other
+        return am
 
     def __iadd__(self, other):
         if isinstance(other, Amount):
@@ -183,7 +183,7 @@ class Amount(dict):
         else:
             return self["amount"] >= float(other or 0)
 
-    def __gt__(self, other):
+    def __gt__(self, other):  # noqa: CCE001
         if isinstance(other, Amount):
             assert other["asset"] == self["asset"]
             return self["amount"] > other["amount"]
