@@ -4,7 +4,7 @@
 repos:
 
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v2.5.0
+  rev: v3.0.1
   hooks:
   - id: trailing-whitespace
   - id: end-of-file-fixer
@@ -41,7 +41,7 @@ repos:
       exclude: 'viz/__init__.py'
 
 - repo: https://github.com/asottile/seed-isort-config
-  rev: v2.1.0
+  rev: v2.1.1
   hooks:
     - id: seed-isort-config
 
@@ -51,7 +51,7 @@ repos:
   - id: isort
 
 - repo: https://gitlab.com/pycqa/flake8
-  rev: 3.7.9
+  rev: 3.8.1
   hooks:
     - id: flake8
       additional_dependencies: [
