@@ -1,20 +1,36 @@
 # Python Library for [VIZ](https://github.com/VIZ-Blockchain/)
 
-This library is built on top of [python-graphenelib](https://github.com/xeroc/python-graphenelib/)
+[![Documentation
+Status](https://readthedocs.org/projects/viz-python-lib/badge/?version=latest)](https://viz-python-lib.readthedocs.io/en/latest/?badge=latest)
 
-**This library is in alpha state**
+**This library is in alpha state, API unstable**
 
-**Installation**
+Built on top of [python-graphenelib](https://github.com/xeroc/python-graphenelib/)
+
+## Installation
+
+Dependencies:
 
 ```
-$ sudo apt-get install g++ libboost-all-dev libssl-dev python3-pip
-$ pip3 install setuptools
-$ pip3 install graphenelib pycryptodome websockets appdirs Events scrypt pyyaml toolz funcy
-$ git clone https://github.com/VIZ-Blockchain/viz-python-lib
-$ cd viz-python-lib/
+sudo apt-get install libffi-dev libssl-dev python-dev
 ```
 
-**Basic read query:**
+Current published version could be installed via
+
+```
+pip install viz-python-lib
+```
+
+Manual installation:
+
+Install [poetry](https://python-poetry.org/docs/)
+
+```
+cd viz-python-lib/
+poetry install
+```
+
+## Basic read query example:
 
 ```python
 from viz import Client
