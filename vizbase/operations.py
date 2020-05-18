@@ -428,24 +428,6 @@ class Proposal_delete(GrapheneObject):
             )
 
 
-class Account_metadata(GrapheneObject):
-    def __init__(self, *args, **kwargs):
-        if isArgsThisClass(self, args):
-            self.data = args[0].data
-        else:
-            if len(args) == 1 and len(kwargs) == 0:
-                kwargs = args[0]
-
-            meta = ""
-            if kwargs.get("json_metadata"):
-                if isinstance(kwargs["json_metadata"], dict):
-                    meta = json.dumps(kwargs["json_metadata"])
-                else:
-                    meta = kwargs["json_metadata"]
-
-            super().__init__(OrderedDict([("account", String(kwargs["account"])), ("json_metadata", String(meta)),]))
-
-
 class Custom(GrapheneObject):
     def __init__(self, *args, **kwargs):
         if isArgsThisClass(self, args):
