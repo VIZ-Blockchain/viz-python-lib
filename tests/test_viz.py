@@ -15,10 +15,10 @@ def test_decode_memo():
 
 
 def test_award(viz, default_account):
-    viz.award(default_account, 100, "test", account=default_account)
+    viz.award(default_account, 10, memo="test", account=default_account)
 
     beneficiaries = [{"account": default_account, "weight": 50}]
-    viz.award(default_account, 100, "test", beneficiaries=beneficiaries, account=default_account)
+    viz.award(default_account, 10, memo="test", beneficiaries=beneficiaries, account=default_account)
 
 
 def test_custom(viz, default_account):

@@ -129,7 +129,7 @@ class Client(AbstractGrapheneChain):
     def award(
         self,
         receiver: str,
-        energy: int,
+        energy: float,
         memo: str = "",
         beneficiaries: Optional[List[Dict[str, Union[str, int]]]] = None,
         account: str = None,
@@ -139,7 +139,7 @@ class Client(AbstractGrapheneChain):
         Award someone.
 
         :param str receiver: account name of award receiver
-        :param int energy: energy as 0-10000 integer where 10000 is 100%
+        :param float energy: energy as 0-100%
         :param str memo: optional comment
         :param list beneficiaries: list of dicts, example [{'account': 'vvk', 'weight': 50}]
         :param str account: initiator account name
@@ -157,7 +157,7 @@ class Client(AbstractGrapheneChain):
             **{
                 "initiator": account,
                 "receiver": receiver,
-                "energy": int(energy),
+                "energy": int(energy * self.rpc.config['CHAIN_1_PERCENT']),
                 "custom_sequence": kwargs.get("custom_sequence", 0),
                 "memo": memo,
                 "beneficiaries": beneficiaries,
