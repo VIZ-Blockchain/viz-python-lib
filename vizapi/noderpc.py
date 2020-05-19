@@ -90,7 +90,7 @@ class NodeRPC(Original_Api):
         for k, v in KNOWN_CHAINS.items():
             if v["chain_id"] == chain_id:
                 return v
-        raise Exception("Connecting to unknown network!")
+        raise exceptions.UnknownNetwork("Connecting to unknown network!")
 
 
 class Rpc(Original_Rpc):

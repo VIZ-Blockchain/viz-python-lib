@@ -55,3 +55,7 @@ class InvalidAccountNameException(Exception):
 
 class ReadLockFail(Exception):
     pass
+
+
+class UnknownNetwork(Exception):
+    pass
