@@ -43,9 +43,10 @@ class Client(AbstractGrapheneChain):
         *(optional)*
     :param int expiration: Delay in seconds until transactions are supposed
         to expire *(optional)*
-    :param str blocking: Wait for broadcasted transactions to be included
-        in a block and return full transaction (can be "head" or
-        "irrversible")
+    :param bool blocking: Wait for broadcasted transactions to be included
+        in a block and return full transaction. Blocking is checked inside
+        :py:meth:`~graphenecommon.transactionbuilder.TransactionBuilder.broadcast`
+        *(Default: False)*, *(optional)*
     :param bool bundle: Do not broadcast transactions right away, but allow
         to bundle operations *(optional)*
 
