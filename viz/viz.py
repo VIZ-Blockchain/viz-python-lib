@@ -13,9 +13,6 @@ from .amount import Amount
 from .transactionbuilder import ProposalBuilder, TransactionBuilder
 from .wallet import Wallet
 
-CHAIN_100_PERCENT = 10000
-CHAIN_1_PERCENT = CHAIN_100_PERCENT / 100
-
 # from .utils import formatTime
 
 log = logging.getLogger(__name__)
@@ -303,7 +300,7 @@ class Client(AbstractGrapheneChain):
             **{
                 "from_account": account,
                 "to_account": to,
-                "percent": int(percentage * CHAIN_1_PERCENT),
+                "percent": int(percentage * self.rpc.config['CHAIN_1_PERCENT']),
                 "auto_vest": auto_vest,
             }
         )
