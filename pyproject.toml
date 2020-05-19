@@ -48,6 +48,7 @@ tomlkit = "^0.6"
 
 [tool.black]
 line-length = 120
+skip-string-normalization = true
 include = '\.pyi?$'
 exclude = '''
 /(
