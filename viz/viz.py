@@ -275,7 +275,7 @@ class Client(AbstractGrapheneChain):
         Set up a vesting withdraw route. When vesting shares are withdrawn, they will be routed to these accounts based
         on the specified weights.
 
-        To obtain existing withdraw routes, use the following example:
+        To obtain existing withdraw routes, use :py:meth:`get_withdraw_vesting_routes`
 
         .. code-block:: python
 
@@ -307,30 +307,18 @@ class Client(AbstractGrapheneChain):
 
         return self.finalizeOp(op, account, "active")
 
-    def get_withdraw_vesting_routes(self, account: str, type_: str = 'all') -> dict:
+    def get_withdraw_vesting_routes(self, account: str, **kwargs: str) -> dict:
         """
         Get vesting withdraw route for an account.
 
+        This is a shortcut for :py:meth:`viz.account.Account.get_withdraw_routes`.
+
         :param str account: account name
-        :param type_: route type, one of `all`, `incoming`, `outgoing`
         :return: list with routes
-
-        Example return:
-
-        .. code-block:: python
-
-            [
-                {
-                    'from_account': 'alice',
-                    'to_account': 'bob',
-                    'percent': 10000,
-                    'auto_vest': False
-                }
-            ]
         """
         _account = Account(account, blockchain_instance=self)
 
-        return _account.get_withdraw_routes(type_)
+        return _account.get_withdraw_routes(**kwargs)
 
     # TODO: Methods to implement:
     # - create_account
