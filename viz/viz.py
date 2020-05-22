@@ -309,12 +309,9 @@ class Client(AbstractGrapheneChain):
 
     # TODO: Methods to implement:
     # - create_account
-    # - withdraw_vesting
-    # - transfer_to_vesting
     # - delegate_vesting_shares
     # - witness_update
     # - chain_properties_update
-    # - set_withdraw_vesting_route
     # - allow / disallow
     # - update_memo_key
     # - approve_witness / disapprove_witness
