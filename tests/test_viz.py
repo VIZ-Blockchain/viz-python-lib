@@ -39,3 +39,7 @@ def test_transfer_to_vesting(viz, default_account):
 
 def test_set_withdraw_vesting_route(viz):
     viz.set_withdraw_vesting_route("bob", account="alice")
+
+
+def test_get_withdraw_vesting_routes(viz):
+    viz.get_withdraw_vesting_routes("bob")
