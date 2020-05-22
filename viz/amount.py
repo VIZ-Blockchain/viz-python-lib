@@ -27,7 +27,7 @@ class Amount(dict):
     def symbol(self):
         return self["asset"]
 
-    @property
+    @property  # noqa: CCE001
     def asset(self):
         return self["asset"]
 
