@@ -10,7 +10,7 @@ def json_expand(json_op, key_name="json"):
     if type(json_op) == dict and key_name in json_op and json_op[key_name]:
         try:
             return update_in(json_op, [key_name], json.loads)
-        except JSONDecodeError:
+        except json.JSONDecodeError:
             return assoc(json_op, key_name, {})
 
     return json_op
