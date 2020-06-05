@@ -2,7 +2,7 @@
 import hashlib
 import json
 import time
-from typing import Union
+from typing import Iterator, List, Optional, Union
 
 from graphenecommon.blockchain import Blockchain as GrapheneBlockchain
 
@@ -19,37 +19,36 @@ class Blockchain(GrapheneBlockchain):
 
     :param viz.viz.Client blockchain_instance: Client
              instance
-    :param str mode: (default) Irreversible block (``irreversible``) or
-             actual head block (``head``)
-    :param int max_block_wait_repetition: (default) 3 maximum wait time for
-        next block ismax_block_wait_repetition * block_interval
+    :param str mode: Irreversible block (``irreversible``) or
+        actual head block (``head``) (default: *irreversible*)
+    :param int max_block_wait_repetition: maximum wait time for
+        next block is ``max_block_wait_repetition * block_interval`` (default 3)
 
     This class let's you deal with blockchain related data and methods.
     """
 
-    def define_classes(self):
+    @staticmethod
+    def hash_op(event: dict) -> str:
+        """This method generates a hash of blockchain operation."""
+        data = json.dumps(event, sort_keys=True)
+        return hashlib.sha1(bytes(data, "utf-8")).hexdigest()  # noqa: DUO130
+
+    def define_classes(self) -> None:
         self.block_class = Block
         self.operationids = operationids
 
-    @staticmethod
-    def hash_op(event: dict):
-        """This method generates a hash of blockchain operation."""
-        data = json.dumps(event, sort_keys=True)
-        return hashlib.sha1(bytes(data, "utf-8")).hexdigest()
-
-    def get_block_interval(self):
+    def get_block_interval(self) -> int:
         """Override class from graphenelib because our API is different."""
         return self.blockchain.rpc.config.get("CHAIN_BLOCK_INTERVAL")
 
     def stream_from(
         self,
-        start_block=None,
-        end_block=None,
-        batch_operations=False,
-        full_blocks=False,
-        only_virtual_ops=False,
-        **kwargs
-    ):
+        start_block: Optional[int] = None,
+        end_block: Optional[int] = None,
+        batch_operations: bool = False,
+        full_blocks: bool = False,
+        only_virtual_ops: bool = False,
+    ) -> Iterator[dict]:
         """
         This call yields raw blocks or operations depending on ``full_blocks`` param.
 
@@ -59,35 +58,36 @@ class Blockchain(GrapheneBlockchain):
         You can also yield full blocks instead, with ``full_blocks=True``.
 
         :param int start_block: Block to start with. If not provided, current (head) block is used.
-        :param int end_block: Stop iterating at this block. If not provided, this generator will run forever (streaming mode).
+        :param int end_block: Stop iterating at this block. If not provided, this generator will run forever
+            (streaming mode).
         :param bool batch_operations: (Defaults to False) Rather than yielding operations one by one,
                 yield a list of all operations for each block.
         :param bool full_blocks: (Defaults to False) Rather than yielding operations, return raw, unedited blocks as
                 provided by blokchain_instance. This mode will NOT include virtual operations.
+        :param bool only_virtual_ops: stream only virtual operations
         """
 
-        _ = kwargs  # we need this
         # Let's find out how often blocks are generated!
         block_interval = self.get_block_interval()
 
-        is_reversed = end_block and start_block > end_block
-
-        if not start_block:
+        if start_block is None:
             start_block = self.get_current_block_num()
+
+        is_reversed = end_block and start_block > end_block
 
         while True:
             head_block = self.get_current_block_num()
 
-            range_params = (start_block, head_block + 1)
-            if end_block is not None and start_block > end_block:
-                range_params = (start_block, max(0, end_block - 2), -1)
+            range_params = (start_block, head_block + 1, 1)
+            if is_reversed:
+                range_params = (start_block, max(0, end_block - 2), -1)  # type: ignore
 
-            for block_num in range(*range_params):
+            for block_num in range(*range_params):  # type: ignore
                 if end_block is not None:
                     if is_reversed and block_num < end_block:
-                        raise StopIteration("Reached stop block at: #%s" % block_num)
+                        return
                     elif not is_reversed and block_num > end_block:
-                        raise StopIteration("Reached stop block at: #%s" % block_num)
+                        return
 
                 if full_blocks:
                     block = self.blockchain.rpc.get_block(block_num)
@@ -107,7 +107,13 @@ class Blockchain(GrapheneBlockchain):
             start_block = head_block + 1
             time.sleep(block_interval)
 
-    def stream(self, filter_by: Union[str, list] = list(), *args, **kwargs):
+    def stream(
+        self,
+        filter_by: Optional[Union[str, List[str]]] = None,
+        start_block: Optional[int] = None,
+        end_block: Optional[int] = None,
+        raw_output: bool = False,
+    ) -> Iterator[dict]:
         """
         Yield a stream of specific operations, starting with current head block.
 
@@ -121,42 +127,47 @@ class Blockchain(GrapheneBlockchain):
         The dict output is formated such that ``type`` caries the operation type, timestamp and block_num are taken
         from the block the operation was stored in and the other key depend on the actual operation.
 
-        Note: you can pass all stream_from() params too.
-
-        :param int start_block: Block to start with. If not provided, current (head) block is used.
-        :param int end_block: Stop iterating at this block. If not provided, this generator will run forever (streaming mode).
         :param str,list filter_by: List of operations to filter for
+        :param int start_block: Block to start with. If not provided, current (head) block is used.
+        :param int end_block: Stop iterating at this block. If not provided, this generator will run forever
+            (streaming mode).
+        :param bool raw_output: when streaming virtual ops, yield raw ops instead of extended ops format
         """
+        if filter_by is None:
+            filter_by = []
+
         if isinstance(filter_by, str):
             filter_by = [filter_by]
 
         if not bool(set(filter_by).intersection(operationids.VIRTUAL_OPS)):
             # uses get_block instead of get_ops_in_block
-            for block in self.stream_from(full_blocks=True, *args, **kwargs):
-                for tx in block.get("transactions"):
+            for block in self.stream_from(full_blocks=True, start_block=start_block, end_block=end_block):
+                for tx in block["transactions"]:
                     for op in tx["operations"]:
                         if not filter_by or op[0] in filter_by:
-                            r = {
+                            operation = {
                                 "type": op[0],
                                 "timestamp": block.get("timestamp"),
                                 "block_num": block.get("block_num"),
                             }
-                            r.update(op[1])
-                            yield r
+                            operation.update(op[1])
+                            yield operation
         else:
             # uses get_ops_in_block
-            kwargs["only_virtual_ops"] = not bool(set(filter_by).difference(operationids.VIRTUAL_OPS))
-            for op in self.stream_from(full_blocks=False, *args, **kwargs):
-                if kwargs.get("raw_output"):
-                    yield op
+            only_virtual_ops = not bool(set(filter_by).difference(operationids.VIRTUAL_OPS))
+            for op in self.stream_from(full_blocks=False, only_virtual_ops=only_virtual_ops, start_block=start_block,
+                                       end_block=end_block):
 
                 if not filter_by or op["op"][0] in filter_by:
-                    r = {
-                        "_id": self.hash_op(op),
-                        "type": op["op"][0],
-                        "timestamp": op.get("timestamp"),
-                        "block_num": op.get("block"),
-                        "trx_id": op.get("trx_id"),
-                    }
-                    r.update(op["op"][1])
-                    yield r
+                    if raw_output:
+                        yield op
+                    else:
+                        operation = {
+                            "_id": self.hash_op(op),
+                            "type": op["op"][0],
+                            "timestamp": op.get("timestamp"),
+                            "block_num": op.get("block"),
+                            "trx_id": op.get("trx_id"),
+                        }
+                        operation.update(op["op"][1])
+                        yield operation
