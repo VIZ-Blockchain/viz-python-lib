@@ -141,7 +141,7 @@ class Client(AbstractGrapheneChain):
         :param str receiver: account name of award receiver
         :param float energy: energy as 0-100%
         :param str memo: optional comment
-        :param list beneficiaries: list of dicts, example [{'account': 'vvk', 'weight': 50}]
+        :param list beneficiaries: list of dicts, example ``[{'account': 'vvk', 'weight': 50}]``
         :param str account: initiator account name
         """
         if not account:
