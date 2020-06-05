@@ -155,8 +155,9 @@ class Blockchain(GrapheneBlockchain):
         else:
             # uses get_ops_in_block
             only_virtual_ops = not bool(set(filter_by).difference(operationids.VIRTUAL_OPS))
-            for op in self.stream_from(full_blocks=False, only_virtual_ops=only_virtual_ops, start_block=start_block,
-                                       end_block=end_block):
+            for op in self.stream_from(
+                full_blocks=False, only_virtual_ops=only_virtual_ops, start_block=start_block, end_block=end_block
+            ):
 
                 if not filter_by or op["op"][0] in filter_by:
                     if raw_output:
