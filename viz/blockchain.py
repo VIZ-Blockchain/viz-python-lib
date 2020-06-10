@@ -132,6 +132,49 @@ class Blockchain(GrapheneBlockchain):
         :param int end_block: Stop iterating at this block. If not provided, this generator will run forever
             (streaming mode).
         :param bool raw_output: when streaming virtual ops, yield raw ops instead of extended ops format
+
+        Example op when streaming virtual ops, ``raw_output = False``:
+
+        .. code-block:: python
+
+            {
+                '_id': 'e2fabb498706edfccd1114921f05d95e8fd64e4c',
+                'type': 'witness_reward',
+                'timestamp': '2020-05-29T19:07:48',
+                'block_num': 1,
+                'trx_id': '0000000000000000000000000000000000000000',
+                'witness': 'committee',
+                'shares': '0.032999 SHARES',
+            }
+
+        Virtual op with ``raw_output = True``:
+
+        .. code-block:: python
+
+            {
+                'trx_id': '0000000000000000000000000000000000000000',
+                'block': 1,
+                'trx_in_block': 65535,
+                'op_in_trx': 0,
+                'virtual_op': 1,
+                'timestamp': '2020-05-29T19:28:08',
+                'op': ['witness_reward', {'witness': 'committee', 'shares': '0.032999 SHARES'}],
+            }
+
+
+        Real op example:
+
+        .. code-block:: python
+
+            {
+                'type': 'transfer',
+                'timestamp': '2020-05-29T19:20:07',
+                'block_num': 6,
+                'from': 'viz',
+                'to': 'alice',
+                'amount': '1.000 VIZ',
+                'memo': 'test stream',
+            }
         """
         if filter_by is None:
             filter_by = []
