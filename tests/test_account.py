@@ -44,6 +44,7 @@ def test_current_energy(account, viz):
     assert 0 < en <= 100
 
     pct = 10
+    time.sleep(3)  # wait for HF4 on testnet
     viz.award(account.name, pct, account=account.name)
     en_new = account.current_energy()
     time.sleep(1)
