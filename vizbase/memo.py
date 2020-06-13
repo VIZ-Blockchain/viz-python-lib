@@ -3,10 +3,11 @@ import hashlib
 import struct
 from binascii import hexlify, unhexlify
 
-from Crypto.Cipher import AES
+from Crypto.Cipher import AES  # noqa: DUO133  # we're using pycryptodome
 from graphenebase.base58 import base58decode, base58encode
-from graphenebase.memo import _pad, _unpad, get_shared_secret
+from graphenebase.memo import get_shared_secret
 
+from .account import PublicKey
 from .objects import Memo
 
 
@@ -21,8 +22,8 @@ def init_aes(shared_secret, nonce):
     """
     " Seed "
     ss = unhexlify(shared_secret)
-    n = struct.pack("<Q", int(nonce))
-    encryption_key = hashlib.sha512(n + ss).hexdigest()
+    non = struct.pack("<Q", int(nonce))
+    encryption_key = hashlib.sha512(non + ss).hexdigest()
     " Check'sum' "
     check = hashlib.sha256(unhexlify(encryption_key)).digest()
     check = struct.unpack_from("<I", check[:4])[0]
@@ -48,13 +49,13 @@ def encode_memo(priv, pub, nonce, message, **kwargs):
     raw = bytes(message, "utf8")
 
     " Padding "
-    BS = 16
-    if len(raw) % BS:
-        raw = _pad(raw, BS)
+    bs = 16
+    if len(raw) % bs:
+        raw = _pad(raw, bs)
     " Encryption "
     cipher = hexlify(aes.encrypt(raw)).decode("ascii")
     prefix = kwargs.pop("prefix")
-    s = {
+    op = {
         "from": format(priv.pubkey, prefix),
         "to": format(pub, prefix),
         "nonce": nonce,
@@ -62,7 +63,7 @@ def encode_memo(priv, pub, nonce, message, **kwargs):
         "encrypted": cipher,
     }
 
-    tx = Memo(**s)
+    tx = Memo(**op)
 
     return "#" + base58encode(hexlify(bytes(tx)).decode("ascii"))
 
@@ -109,7 +110,7 @@ def decode_memo(priv, message):
     message = aes.decrypt(unhexlify(bytes(message, "ascii")))
     try:
         return _unpad(message.decode("utf8"), 16)
-    except:
+    except Exception:
         raise ValueError(message)
 
 
@@ -121,3 +122,15 @@ def involved_keys(message):
     to_key = PublicKey(raw[:66])
 
     return [from_key, to_key]
+
+
+def _pad(raw_message, bs):
+    num_bytes = bs - len(raw_message) % bs
+    return raw_message + num_bytes * struct.pack("B", num_bytes)
+
+
+def _unpad(raw_message, bs):
+    count = int(struct.unpack("B", bytes(raw_message[-1], "ascii"))[0])
+    if bytes(raw_message[-count::], "ascii") == count * struct.pack("B", count):
+        return raw_message[:-count]
+    return raw_message

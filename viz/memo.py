@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import random
+import secrets
 
 from graphenecommon.memo import Memo as GrapheneMemo
 
@@ -7,14 +7,7 @@ from vizbase import memo
 from vizbase.account import PrivateKey, PublicKey
 
 from .account import Account
-from .exceptions import (
-    AccountDoesNotExistsException,
-    InvalidMemoKeyException,
-    InvalidMessageSignature,
-    KeyNotFound,
-    MissingKeyError,
-    WrongMemoKey,
-)
+from .exceptions import KeyNotFound, MissingKeyError
 from .instance import BlockchainInstance
 
 
@@ -39,11 +32,10 @@ class Memo(GrapheneMemo):
     .. code-block:: python
 
         from viz.memo import Memo
-        m = Memo("vizeu", "wallet.xeroc")
+        m = Memo("alice", "bob")
         m.unlock_wallet("secret")
         enc = (m.encrypt("foobar"))
         print(enc)
-        >> {'nonce': '17329630356955254641', 'message': '8563e2bb2976e0217806d642901a2855'}
         print(m.decrypt(enc))
         >> foobar
 
@@ -64,21 +56,18 @@ class Memo(GrapheneMemo):
         self.privatekey_class = PrivateKey
         self.publickey_class = PublicKey
 
-    def encrypt(self, message):
+    def encrypt(self, message: str) -> str:
         """
         Encrypt a memo.
+
+        This class overriden because upstream assumes memo key is in
+        account['options']['memo_key'], and bitshares memo format is different. We're using Golos memo format.
 
         :param str message: clear text memo message
         :returns: encrypted message
         :rtype: str
-
-        This class overriden because upstream assumes memo key is in
-        account['options']['memo_key'], and bitshares memo format is different
         """
-        if not message:
-            return None
-
-        nonce = str(random.getrandbits(64))
+        nonce = str(secrets.randbits(64))
         try:
             memo_wif = self.blockchain.wallet.getPrivateKeyForPublicKey(self.from_account["memo_key"])
         except KeyNotFound:
@@ -104,7 +93,7 @@ class Memo(GrapheneMemo):
 
         return enc
 
-    def decrypt(self, message):
+    def decrypt(self, message: str) -> str:
         """
         Decrypt a message.
 
@@ -112,11 +101,8 @@ class Memo(GrapheneMemo):
         :returns: decrypted message
         :rtype: str
         """
-        if not message:
-            return None
-
-        assert enc_memo[0] == "#", "decode memo requires memos to start with '#'"
-        keys = memo.involved_keys(enc_memo)
+        assert message[0] == "#", "decode memo requires memos to start with '#'"
+        keys = memo.involved_keys(message)
         wif = None
         for key in keys:
             wif = self.blockchain.wallet.getPrivateKeyForPublicKey(str(key))
@@ -128,4 +114,4 @@ class Memo(GrapheneMemo):
         if not hasattr(self, "chain_prefix"):
             self.chain_prefix = self.blockchain.prefix
 
-        return memo.decode_memo(self.privatekey_class(wif), enc_memo)
+        return memo.decode_memo(self.privatekey_class(wif), message)
