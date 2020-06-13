@@ -119,13 +119,6 @@ class Client(AbstractGrapheneChain):
 
         return self.finalizeOp(op, account, "active", **kwargs)
 
-    def decode_memo(self, enc_memo: str) -> str:
-        """Try to decode an encrypted memo."""
-        from .memo import Memo
-
-        memo_obj = Memo()
-        return memo_obj.decrypt(enc_memo)
-
     def award(
         self,
         receiver: str,

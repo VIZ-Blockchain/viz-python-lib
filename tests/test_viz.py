@@ -9,11 +9,6 @@ def test_transfer(viz, default_account):
     viz.transfer(default_account, 1, "VIZ", memo="#encrypted memo", account=default_account)
 
 
-def test_decode_memo():
-    # TODO
-    pass
-
-
 def test_award(viz, default_account):
     viz.award(default_account, 10, memo="test", account=default_account)
 
