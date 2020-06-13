@@ -1,9 +1,0 @@
-graphenelib>=1.1.11
-pycryptodome
-websockets
-appdirs
-Events
-scrypt
-pyyaml
-toolz
-funcy
