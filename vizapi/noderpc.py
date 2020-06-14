@@ -115,9 +115,6 @@ class Rpc(GrapheneRpc):
             if api == "network_broadcast":
                 api = "network_broadcast_api"
 
-            # let's be able to define the num_retries per query
-            self.num_retries = kwargs.get("num_retries", self.num_retries)
-
             query = {
                 "method": "call",
                 "params": [api, name, list(args)],
