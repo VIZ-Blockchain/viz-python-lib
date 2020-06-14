@@ -23,9 +23,6 @@ class NodeRPC(GrapheneApi):
     viz.Client -> graphenecommon.chain.AbstractGrapheneChain -> vizapi.NodeRPC ->
     grapheneapi.api.Api -> grapheneapi.api.Websocket -> grapheneapi.api.Rpc
 
-    We are overriding here locally Websocket and Rpc classes. We have to override
-    Websocket because we need it to inherit from our own Rpc class.
-
     To enable RPC debugging:
 
     .. code-block:: python
@@ -136,6 +133,12 @@ class Rpc(GrapheneRpc):
 
 
 class Websocket(GrapheneWebsocket, Rpc):
+    """
+    Interface to API node websocket endpoint.
+
+    We have to override Websocket class because we need it to inherit from our own Rpc class.
+    """
+
     def __init__(self, *args, **kwargs):
         super(Rpc, self).__init__(*args, **kwargs)
 
@@ -146,5 +149,11 @@ class Websocket(GrapheneWebsocket, Rpc):
 
 
 class Http(GrapheneHttp, Rpc):
+    """
+    Interface to API node http endpoint.
+
+    We have to override Websocket class because we need it to inherit from our own Rpc class.
+    """
+
     def __init__(self, *args, **kwargs):
         super(Rpc, self).__init__(*args, **kwargs)
