@@ -2,10 +2,10 @@ import logging
 import re
 from threading import Lock
 
-from grapheneapi.api import Api as Original_Api
-from grapheneapi.http import Http as Original_Http
-from grapheneapi.rpc import Rpc as Original_Rpc
-from grapheneapi.websocket import Websocket as Original_Websocket
+from grapheneapi.api import Api as GrapheneApi
+from grapheneapi.http import Http as GrapheneHttp
+from grapheneapi.rpc import Rpc as GrapheneRpc
+from grapheneapi.websocket import Websocket as GrapheneWebsocket
 
 from vizbase.chains import KNOWN_CHAINS
 
@@ -15,7 +15,7 @@ from .consts import API
 log = logging.getLogger(__name__)
 
 
-class NodeRPC(Original_Api):
+class NodeRPC(GrapheneApi):
     """
     Redefine graphene Api class.
 
@@ -93,7 +93,7 @@ class NodeRPC(Original_Api):
         raise exceptions.UnknownNetwork("Connecting to unknown network!")
 
 
-class Rpc(Original_Rpc):
+class Rpc(GrapheneRpc):
     """
     This class is responsible for making RPC queries.
 
@@ -138,16 +138,16 @@ class Rpc(Original_Rpc):
         return method
 
 
-class Websocket(Original_Websocket, Rpc):
+class Websocket(GrapheneWebsocket, Rpc):
     def __init__(self, *args, **kwargs):
         super(Rpc, self).__init__(*args, **kwargs)
 
-        ### We don't initializing Original_Websocket, so we need to double it's code
+        # We don't initializing GrapheneWebsocket, so we need to double it's code
 
         # We need a lock to ensure thread-safty
         self.__lock = Lock()
 
 
-class Http(Original_Http, Rpc):
+class Http(GrapheneHttp, Rpc):
     def __init__(self, *args, **kwargs):
         super(Rpc, self).__init__(*args, **kwargs)
