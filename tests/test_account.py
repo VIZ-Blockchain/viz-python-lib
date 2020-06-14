@@ -16,7 +16,7 @@ def _make_ops(viz, default_account):
     # Sent to different destinations to avoid transaction dupe check fail
     dests = ['null', 'alice', 'bob']
     for dest in dests:
-        viz.transfer(dest, 1, "VIZ", memo="test", account=default_account)
+        viz.transfer(dest, 1, "VIZ", memo="test_account", account=default_account)
 
     viz.transfer_to_vesting(10, account=default_account)
     time.sleep(1)
