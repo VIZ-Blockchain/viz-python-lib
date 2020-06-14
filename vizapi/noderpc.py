@@ -40,8 +40,8 @@ class NodeRPC(GrapheneApi):
         self._network = None
         self.config = None
 
-    def post_process_exception(self, e):
-        msg = exceptions.decodeRPCErrorMsg(e).strip()
+    def post_process_exception(self, error):
+        msg = exceptions.decodeRPCErrorMsg(error).strip()
         if msg == "missing required active authority":
             raise exceptions.MissingRequiredActiveAuthority
         elif msg == "Internal error: Unable to acquire READ lock":
@@ -55,7 +55,7 @@ class NodeRPC(GrapheneApi):
         elif msg:
             raise exceptions.UnhandledRPCError(msg)
         else:
-            raise e
+            raise error
 
     def updated_connection(self):
         if self.url[:2] == "ws":
@@ -87,9 +87,9 @@ class NodeRPC(GrapheneApi):
         # blockchain_instance.rpc.config
         self.config = self.get_config()
         chain_id = self.config["CHAIN_ID"]
-        for k, v in KNOWN_CHAINS.items():
-            if v["chain_id"] == chain_id:
-                return v
+        for _, chain_data in KNOWN_CHAINS.items():
+            if chain_data["chain_id"] == chain_id:
+                return chain_data
         raise exceptions.UnknownNetwork("Connecting to unknown network!")
 
 
@@ -124,8 +124,8 @@ class Rpc(GrapheneRpc):
             log.debug(query)
             while True:
                 try:
-                    r = self.rpcexec(query)
-                    message = self.parse_response(r)
+                    response = self.rpcexec(query)
+                    message = self.parse_response(response)
                 except exceptions.ReadLockFail:
                     pass
                 else:
