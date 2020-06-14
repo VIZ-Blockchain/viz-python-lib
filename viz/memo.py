@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 import secrets
 
+from graphenecommon.exceptions import KeyNotFound, MissingKeyError
 from graphenecommon.memo import Memo as GrapheneMemo
 
 from vizbase import memo
 from vizbase.account import PrivateKey, PublicKey
 
 from .account import Account
-from .exceptions import KeyNotFound, MissingKeyError
 from .instance import BlockchainInstance
 
 

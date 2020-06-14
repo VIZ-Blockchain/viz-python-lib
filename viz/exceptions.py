@@ -1,40 +1,19 @@
 # -*- coding: utf-8 -*-
-from graphenecommon.exceptions import (
-    AccountDoesNotExistsException,
-    AssetDoesNotExistsException,
-    BlockDoesNotExistsException,
-    CommitteeMemberDoesNotExistsException,
-    GenesisBalanceDoesNotExistsException,
-    InvalidAssetException,
-    InvalidMemoKeyException,
-    InvalidMessageSignature,
-    InvalidWifError,
-    KeyAlreadyInStoreException,
-    KeyNotFound,
-    MissingKeyError,
-    NoWalletException,
-    OfflineHasNoRPCException,
-    ProposalDoesNotExistException,
-    VestingBalanceDoesNotExistsException,
-    WalletExists,
-    WalletLocked,
-    WitnessDoesNotExistsException,
-    WorkerDoesNotExistsException,
-    WrongMemoKey,
-)
+class BaseException(Exception):
+    """Base excepsion class."""
 
 
-class RPCConnectionRequired(Exception):
+class RPCConnectionRequired(BaseException):
     """An RPC connection is required."""
 
 
-class AccountExistsException(Exception):
+class AccountExistsException(BaseException):
     """The requested account already exists."""
 
 
-class ObjectNotInProposalBuffer(Exception):
+class ObjectNotInProposalBuffer(BaseException):
     """Object was not found in proposal."""
 
 
-class HtlcDoesNotExistException(Exception):
+class HtlcDoesNotExistException(BaseException):
     """HTLC object does not exist."""

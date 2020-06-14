@@ -1,9 +1,9 @@
 import time
 
 import pytest
+from graphenecommon.exceptions import AccountDoesNotExistsException
 
 from viz.account import Account
-from viz.exceptions import AccountDoesNotExistsException
 
 
 @pytest.fixture()

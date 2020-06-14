@@ -1,10 +1,10 @@
 from typing import TYPE_CHECKING, Generator, List, Optional, Union
 
+from graphenecommon.exceptions import AccountDoesNotExistsException
 from toolz import dissoc
 
 from .amount import Amount
 from .blockchain import Blockchain
-from .exceptions import AccountDoesNotExistsException
 from .instance import shared_blockchain_instance
 from .utils import json_expand, parse_time, time_elapsed
 
