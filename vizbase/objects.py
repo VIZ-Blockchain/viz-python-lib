@@ -26,6 +26,7 @@ from graphenebase.types import (
 
 from .account import PublicKey
 from .chains import DEFAULT_PREFIX, PRECISIONS
+from .exceptions import AssetUnknown
 from .operationids import operations
 
 
@@ -44,7 +45,7 @@ class Amount:
         if self.asset in PRECISIONS:
             self.precision = PRECISIONS[self.asset]
         else:
-            raise Exception("Asset unknown")
+            raise AssetUnknown
 
     def __bytes__(self):
         # padding
