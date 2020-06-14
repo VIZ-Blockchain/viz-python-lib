@@ -31,7 +31,7 @@ from graphenebase.types import (
 
 from .account import PublicKey
 from .chains import DEFAULT_PREFIX
-from .objects import Amount, Beneficiary, GrapheneObject, Operation, Permission, isArgsThisClass
+from .objects import Amount, Beneficiary, ChainPropertiesVariant, GrapheneObject, Operation, Permission, isArgsThisClass
 from .operationids import operations
 
 class_idmap = {}
@@ -284,18 +284,15 @@ class Witness_update(GrapheneObject):
             super().__init__(
                 OrderedDict(
                     [
-                        ("master", String(kwargs["master"])),
+                        ("owner", String(kwargs["owner"])),
                         ("url", String(kwargs["url"])),
-                        ("block_signing_key", PublicKey(kwargs["block_signing_key"], prefix=prefix),),
-                        ("props", ChainProperties(kwargs["props"])),
-                        ("fee", Amount(kwargs["fee"])),
+                        ("block_signing_key", PublicKey(kwargs["block_signing_key"], prefix=prefix)),
                     ]
                 )
             )
 
 
-# TODO: VersionedChainPropertiesUpdate
-class Chain_properties_update(GrapheneObject):
+class Versioned_chain_properties_update(GrapheneObject):
     def __init__(self, *args, **kwargs):
         if isArgsThisClass(self, args):
             self.data = args[0].data
@@ -306,20 +303,13 @@ class Chain_properties_update(GrapheneObject):
             props = kwargs.get("props")
 
             # A hack to extract properties at the second op processing in transactionbuilder
-            if props and type(props) == list:
+            if props and isinstance(props, list):
                 props = props[1]
 
-            if props and type(props) == dict:
-                type_id = 0
-                if "min_delegation" in props:
-                    type_id = 1
-                if "auction_window_size" in props:
-                    type_id = 2
+            if props and isinstance(props, dict):
+                props = ChainPropertiesVariant(props)
 
-                obj = [type_id, {"props": props}]
-                props = Props(obj)
-
-            super().__init__(OrderedDict([("master", String(kwargs["master"])), ("props", props)]))
+            super().__init__(OrderedDict([("owner", String(kwargs["owner"])), ("props", props)]))
 
 
 class Account_witness_vote(GrapheneObject):
@@ -454,9 +444,6 @@ class Custom(GrapheneObject):
                     ]
                 )
             )
-
-
-# TODO: versioned_chain_properties op
 
 
 fill_classmaps()

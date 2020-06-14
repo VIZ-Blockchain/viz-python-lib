@@ -115,3 +115,66 @@ class Permission(GrapheneObject):
                     ]
                 )
             )
+
+
+class ChainPropertiesVariant(Static_variant):
+    def __init__(self, props):
+
+        version = 3
+        data = ChainProperties(**props)
+
+        super().__init__(data, version)
+
+
+class ChainProperties(GrapheneObject):
+    def __init__(self, *args, **kwargs):
+        if isArgsThisClass(self, args):
+            self.data = args[0].data
+        else:
+            if len(args) == 1 and len(kwargs) == 0:
+                kwargs = args[0]
+
+            super().__init__(
+                OrderedDict(
+                    [
+                        # initial, version 0
+                        ("account_creation_fee", Amount(kwargs["account_creation_fee"])),
+                        ("maximum_block_size", Uint32(kwargs["maximum_block_size"])),
+                        ("create_account_delegation_ratio", Uint32(kwargs["create_account_delegation_ratio"])),
+                        ("create_account_delegation_time", Uint32(kwargs["create_account_delegation_time"])),
+                        ("min_delegation", Amount(kwargs["min_delegation"])),
+                        ("min_curation_percent", Uint16(kwargs["min_curation_percent"])),
+                        ("max_curation_percent", Uint16(kwargs["max_curation_percent"])),
+                        ("bandwidth_reserve_percent", Uint16(kwargs["bandwidth_reserve_percent"])),
+                        ("bandwidth_reserve_below", Amount(kwargs["bandwidth_reserve_below"])),
+                        ("flag_energy_additional_cost", Uint16(kwargs["flag_energy_additional_cost"])),
+                        ("vote_accounting_min_rshares", Uint32(kwargs["vote_accounting_min_rshares"])),
+                        (
+                            "committee_request_approve_min_percent",
+                            Uint16(kwargs["committee_request_approve_min_percent"]),
+                        ),
+                        # chain_properties_hf4, version 1
+                        ("inflation_witness_percent", Uint16(kwargs["inflation_witness_percent"])),
+                        (
+                            "inflation_ratio_committee_vs_reward_fund",
+                            Uint16(kwargs["inflation_ratio_committee_vs_reward_fund"]),
+                        ),
+                        ("inflation_recalc_period", Uint32(kwargs["inflation_recalc_period"])),
+                        # chain_properties_hf6: version 2
+                        (
+                            "data_operations_cost_additional_bandwidth",
+                            Uint32(kwargs["data_operations_cost_additional_bandwidth"]),
+                        ),
+                        ("witness_miss_penalty_percent", Uint16(kwargs["witness_miss_penalty_percent"])),
+                        ("witness_miss_penalty_duration", Uint32(kwargs["witness_miss_penalty_duration"])),
+                        # chain_properties_hf9: version 3
+                        ("create_invite_min_balance", Amount(kwargs["create_invite_min_balance"])),
+                        ("committee_create_request_fee", Amount(kwargs["committee_create_request_fee"])),
+                        ("create_paid_subscription_fee", Amount(kwargs["create_paid_subscription_fee"])),
+                        ("account_on_sale_fee", Amount(kwargs["account_on_sale_fee"])),
+                        ("subaccount_on_sale_fee", Amount(kwargs["subaccount_on_sale_fee"])),
+                        ("witness_declaration_fee", Amount(kwargs["witness_declaration_fee"])),
+                        ("withdraw_intervals", Uint16(kwargs["withdraw_intervals"])),
+                    ]
+                )
+            )
