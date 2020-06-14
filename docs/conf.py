@@ -70,6 +70,7 @@ autoapi_options = [
     "undoc-members",
     "private-members",
     "show-inheritance",
+    "show-inheritance-diagram",
     "special-members",
     "inherited-members",
 ]
