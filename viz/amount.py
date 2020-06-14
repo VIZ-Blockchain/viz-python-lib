@@ -70,7 +70,7 @@ class Amount(dict):
     def __floordiv__(self, other):
         am = Amount(self)
         if isinstance(other, Amount):
-            raise Exception("Cannot divide two Amounts")
+            raise ValueError("Cannot divide two Amounts")
         else:
             am["amount"] //= other
         return am
@@ -78,7 +78,7 @@ class Amount(dict):
     def __div__(self, other):
         am = Amount(self)
         if isinstance(other, Amount):
-            raise Exception("Cannot divide two Amounts")
+            raise ValueError("Cannot divide two Amounts")
         else:
             am["amount"] /= other
         return am
