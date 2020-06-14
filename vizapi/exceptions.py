@@ -1,31 +1,24 @@
-import re
-
 from grapheneapi.exceptions import RPCError
 
 
-def decodeRPCErrorMsg(e):
-    """Helper function to decode the raised Exception and give it a python Exception class."""
-    found = re.search(
-        (
-            "(10 assert_exception: Assert Exception\n|"
-            "Assert Exception \(10\)\n|"
-            "3030000 tx_missing_regular_auth)"
-            ".*: (.*)\n"
-        ),
-        str(e),
-        flags=re.M,
-    )
-    if found:
-        return found.group(2).strip()
-    else:
-        return str(e)
+def decode_rpc_error_msg(exc: Exception) -> str:
+    r"""
+    Helper function to decode the raised Exception and give it a python Exception class.
+
+    Exception text usually consists of two lines, in raw:
+
+    ``Assert Exception (10)\namount.amount > 0: Cannot transfer a negative amount (aka: stealing)\n\n``
+    or
+
+    ``missing required active authority (3010000)\nMissing Active Authority ["viz"]\n\n\n``
+
+    We're omitting the fist line and returning meaningful second line, stripping trailing newlines.
+    """
+    lines = str(exc).strip("\n").split("\n")
+    return lines[-1]
 
 
-class MissingRequiredActiveAuthority(RPCError):
-    pass
-
-
-class NoMethodWithName(RPCError):
+class MissingRequiredAuthority(RPCError):
     pass
 
 
@@ -37,25 +30,9 @@ class UnhandledRPCError(RPCError):
     pass
 
 
-class NumRetriesReached(Exception):
+class ReadLockFail(RPCError):
     pass
 
 
-class InvalidEndpointUrl(Exception):
-    pass
-
-
-class AccountCouldntBeFoundException(Exception):
-    pass
-
-
-class InvalidAccountNameException(Exception):
-    pass
-
-
-class ReadLockFail(Exception):
-    pass
-
-
-class UnknownNetwork(Exception):
+class UnknownNetwork(RPCError):
     pass

@@ -1,5 +1,4 @@
 import logging
-import re
 from threading import Lock
 
 from grapheneapi.api import Api as GrapheneApi
@@ -19,9 +18,8 @@ class NodeRPC(GrapheneApi):
     """
     Redefine graphene Api class.
 
-    API class inheritance:
-    viz.Client -> graphenecommon.chain.AbstractGrapheneChain -> vizapi.NodeRPC ->
-    grapheneapi.api.Api -> grapheneapi.api.Websocket -> grapheneapi.api.Rpc
+    Class wraps communications with API nodes via proxying requests to lower-level :py:class:`Rpc` class and it's
+    implementations :py:class:`Websocket` and :py:class:`Http`.
 
     To enable RPC debugging:
 
@@ -37,18 +35,28 @@ class NodeRPC(GrapheneApi):
         self._network = None
         self.config = None
 
-    def post_process_exception(self, error):
-        msg = exceptions.decodeRPCErrorMsg(error).strip()
-        if msg == "missing required active authority":
-            raise exceptions.MissingRequiredActiveAuthority
-        elif msg == "Internal error: Unable to acquire READ lock":
+    def post_process_exception(self, error: Exception) -> None:
+        """
+        Process error response and raise proper exception.
+
+        Called from :py:meth:`__getattr__`, which catches RPCError exception which raised by
+        :py:meth:`Rpc.parse_response` in Rpc class.
+
+        :param error: exception
+        """
+        if isinstance(error, exceptions.NoSuchAPI):
+            raise
+
+        msg = exceptions.decode_rpc_error_msg(error)
+        if (
+            msg.startswith("Missing Active Authority")
+            or msg.startswith("Missing Master Authority")
+            or msg.startswith("Missing Authority")
+            or msg.startswith("Missing Regular Authority")
+        ):
+            raise exceptions.MissingRequiredAuthority(msg)
+        elif msg == "Unable to acquire READ lock":
             raise exceptions.ReadLockFail(msg)
-        elif re.match("current_account_itr == acnt_indx.indices().get<by_name>().end()", msg):
-            raise exceptions.AccountCouldntBeFoundException(msg)
-        elif re.match("Assert Exception: is_valid_name( name )", msg):
-            raise exceptions.InvalidAccountNameException(msg)
-        elif re.match("^no method with name.*", msg):
-            raise exceptions.NoMethodWithName(msg)
         elif msg:
             raise exceptions.UnhandledRPCError(msg)
         else:
