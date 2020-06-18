@@ -31,7 +31,16 @@ from graphenebase.types import (
 
 from .account import PublicKey
 from .chains import DEFAULT_PREFIX
-from .objects import Amount, Beneficiary, ChainPropertiesVariant, GrapheneObject, Operation, Permission, isArgsThisClass
+from .objects import (
+    Amount,
+    Beneficiary,
+    ChainPropertiesVariant,
+    GrapheneObject,
+    Op_wrapper,
+    Operation,
+    Permission,
+    isArgsThisClass,
+)
 from .operationids import operations
 
 class_idmap = {}
@@ -332,6 +341,8 @@ class Account_witness_vote(GrapheneObject):
 
 # TODO: make sure this is working
 class Proposal_create(GrapheneObject):
+    """See libraries/protocol/include/graphene/protocol/proposal_operations.hpp."""
+
     def __init__(self, *args, **kwargs):
         if isArgsThisClass(self, args):
             self.data = args[0].data
@@ -342,9 +353,9 @@ class Proposal_create(GrapheneObject):
             assert kwargs["proposed_operations"], "proposed_operations cannot be empty!"
 
             if isinstance(kwargs["proposed_operations"][0], GrapheneObject):
-                proposed_operations = [OperationWrapper(Operation(op)) for op in kwargs["proposed_operations"]]
+                proposed_operations = [Op_wrapper(Operation(op)) for op in kwargs["proposed_operations"]]
             else:
-                proposed_operations = [OperationWrapper(Operation(op["op"])) for op in kwargs["proposed_operations"]]
+                proposed_operations = [Op_wrapper(Operation(op["op"])) for op in kwargs["proposed_operations"]]
 
             review_period_time = PointInTime(kwargs["review_period_time"]) if kwargs.get("review_period_time") else None
 

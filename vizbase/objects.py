@@ -178,3 +178,13 @@ class ChainProperties(GrapheneObject):
                     ]
                 )
             )
+
+
+class Op_wrapper(GrapheneObject):
+    def __init__(self, *args, **kwargs):
+        if isArgsThisClass(self, args):
+            self.data = args[0].data
+        else:
+            if len(args) == 1 and len(kwargs) == 0:
+                kwargs = args[0]
+            super().__init__(OrderedDict([("op", Operation(kwargs["op"]))]))
