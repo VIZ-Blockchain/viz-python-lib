@@ -339,7 +339,6 @@ class Account_witness_vote(GrapheneObject):
             )
 
 
-# TODO: make sure this is working
 class Proposal_create(GrapheneObject):
     """See libraries/protocol/include/graphene/protocol/proposal_operations.hpp."""
 
@@ -349,16 +348,10 @@ class Proposal_create(GrapheneObject):
         else:
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
-
-            assert kwargs["proposed_operations"], "proposed_operations cannot be empty!"
-
-            if isinstance(kwargs["proposed_operations"][0], GrapheneObject):
-                proposed_operations = [Op_wrapper(Operation(op)) for op in kwargs["proposed_operations"]]
+            if "review_period_time" in kwargs:
+                review = Optional(PointInTime(kwargs["review_period_time"]))
             else:
-                proposed_operations = [Op_wrapper(Operation(op["op"])) for op in kwargs["proposed_operations"]]
-
-            review_period_time = PointInTime(kwargs["review_period_time"]) if kwargs.get("review_period_time") else None
-
+                review = Optional(None)
             super().__init__(
                 OrderedDict(
                     [
@@ -366,8 +359,8 @@ class Proposal_create(GrapheneObject):
                         ("title", String(kwargs["title"])),
                         ("memo", String(kwargs.get("memo", ""))),
                         ("expiration_time", PointInTime(kwargs["expiration_time"])),
-                        ("proposed_operations", Array(proposed_operations)),
-                        ("review_period_time", Optional(review_period_time)),
+                        ("proposed_operations", Array([Op_wrapper(o) for o in kwargs["proposed_operations"]])),
+                        ("review_period_time", review),
                         ("extensions", Array(kwargs.get("extensions") or [])),
                     ]
                 )

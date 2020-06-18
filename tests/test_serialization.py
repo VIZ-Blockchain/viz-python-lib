@@ -80,3 +80,17 @@ class TestSerialization:
         data = {'owner': self.default_account, 'props': props}  # type: ignore
         op = operations.Versioned_chain_properties_update(**data)
         self.do_test(op)
+
+    def test_proposal_create(self):
+        transfer_op = [2, {"from": "viz", "to": "vvk2", "amount": "1.000 VIZ", "memo": "proposal_create"}]
+        proposal = {
+            'author': 'vvk',
+            'title': 'test',
+            'memo': 'test proposal',
+            'proposed_operations': [{'op': transfer_op}],
+            'expiration_time': '1970-01-01T00:00:00',
+            'review_period_time': '1970-01-01T00:10:00',
+            'extensions': [],
+        }
+        op = operations.Proposal_create(**proposal)
+        self.do_test(op)
