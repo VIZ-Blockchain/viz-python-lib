@@ -21,7 +21,7 @@ from .instance import BlockchainInstance
 @BlockchainInstance.inject
 class ProposalBuilder(GrapheneProposalBuilder):
     """
-    Proposal Builder allows us to construct an independent Proposal that may later be added to an instance ot
+    Proposal Builder allows us to construct an independent Proposal that may later be added to an instance of
     TransactionBuilder.
 
     :param str proposer: Account name of the proposing user
