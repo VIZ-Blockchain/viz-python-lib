@@ -94,3 +94,31 @@ class TestSerialization:
         }
         op = operations.Proposal_create(**proposal)
         self.do_test(op)
+
+    def test_proposal_update(self):
+
+        proposal_update = {
+            'author': 'vvk',
+            'title': 'test',
+            'active_approvals_to_add': ['alice'],
+            'active_approvals_to_remove': ['bob'],
+            'master_approvals_to_add': ['alice'],
+            'master_approvals_to_remove': ['bob'],
+            'regular_approvals_to_add': ['alice'],
+            'regular_approvals_to_remove': ['bob'],
+            'key_approvals_to_add': ['VIZ5tLLCzNt5ZyVHcdABQKcDcrM6fPHoLBsfkyxK38cfjxwne9jwJ'],
+            'key_approvals_to_remove': ['VIZ5aiJJPDdePP5m92douqXP6VnBiLEFyaaRUjj1L6PpNE17DTC7C'],
+        }
+        op = operations.Proposal_update(**proposal_update)
+        self.print_serialization(op)
+        self.do_test(op)
+
+    def test_proposal_delete(self):
+        proposal_delete = {
+            'author': 'vvk',
+            'title': 'test',
+            'requester': 'bob',
+        }
+        op = operations.Proposal_delete(**proposal_delete)
+        self.print_serialization(op)
+        self.do_test(op)

@@ -356,6 +356,7 @@ class Proposal_update(GrapheneObject):
         else:
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
+            prefix = kwargs.pop("prefix", DEFAULT_PREFIX)
 
             active_approvals_to_add = [String(str(x)) for x in kwargs.get("active_approvals_to_add") or []]
             active_approvals_to_remove = [String(str(x)) for x in kwargs.get("active_approvals_to_remove") or []]
@@ -363,8 +364,8 @@ class Proposal_update(GrapheneObject):
             master_approvals_to_remove = [String(str(x)) for x in kwargs.get("master_approvals_to_remove") or []]
             regular_approvals_to_add = [String(str(x)) for x in kwargs.get("regular_approvals_to_add") or []]
             regular_approvals_to_remove = [String(str(x)) for x in kwargs.get("regular_approvals_to_remove") or []]
-            key_approvals_to_add = [String(str(x)) for x in kwargs.get("key_approvals_to_add") or []]
-            key_approvals_to_remove = [String(str(x)) for x in kwargs.get("key_approvals_to_remove") or []]
+            key_approvals_to_add = [PublicKey(x, prefix=prefix) for x in kwargs.get("key_approvals_to_add") or []]
+            key_approvals_to_remove = [PublicKey(x, prefix=prefix) for x in kwargs.get("key_approvals_to_remove") or []]
 
             super().__init__(
                 OrderedDict(
