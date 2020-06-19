@@ -179,7 +179,7 @@ class Client(AbstractGrapheneChain):
         memo: str = "",
         beneficiaries: Optional[List[Dict[str, Union[str, int]]]] = None,
         account: str = None,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> dict:
         """
         Award someone.
