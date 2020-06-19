@@ -32,12 +32,6 @@ class Client(AbstractGrapheneChain):
         wallet database *(optional)*
     :param bool offline: Boolean to prevent connecting to network (defaults
         to ``False``) *(optional)*
-    :param str proposer: Propose a transaction using this proposer
-        *(optional)*
-    :param int proposal_expiration: Expiration time (in seconds) for the
-        proposal *(optional)*
-    :param int proposal_review: Review period (in seconds) for the proposal
-        *(optional)*
     :param int expiration: Delay in seconds until transactions are supposed
         to expire *(optional)*
     :param bool blocking: Wait for broadcasted transactions to be included
@@ -86,6 +80,65 @@ class Client(AbstractGrapheneChain):
         self.proposalbuilder_class = ProposalBuilder
         self.transactionbuilder_class = TransactionBuilder
         self.blockchainobject_class = BlockchainObject
+
+    def new_proposal(
+        self,
+        title: str,
+        memo: str = '',
+        parent: Optional[TransactionBuilder] = None,
+        expiration_time: int = 2 * 24 * 60 * 60,
+        review_period_time: Optional[int] = None,
+        account: str = None,
+        **kwargs: Any,
+    ) -> ProposalBuilder:
+        """
+        Create a new proposal.
+
+        Proposal is a way to propose some transaction to another account. Primary usecase is a multisig account which
+        requires several members approval to perform an operation.
+
+        :param str title: title of proposed transaction
+        :param str memo: may be a description of the proposal
+        :param TransactionBuilder parent: TransactionBuilder instance to add proposal to
+        :param int expiration_time: maximum time allowed for transaction
+        :param int review_period_time: time to make a decision of the transaction participants
+        :param str account: author of proposed transaction
+
+        Example usage:
+
+        .. code-block:: python
+
+            from viz import Client
+            viz = Client()
+            proposal = viz.new_proposal('title', 'test proposal', account='alice')
+            viz.transfer("null", 1, "VIZ", memo="test transfer proposal", account=default_account, append_to=proposal)
+            proposal.broadcast()
+        """
+        if not parent:
+            parent = self.tx()
+
+        if not account:
+            if "default_account" in self.config:
+                account = self.config["default_account"]
+
+        if not account:
+            raise ValueError("You need to provide an account")
+
+        # Else, we create a new object
+        proposal = self.proposalbuilder_class(
+            account,
+            title,
+            memo,
+            proposal_expiration=expiration_time,
+            proposal_review=review_period_time,
+            blockchain_instance=self,
+            parent=parent,
+            **kwargs,
+        )
+        if parent:
+            parent.appendOps(proposal)
+        self._propbuffer.append(proposal)
+        return proposal
 
     def transfer(
         self, to: str, amount: float, asset: str, memo: str = "", account: Optional[str] = None, **kwargs: Any

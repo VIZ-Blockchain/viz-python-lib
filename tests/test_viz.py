@@ -2,6 +2,14 @@ def test_info(viz):
     viz.info()
 
 
+def test_new_proposal(viz, default_account):
+    proposal = viz.new_proposal('title', 'test proposal', account='alice')
+    viz.transfer("null", 1, "VIZ", memo="test transfer proposal", account=default_account, append_to=proposal)
+    proposal.broadcast()
+    proposals = viz.rpc.get_proposed_transactions('alice', 0, 100)
+    assert len(proposals) > 0
+
+
 def test_transfer(viz, default_account):
 
     trx = viz.transfer("null", 1, "VIZ", memo="test_viz", account=default_account)

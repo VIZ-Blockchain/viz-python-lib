@@ -3,6 +3,7 @@
 import struct
 from binascii import unhexlify
 
+from graphenebase.utils import formatTimeFromNow
 from graphenecommon.asset import Asset
 from graphenecommon.exceptions import WalletLocked
 from graphenecommon.transactionbuilder import ProposalBuilder as GrapheneProposalBuilder
@@ -34,10 +35,45 @@ class ProposalBuilder(GrapheneProposalBuilder):
     :param instance blockchain_instance: Blockchain instance
     """
 
+    def __init__(
+        self, author, title, memo, proposal_expiration=None, proposal_review=None, parent=None, *args, **kwargs
+    ):
+        self.define_classes()
+        assert self.operation_class
+        assert self.operations
+        assert self.account_class
+
+        self.proposal_expiration = proposal_expiration or 2 * 24 * 60 * 60
+        self.proposal_review = proposal_review
+        self.parent = parent
+        self.proposer = author
+        self.title = title
+        self.memo = memo
+        self.ops = []
+
     def define_classes(self):
         self.operation_class = Operation
         self.operations = operations
         self.account_class = Account
+
+    def get_raw(self):
+        """Returns an instance of base "Operations" for further processing."""
+        if not self.ops:
+            return
+        ops = [self.operations.Op_wrapper(op=o) for o in list(self.ops)]
+        data = {
+            'author': self.proposer,
+            'title': self.title,
+            'memo': self.memo,
+            'proposed_operations': [o.json() for o in ops],
+            'expiration_time': formatTimeFromNow(self.proposal_expiration),
+            'extensions': [],
+        }
+        if self.proposal_review:
+            data.update({"review_period_time": formatTimeFromNow(self.proposal_review)})
+
+        ops = self.operations.Proposal_create(**data)
+        return self.operation_class(ops)
 
 
 @BlockchainInstance.inject
