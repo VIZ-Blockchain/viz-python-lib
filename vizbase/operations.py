@@ -41,23 +41,9 @@ from .objects import (
     Permission,
     isArgsThisClass,
 )
-from .operationids import operations
-
-class_idmap = {}
-class_namemap = {}
 
 # You can find operations definitions in
 # libraries/protocol/include/graphene/protocol/chain_operations.hpp
-
-
-def fill_classmaps():
-    for name, ind in operations.items():
-        classname = name[0:1].upper() + name[1:]
-        class_namemap[classname] = ind
-        try:
-            class_idmap[ind] = globals()[classname]
-        except Exception:
-            continue
 
 
 class Account_create_with_delegation(GrapheneObject):
@@ -431,6 +417,3 @@ class Custom(GrapheneObject):
                     ]
                 )
             )
-
-
-fill_classmaps()
