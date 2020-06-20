@@ -75,6 +75,13 @@ class ProposalBuilder(GrapheneProposalBuilder):
         ops = self.operations.Proposal_create(**data)
         return self.operation_class(ops)
 
+    def broadcast(self):
+        # TODO: remove method after release with fix https://github.com/xeroc/python-graphenelib/pull/172
+        assert self.parent, "No parent transaction provided!"
+        self.parent._set_require_reconstruction()
+        self.parent.sign()
+        return self.parent.broadcast()
+
 
 @BlockchainInstance.inject
 class TransactionBuilder(GrapheneTransactionBuilder):
