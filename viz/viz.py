@@ -6,6 +6,7 @@ from graphenecommon.chain import AbstractGrapheneChain
 
 from vizapi.noderpc import NodeRPC
 from vizbase import operations
+from vizbase.account import PublicKey
 from vizbase.chains import PRECISIONS
 
 from .account import Account
@@ -138,6 +139,56 @@ class Client(AbstractGrapheneChain):
             parent.appendOps(proposal)
         self._propbuffer.append(proposal)
         return proposal
+
+    def proposal_update(
+        self,
+        author: str,
+        title: str,
+        approver: Union[str, list] = None,
+        keys: Union[str, list] = None,
+        permission: str = "regular",
+        approve: bool = True,
+        account: str = None,
+    ) -> dict:
+        """
+        Update proposal (approve or disapprove)
+
+        :param str author: author of proposed transaction
+        :param str title: title of proposed transaction
+        :param str, list approver: account(s) for approvals, default is account field
+        :param str keys: public key(s) used for multisig accounts (key approval)
+        :param str permission: the required permission type for signing
+        :param str approve: True = approve, False = disapprove
+        :param str account: the account that authorizes the operation
+        """
+        if not account:
+            if "default_account" in self.config:
+                account = self.config["default_account"]
+
+        if not account:
+            raise ValueError("You need to provide an account")
+
+        if approver:
+            if not isinstance(approver, list):
+                approver = [approver]
+        else:
+            approver = [account]
+
+        payload = {}
+
+        approval_dict_key = "{permission}_approvals_to_{action}".format(
+            permission=permission, action="add" if approve else "remove"
+        )
+        payload[approval_dict_key] = approver
+
+        if keys:
+            if not isinstance(keys, list):
+                keys = [keys]
+            keys = [PublicKey(k) for k in keys]
+            payload["key_approvals_to_{}".format("add" if approve else "remove")] = keys
+
+        op = operations.Proposal_update(**{**payload, "author": author, "title": title, "extensions": []})
+        return self.finalizeOp(op, account, permission)
 
     def transfer(
         self, to: str, amount: float, asset: str, memo: str = "", account: Optional[str] = None, **kwargs: Any

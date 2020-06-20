@@ -10,6 +10,16 @@ def test_new_proposal(viz, default_account):
     assert len(proposals) > 0
 
 
+def test_proposal_update(viz, default_account):
+    proposer = 'alice'
+    title = 'test update 1'
+    proposal = viz.new_proposal(title, account=proposer)
+    viz.transfer("null", 1, "VIZ", memo="test_proposal_update", account=default_account, append_to=proposal)
+    viz.proposal_update(proposer, title, approve=True, permission='active', account=default_account)
+    # TODO: need multisig to test disapproval
+    # viz.proposal_update(proposer, title, approve=False, permission='active', account=default_account)
+
+
 def test_transfer(viz, default_account):
 
     trx = viz.transfer("null", 1, "VIZ", memo="test_viz", account=default_account)
