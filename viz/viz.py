@@ -124,7 +124,6 @@ class Client(AbstractGrapheneChain):
         if not account:
             raise ValueError("You need to provide an account")
 
-        # Else, we create a new object
         proposal = self.proposalbuilder_class(
             account,
             title,
