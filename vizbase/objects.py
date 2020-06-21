@@ -101,9 +101,7 @@ class Permission(GrapheneObject):
 
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
-            kwargs["key_auths"] = sorted(
-                kwargs["key_auths"], key=lambda x: PublicKey(x[0], prefix=prefix), reverse=False,
-            )
+            kwargs["key_auths"] = sorted(kwargs["key_auths"], key=lambda x: x[0], reverse=False,)
             accountAuths = Map([[String(e[0]), Uint16(e[1])] for e in kwargs["account_auths"]])
             keyAuths = Map([[PublicKey(e[0], prefix=prefix), Uint16(e[1])] for e in kwargs["key_auths"]])
             super().__init__(
