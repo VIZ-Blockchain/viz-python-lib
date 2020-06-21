@@ -46,7 +46,7 @@ from .objects import (
 # libraries/protocol/include/graphene/protocol/chain_operations.hpp
 
 
-class Account_create_with_delegation(GrapheneObject):
+class Account_create(GrapheneObject):
     def __init__(self, *args, **kwargs):
         if isArgsThisClass(self, args):
             self.data = args[0].data
@@ -54,8 +54,6 @@ class Account_create_with_delegation(GrapheneObject):
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
             prefix = kwargs.pop("prefix", DEFAULT_PREFIX)
-
-            assert len(kwargs["new_account_name"]) <= 16, "Account name must be at most 16 chars long"
 
             meta = ""
             if "json_metadata" in kwargs and kwargs["json_metadata"]:
@@ -75,6 +73,7 @@ class Account_create_with_delegation(GrapheneObject):
                         ("regular", Permission(kwargs["regular"], prefix=prefix)),
                         ("memo_key", PublicKey(kwargs["memo_key"], prefix=prefix)),
                         ("json_metadata", String(meta)),
+                        ("referrer", String(kwargs["referrer"])),
                         ("extensions", Array([])),
                     ]
                 )

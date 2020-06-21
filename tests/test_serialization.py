@@ -122,3 +122,43 @@ class TestSerialization:
         op = operations.Proposal_delete(**proposal_delete)
         self.print_serialization(op)
         self.do_test(op)
+
+    def test_account_create(self):
+
+        data = {
+            'fee': '1.000 VIZ',
+            'delegation': '10.000000 SHARES',
+            'creator': 'alice',
+            'new_account_name': 'jimmy4',
+            'master': {
+                'weight_threshold': 1,
+                'account_auths': [],
+                'key_auths': [
+                    ['VIZ6Q1LNQWadRVeosq2TjR248vKicuHqx7vCzMowVoEt6RNLXD7sP', '1'],
+                    ['VIZ7eAhqG2xxv9RLcsMHswv2MJt6SFPUp9dA6A6sWeZj1LJGFZe4M', '1'],
+                ],
+            },
+            'active': {
+                'weight_threshold': 1,
+                'account_auths': [],
+                'key_auths': [
+                    ['VIZ7jz2YdLcdp4mvju8xXZZzk72Fs24MnrtZg2ZU7uufURGfr7NPN', '1'],
+                    ['VIZ5faiNN8Ep7xpiGG8PvmvHmoa2ioHYzdgSLW5tGF85ZjfhNT5G5', '1'],
+                ],
+            },
+            'regular': {
+                'weight_threshold': 1,
+                'account_auths': [],
+                'key_auths': [
+                    ['VIZ81XkdB9GfA4QBnHEqr9n9VCE1N3Y4SHti6KtvQPjadVVdooQbB', '1'],
+                    ['VIZ7YfB79UZFDFBXVuTKUm5vocwa4gomNiBz7qngmSHkhGMqwo6Di', '1'],
+                ],
+            },
+            'memo_key': 'VIZ8hAezpcHkf7ZaGf7STKi5M8iNd3ReMWnVJ7rYmyNvrGkXNB4An',
+            'json_metadata': '',
+            'referrer': '',
+            'extensions': [],
+        }
+        op = operations.Account_create(**data)
+        self.print_serialization(op)
+        self.do_test(op)
