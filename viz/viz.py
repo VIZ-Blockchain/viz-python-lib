@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 import logging
-from typing import Any, Dict, List, Optional, Union
+from collections import defaultdict
+from typing import Any, DefaultDict, Dict, List, Optional, Union
 
 from graphenecommon.chain import AbstractGrapheneChain
+from graphenecommon.exceptions import KeyAlreadyInStoreException
 
 from vizapi.noderpc import NodeRPC
 from vizbase import operations
@@ -11,6 +13,8 @@ from vizbase.chains import PRECISIONS
 
 from .account import Account
 from .amount import Amount
+from .converter import Converter
+from .exceptions import AccountExistsException
 from .transactionbuilder import ProposalBuilder, TransactionBuilder
 from .wallet import Wallet
 
@@ -184,7 +188,7 @@ class Client(AbstractGrapheneChain):
         if keys:
             if not isinstance(keys, list):
                 keys = [keys]
-            keys = [PublicKey(k) for k in keys]
+            keys = [PublicKey(key) for key in keys]
             payload["key_approvals_to_{}".format("add" if approve else "remove")] = keys
 
         op = operations.Proposal_update(**{**payload, "author": author, "title": title, "extensions": []})
@@ -416,8 +420,220 @@ class Client(AbstractGrapheneChain):
 
         return _account.get_withdraw_routes(**kwargs)
 
+    def create_account(
+        self,
+        account_name: str,
+        json_meta: Optional[Dict[str, Any]] = None,
+        password: str = None,
+        master_key: str = None,
+        active_key: str = None,
+        regular_key: str = None,
+        memo_key: str = None,
+        additional_master_keys: Optional[List[str]] = None,
+        additional_active_keys: Optional[List[str]] = None,
+        additional_regular_keys: Optional[List[str]] = None,
+        additional_master_accounts: Optional[List[str]] = None,
+        additional_active_accounts: Optional[List[str]] = None,
+        additional_regular_accounts: Optional[List[str]] = None,
+        store_keys: bool = True,
+        fee: float = 0,
+        delegation: float = 0,
+        creator: str = None,
+        referrer: str = '',
+    ) -> dict:
+        """
+        Create new account.
+
+        The brainkey/password can be used to recover all generated keys (see :py:mod:`vizbase.account` for more details.
+
+        By default, this call will use ``default_account`` to
+        register a new name ``account_name`` with all keys being derived from a new brain key that will be returned. The
+        corresponding keys will automatically be installed in the wallet.
+
+        .. note::
+
+            Account creations cost a fee that is defined by the network. If you create an account, you will need to pay
+            for that fee!
+
+           **You can partially pay that fee by delegating SHARES.**
+
+        .. warning::
+
+            Don't call this method unless you know what you are doing! Be sure to understand what this method does and
+            where to find the private keys for your account.
+
+        .. note::
+
+            Please note that this imports private keys (if password is present) into the wallet by default.
+
+        :param str account_name: (**required**) new account name
+        :param dict json_meta: Optional meta data for the account
+        :param str password: Alternatively to providing keys, one
+                             can provide a password from which the
+                             keys will be derived
+        :param str master_key: Main master key
+        :param str active_key: Main active key
+        :param str regular_key: Main regular key
+        :param str memo_key: Main memo_key
+        :param list additional_master_keys:  Additional master public keys
+        :param list additional_active_keys: Additional active public keys
+        :param list additional_regular_keys: Additional regular public keys
+        :param list additional_master_accounts: Additional master account names
+        :param list additional_active_accounts: Additional active account names
+        :param list additional_regular_accounts: Additional regular account names
+        :param bool store_keys: Store new keys in the wallet (default: ``True``)
+        :param float fee: (Optional) If set, `creator` pay a fee of this amount,
+                                    and delegate the rest with SHARES (calculated automatically).
+        :param float delegation: amount of SHARES to be delegated to a new account
+        :param str creator: which account should pay the registration fee
+                            (defaults to ``default_account``)
+        :param str referrer: account who will be set as referrer, defaults to creator
+        :raises AccountExistsException: if the account already exists on the blockchain
+        """
+        max_length = self.rpc.config['CHAIN_MAX_ACCOUNT_NAME_LENGTH']
+        if len(account_name) > max_length:
+            raise ValueError("Account name must be at most {} chars long".format(max_length))
+
+        if not creator and self.config["default_account"]:
+            creator = self.config["default_account"]
+        if not creator:
+            raise ValueError("No creator account given")
+
+        if password and (master_key or regular_key or active_key or memo_key):
+            raise ValueError("You cannot use 'password' AND provide keys!")
+
+        if additional_master_keys is None:
+            additional_master_keys = []
+        if additional_active_keys is None:
+            additional_active_keys = []
+        if additional_regular_keys is None:
+            additional_regular_keys = []
+        if additional_master_accounts is None:
+            additional_master_accounts = []
+        if additional_active_accounts is None:
+            additional_active_accounts = []
+        if additional_regular_accounts is None:
+            additional_regular_accounts = []
+
+        # check if account already exists
+        try:
+            Account(account_name, blockchain_instance=self)
+        except Exception:
+            pass
+        else:
+            raise AccountExistsException
+
+        # Generate new keys from password
+        from vizbase.account import PasswordKey, PublicKey
+
+        key_roles = ['regular', 'active', 'master', 'memo']
+        keys: DefaultDict[str, Union[PasswordKey, Dict]] = defaultdict(dict)
+
+        if password:
+            for role in key_roles:
+                passkey = PasswordKey(account_name, password, role=role)
+                keys['pubkeys'][role] = passkey.get_public_key()
+                keys['privkeys'][role] = passkey.get_private_key()
+                # store private keys
+                if store_keys:
+                    self._store_keys(keys['privkeys'][role])
+        elif master_key and regular_key and active_key and memo_key:
+            keys['pubkeys']['regular'] = PublicKey(regular_key, prefix=self.prefix)
+            keys['pubkeys']['active'] = PublicKey(active_key, prefix=self.prefix)
+            keys['pubkeys']['master'] = PublicKey(master_key, prefix=self.prefix)
+            keys['pubkeys']['memo'] = PublicKey(memo_key, prefix=self.prefix)
+        else:
+            raise ValueError("Call incomplete! Provide either a password or public keys!")
+
+        # main key authorities
+        authority: Union[str, List] = ''
+        for role in key_roles:
+            if role == 'memo':
+                authority = format(keys['pubkeys'][role], self.prefix)
+            else:
+                authority = [[format(keys['pubkeys'][role], self.prefix), 1]]
+            keys['authorities'][role] = authority
+
+        # additional key authorities
+        for key in additional_master_keys:
+            keys['authorities']['master'].append([key, 1])
+        for key in additional_active_keys:
+            keys['authorities']['active'].append([key, 1])
+        for key in additional_regular_keys:
+            keys['authorities']['regular'].append([key, 1])
+
+        # account authorities
+        owner_accounts_authority = []
+        active_accounts_authority = []
+        posting_accounts_authority = []
+
+        for key in additional_master_accounts:
+            owner_accounts_authority.append([key, 1])
+        for key in additional_active_accounts:
+            active_accounts_authority.append([key, 1])
+        for key in additional_regular_accounts:
+            posting_accounts_authority.append([key, 1])
+
+        props = self.rpc.get_chain_properties()
+
+        if not fee:
+            required_fee = Amount(props['account_creation_fee']).amount
+        else:
+            required_fee = fee
+
+        if not delegation:
+            delegation_ratio = props['create_account_delegation_ratio']
+            cv = Converter(blockchain_instance=self)
+            shares_price = cv.core_per_share()
+            delegation = required_fee * delegation_ratio * shares_price
+
+        op = {
+            "fee": "{:.{prec}f} {asset}".format(
+                float(required_fee),
+                prec=PRECISIONS.get(self.rpc.chain_params["core_symbol"]),
+                asset=self.rpc.chain_params["core_symbol"],
+            ),
+            "delegation": "{:.{prec}f} {asset}".format(
+                float(delegation),
+                prec=PRECISIONS.get(self.rpc.chain_params["shares_symbol"]),
+                asset=self.rpc.chain_params["shares_symbol"],
+            ),
+            "creator": creator,
+            "new_account_name": account_name,
+            "master": {
+                "account_auths": owner_accounts_authority,
+                "key_auths": keys['authorities']['master'],
+                "weight_threshold": 1,
+            },
+            "active": {
+                "account_auths": active_accounts_authority,
+                "key_auths": keys['authorities']['active'],
+                "weight_threshold": 1,
+            },
+            "regular": {
+                "account_auths": posting_accounts_authority,
+                "key_auths": keys['authorities']['regular'],
+                "weight_threshold": 1,
+            },
+            "memo_key": keys['authorities']['memo'],
+            "json_metadata": json_meta or {},
+            "referrer": referrer,
+            "prefix": self.prefix,
+        }
+
+        op = operations.Account_create(**op)
+
+        return self.finalizeOp(op, creator, "active")
+
+    def _store_keys(self, *args):
+        """Store private keys to local storage."""
+        for key in args:
+            try:
+                self.wallet.addPrivateKey(str(key))
+            except KeyAlreadyInStoreException:
+                pass
+
     # TODO: Methods to implement:
-    # - create_account
     # - delegate_vesting_shares
     # - witness_update
     # - chain_properties_update
