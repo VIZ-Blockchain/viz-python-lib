@@ -70,7 +70,7 @@ def test_get_withdraw_vesting_routes(viz):
     viz.get_withdraw_vesting_routes("bob")
 
 
-@pytest.mark.usefixtures(_add_liquid_to_alice)
+@pytest.mark.usefixtures('_add_liquid_to_alice')
 def test_create_account(viz):
     # normal case
     viz.create_account('jimmy', password='123', creator='alice')
