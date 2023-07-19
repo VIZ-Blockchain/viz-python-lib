@@ -12,31 +12,31 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
 
       - name: Install poetry
         run: |
-          curl -sSL \
-            "https://install.python-poetry.org" | python
+          python -m pip install poetry==1.5.1
+      
+      - name: Configure poetry
+        run: |
+          python -m poetry config virtualenvs.in-project true
 
-      - name: Set up cache
-        uses: actions/cache@v1
+      - name: Cache the virtualenv
+        uses: actions/cache@v2
         with:
-          path: .venv
-          key: venv-${{ matrix.python-version }}-${{ hashFiles('poetry.lock') }}
+          path: ./.venv
+          key: ${{ runner.os }}-venv-${{ hashFiles('**/poetry.lock') }}
 
       - name: Install dependencies
         run: |
-          source "$HOME/.poetry/env"
-          poetry config virtualenvs.in-project true
-          poetry install
+          python -m poetry install
 
-      - name: Run checks
+      - name: Run tests
         run: |
-          source "$HOME/.poetry/env"
-          poetry run pytest
+          python -m poetry run python -m pytest -sxv
 
       # Uncomment this lines if you wish to upload coverage to codecov:
       # https://codecov.io/
