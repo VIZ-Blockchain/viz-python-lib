@@ -27,10 +27,10 @@ classifiers = [
 
 
 [tool.poetry.dependencies]
-python = "^3.6.1"
-graphenelib = "^1.2.0"
+python = "^3.9"
+graphenelib = "^1.6"
 toolz = "^0.10.0"
-funcy = "^1.14"
+funcy = "^2.0"
 docker = "^4.2.0"
 
 [tool.poetry.dev-dependencies]
