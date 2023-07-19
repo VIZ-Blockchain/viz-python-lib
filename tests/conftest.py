@@ -75,7 +75,7 @@ def viz_testnet(session_id, unused_port, docker_manager):
 @pytest.fixture(scope="session")
 def viz_instance_ws(viz_testnet, private_keys):
     """Initialize BitShares instance connected to a local testnet."""
-    viz = Client(node="ws://127.0.0.1:{}".format(viz_testnet.ws_port), keys=private_keys, num_retries=-1)
+    viz = Client(node="ws://127.0.0.1:{}".format(viz_testnet.ws_port), keys=private_keys, num_retries=10)
     set_shared_chain_instance(viz)
 
     return viz
