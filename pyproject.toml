@@ -35,9 +35,9 @@ docker = "^4.2.0"
 
 [tool.poetry.dev-dependencies]
 pre-commit = "^2.2.0"
-pytest = "^5.4"
-pytest-cov = "^2.7"
-pytest-mock = "^3.1.0"
+pytest = "^7.4"
+pytest-cov = "^4.1"
+pytest-mock = "^3.11"
 
 sphinx = "^2.2"
 sphinx-autoapi = "^1.4.0"
