@@ -28,14 +28,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-          source "$HOME/.poetry/env"
           python -m poetry config virtualenvs.in-project true
           python -m poetry install
 
       - name: Run tests
         run: |
-          source "$HOME/.poetry/env"
-          poetry run pytest
+          python -m poetry run pytest
 
       # Uncomment this lines if you wish to upload coverage to codecov:
       # https://codecov.io/
