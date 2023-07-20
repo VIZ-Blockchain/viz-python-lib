@@ -437,7 +437,7 @@ class Client(AbstractGrapheneChain):
         additional_regular_accounts: Optional[List[str]] = None,
         store_keys: bool = True,
         fee: float = 0,
-        delegation: float = 0,
+        delegation: float = None,
         creator: str = None,
         referrer: str = '',
     ) -> dict:
@@ -581,7 +581,7 @@ class Client(AbstractGrapheneChain):
         else:
             required_fee = fee
 
-        if not delegation:
+        if delegation is None:
             delegation_ratio = props['create_account_delegation_ratio']
             cv = Converter(blockchain_instance=self)
             shares_price = cv.core_per_share()
