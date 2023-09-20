@@ -156,6 +156,31 @@ class Award(GrapheneObject):
             )
 
 
+class Fixed_award(GrapheneObject):
+    def __init__(self, *args, **kwargs):
+        if isArgsThisClass(self, args):
+            self.data = args[0].data
+        else:
+            if len(args) == 1 and len(kwargs) == 0:
+                kwargs = args[0]
+            if "custom_sequence" not in kwargs:
+                kwargs["custom_sequence"] = 0
+
+            super().__init__(
+                OrderedDict(
+                    [
+                        ("initiator", String(kwargs["initiator"])),
+                        ("receiver", String(kwargs["receiver"])),
+                        ("reward_amount", Amount(kwargs["reward_amount"])),
+                        ("max_energy", Uint16(kwargs["max_energy"])),
+                        ("custom_sequence", Uint64(kwargs["custom_sequence"])),
+                        ("memo", String(kwargs["memo"])),
+                        ("beneficiaries", Array([Beneficiary(o) for o in kwargs["beneficiaries"]]),),
+                    ]
+                )
+            )
+
+
 class Transfer(GrapheneObject):
     def __init__(self, *args, **kwargs):
         if isArgsThisClass(self, args):

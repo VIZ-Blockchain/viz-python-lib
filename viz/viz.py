@@ -265,6 +265,51 @@ class Client(AbstractGrapheneChain):
         )
 
         return self.finalizeOp(op, account, "regular")
+    
+    def fixed_award(
+        self,
+        receiver: str,
+        reward_amount: float,
+        max_energy: float,
+        memo: str = "",
+        beneficiaries: Optional[List[Dict[str, Union[str, int]]]] = None,
+        account: str = None,
+        **kwargs: Any,
+    ) -> dict:
+        """
+        Award someone.
+
+        :param str receiver: account name of award receiver
+        :param float max_energy: maximum energy one is willing to expend
+        :param float reward_amount: reward amount
+        :param str memo: optional comment
+        :param list beneficiaries: list of dicts, example ``[{'account': 'vvk', 'weight': 50}]``
+        :param str account: initiator account name
+        """
+        if not account:
+            if "default_account" in self.config:
+                account = self.config["default_account"]
+        if not account:
+            raise ValueError("You need to provide an account")
+
+        if beneficiaries is None:
+            beneficiaries = []
+
+        _amount = Amount("{} {}".format(reward_amount, "VIZ"))
+
+        op = operations.Fixed_award(
+            **{
+                "initiator": account,
+                "receiver": receiver,
+                "reward_amount": "{}".format(str(_amount)),
+                "max_energy": int(max_energy * self.rpc.config['CHAIN_1_PERCENT']),
+                "custom_sequence": kwargs.get("custom_sequence", 0),
+                "memo": memo,
+                "beneficiaries": beneficiaries,
+            }
+        )
+
+        return self.finalizeOp(op, account, "regular")
 
     def custom(
         self,
@@ -624,6 +669,41 @@ class Client(AbstractGrapheneChain):
         op = operations.Account_create(**op)
 
         return self.finalizeOp(op, creator, "active")
+    
+    def update_account_profile(
+        self,
+        account_name: str,
+        memo_key: str,
+        json_meta: Optional[Dict[str, Any]] = None,
+        ) -> dict:
+        """
+        Update account profile.
+
+        By default, this call will use ``default_account`` to
+        update account profile with all keys being derived from a new brain key that will be returned. The
+        corresponding keys will automatically be installed in the wallet.
+
+        :param str account_name: (**required**) new account name
+        :param dict json_meta: Optional meta data for the account
+    
+        :raises AccountDoesNotExistsException: if the account does not exist
+        """
+
+        # check if account already exists
+        try:
+            Account(account_name, blockchain_instance=self)
+        except Exception:
+            raise AccountDoesNotExistsException
+
+        op = {
+            "account": account_name,
+            "memo_key": memo_key,
+            "json_metadata": json_meta or {},
+        }
+
+        op = operations.Account_update(**op)
+
+        return self.finalizeOp(ops=op, account=account_name, permission="active")
 
     def _store_keys(self, *args):
         """Store private keys to local storage."""
@@ -640,7 +720,6 @@ class Client(AbstractGrapheneChain):
     # - allow / disallow
     # - update_memo_key
     # - approve_witness / disapprove_witness
-    # - update_account_profile
     # - account_metadata
     # - proposal_create / proposal_update / proposal_delete
     # - witness_proxy

@@ -56,6 +56,16 @@ OPS = [
     "paid_subscribe",
     "paid_subscription_action",
     "cancel_paid_subscription",
+    "set_account_price",
+    "set_subaccount_price",
+    "buy_account",
+    "account_sale",
+    "use_invite_balance",
+    "expire_escrow_ratification",
+    "fixed_award",
+    "target_account_sale",
+    "bid",
+    "outbid"
 ]
 operations = {o: OPS.index(o) for o in OPS}
 
@@ -79,4 +89,7 @@ VIRTUAL_OPS = [
     "benefactor_award",
     "paid_subscription_action",
     "cancel_paid_subscription",
+    "expire_escrow_ratification",
+    "bid",
+    "outbid"
 ]
