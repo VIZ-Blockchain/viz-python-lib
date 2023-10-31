@@ -105,9 +105,10 @@ class Memo(GrapheneMemo):
         keys = memo.involved_keys(message)
         wif = None
         for key in keys:
-            wif = self.blockchain.wallet.getPrivateKeyForPublicKey(str(key))
-            if wif:
-                break
+            try: 
+                wif = self.blockchain.wallet.getPrivateKeyForPublicKey(str(key))
+            except: 
+                continue
         if not wif:
             raise MissingKeyError("None of the required memo keys are installed!")
 
