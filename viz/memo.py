@@ -107,6 +107,7 @@ class Memo(GrapheneMemo):
         for key in keys:
             try: 
                 wif = self.blockchain.wallet.getPrivateKeyForPublicKey(str(key))
+                break
             except: 
                 continue
         if not wif:
