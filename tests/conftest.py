@@ -1,7 +1,6 @@
 import logging
 import socket
 import uuid
-import time
 import docker
 import pytest
 
@@ -68,7 +67,7 @@ def viz_testnet(session_id, unused_port, docker_manager):
     )
     container.http_port = port_http
     container.ws_port = port_ws
-    time.sleep(5)
+    
     yield container
     container.remove(v=True, force=True)
 
@@ -76,7 +75,7 @@ def viz_testnet(session_id, unused_port, docker_manager):
 @pytest.fixture(scope="session")
 def viz_instance_ws(viz_testnet, private_keys):
     """Initialize BitShares instance connected to a local testnet."""
-    viz = Client(node="ws://127.0.0.1:{}".format(viz_testnet.ws_port), keys=private_keys, num_retries=1000)
+    viz = Client(node="ws://127.0.0.1:{}".format(viz_testnet.ws_port), keys=private_keys, num_retries=-1)
     set_shared_chain_instance(viz)
 
     return viz
