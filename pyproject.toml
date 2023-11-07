@@ -5,7 +5,7 @@ build-backend = "poetry.masonry.api"
 [tool.poetry]
 name = "viz-python-lib"
 version = "0.2.0"
-description = "python library for VIZ blockchain"
+description = "Python library for VIZ blockchain"
 authors = ["Vladimir Kamarzin <vvk@vvk.pp.ru>"]
 license = "MIT"
 readme = "README.md"

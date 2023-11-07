@@ -1,7 +1,7 @@
 import logging
 import socket
 import uuid
-
+import time
 import docker
 import pytest
 
@@ -68,6 +68,7 @@ def viz_testnet(session_id, unused_port, docker_manager):
     )
     container.http_port = port_http
     container.ws_port = port_ws
+    time.sleep(5)
     yield container
     container.remove(v=True, force=True)
 
