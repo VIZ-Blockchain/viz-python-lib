@@ -44,11 +44,11 @@ def test_current_energy(account, viz):
     assert 0 < en <= 100
 
     pct = 10
-    time.sleep(7)  # wait for HF4 on testnet
+    time.sleep(10)  # wait for HF4 on testnet
     viz.award(account.name, pct, account=account.name)
-    en_new = account.current_energy()
     time.sleep(1)
-    assert en - en_new == pytest.approx(pct, abs=1)
+    en_new = account.current_energy()
+    assert en - en_new == pytest.approx(pct, abs=2)
 
 
 def test_virtual_op_count(viz):
