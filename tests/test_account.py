@@ -65,6 +65,6 @@ def test_get_withdraw_routes(viz):
 
 @pytest.mark.usefixtures('_make_ops')
 def test_history_reverse(account: Account):
-    time.sleep(1)
+    time.sleep(2)
     history = list(account.history_reverse(batch_size=1, limit=2))
     assert len(history) == 2
