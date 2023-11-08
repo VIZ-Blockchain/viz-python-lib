@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "viz-python-lib"
-version = "0.2.0"
+version = "1.0.0"
 description = "Python library for VIZ blockchain"
 authors = ["Vladimir Kamarzin <vvk@vvk.pp.ru>"]
 license = "MIT"
@@ -27,7 +27,7 @@ classifiers = [
 
 
 [tool.poetry.dependencies]
-python = "^3.10.0"
+python = "^3.8"
 graphenelib = "^1.6.0"
 toolz = "^0.12.0"
 funcy = "^2.0"
