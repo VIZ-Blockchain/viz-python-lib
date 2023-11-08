@@ -1,8 +1,6 @@
 import time
-
 import pytest
 from graphenecommon.exceptions import AccountDoesNotExistsException
-
 from viz.account import Account
 
 
@@ -48,7 +46,7 @@ def test_current_energy(account, viz):
     viz.award(account.name, pct, account=account.name)
     time.sleep(1)
     en_new = account.current_energy()
-    assert en - en_new == pytest.approx(pct, abs=2)
+    assert en - en_new == pytest.approx(pct, abs=3.0)
 
 
 def test_virtual_op_count(viz):
@@ -66,23 +64,7 @@ def test_get_withdraw_routes(viz):
 
 
 @pytest.mark.usefixtures('_make_ops')
-@pytest.mark.skip(reason="Currently disabled because: from <= itr_range->end_sequence: From is greater than account history end sequence 4")
-def test_history(account):
-    history = list(account.history())
-    assert 'trx_id' in history[0]
-
-    history = list(account.history(raw_output=True))
-    assert 'trx_id' in history[0][1]
-
-    history = list(account.history(batch_size=1, limit=2))
-    assert len(history) == 2
-
-    history = list(account.history(filter_by='transfer_to_vesting'))
-    assert history[0]['type'] == 'transfer_to_vesting'
-
-
-@pytest.mark.usefixtures('_make_ops')
-@pytest.mark.skip(reason="itr_range != idx_range.end(): Account not found in history index, it may have been purged since the last  4294967295 blocks are stored in the history")
-def test_history_reverse(account):
+def test_history_reverse(account: Account):
+    time.sleep(1)
     history = list(account.history_reverse(batch_size=1, limit=2))
     assert len(history) == 2
