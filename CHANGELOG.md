@@ -7,6 +7,8 @@ We follow [Semantic Versions](https://semver.org/).
 
 - Initial release
 
-## Version 0.2.0
+## Version 1.0.0
 
-- Bump dependencies versions, fix bugs
+- Add `fixed_award` and `update_account_profile` methods
+- Fix memo decoding errors
+- Bump dependencies versions
