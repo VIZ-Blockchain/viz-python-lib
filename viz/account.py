@@ -1,5 +1,5 @@
 from typing import TYPE_CHECKING, Generator, List, Optional, Union
-
+from warnings import warn
 from graphenecommon.exceptions import AccountDoesNotExistsException
 from toolz import dissoc
 
@@ -83,8 +83,7 @@ class Account(dict):
         except IndexError:
             return 0
         else:
-            # fist item has 0 index, so count is +1
-            return last_item + 1
+            return last_item
 
     def get_withdraw_routes(self, type_: str = 'all') -> dict:
         """
@@ -185,12 +184,63 @@ class Account(dict):
         limit: int = -1,
     ) -> HistoryGenerator:
         """
-        Stream account history in chronological order.
+        THIS FUNCTION IS DEPRECATED. PLEASE USE :py:func:`history_reverse` INSTEAD.
+
+        Stream account history in chronological order. 
+
+        This generator yields history items which may be in list or dict form depending on ``raw_output``.
+        Output is similar to :py:func:`history_reverse`.
+
+        :param str,list filter_by: filter out all but these operations
+        :param int start: (Optional) skip items until this index
+        :param int batch_size: (Optional) request as many items from API in each chunk
+        :param bool raw_output: (Defaults to False). If True, return history in
+            steemd format (unchanged).
+        :param int limit: (Optional) limit number of filtered items to this amount (-1 means unlimited).
+            This is a rough limit, actual results could be a bit longer
+        :return: number of ops
+        """
+        warn("Function `history` is not recommened. Use `history_reverse` instead.", DeprecationWarning, stacklevel=2)
+
+        op_count = 0
+
+        max_index = self.virtual_op_count()
+        if not max_index:
+            return op_count
+
+        start_index = start + batch_size
+        i = start_index
+        while i < max_index + batch_size:
+            count = yield from self.get_account_history(
+                index=i,
+                limit=batch_size,
+                start=i - batch_size,
+                stop=max_index,
+                order=1,
+                filter_by=filter_by,
+                raw_output=raw_output,
+            )
+            i += batch_size + 1
+            op_count += count
+
+            if limit > 0 and op_count >= limit:
+                break
+
+        return op_count
+
+    def history_reverse(
+        self,
+        filter_by: Optional[Union[str, List[str]]] = None,
+        batch_size: int = 1000,
+        raw_output: bool = False,
+        limit: int = -1,
+    ) -> HistoryGenerator:
+        """
+        Stream account history in reverse chronological order.
 
         This generator yields history items which may be in list or dict form depending on ``raw_output``.
 
         :param str,list filter_by: filter out all but these operations
-        :param int start: (Optional) skip items until this index
         :param int batch_size: (Optional) request as many items from API in each chunk
         :param bool raw_output: (Defaults to False). If True, return history in
             steemd format (unchanged).
@@ -235,53 +285,6 @@ class Account(dict):
                     'op': ['transfer', {'from': 'viz', 'to': 'null', 'amount': '1.000 VIZ', 'memo': 'test'}],
                 },
             ]
-        """
-        op_count = 0
-
-        max_index = self.virtual_op_count()
-        if not max_index:
-            return op_count
-
-        start_index = start + batch_size
-        i = start_index
-        while i < max_index + batch_size:
-            count = yield from self.get_account_history(
-                index=i,
-                limit=batch_size,
-                start=i - batch_size,
-                stop=max_index,
-                order=1,
-                filter_by=filter_by,
-                raw_output=raw_output,
-            )
-            i += batch_size + 1
-            op_count += count
-
-            if limit > 0 and op_count >= limit:
-                break
-
-        return op_count
-
-    def history_reverse(
-        self,
-        filter_by: Optional[Union[str, List[str]]] = None,
-        batch_size: int = 1000,
-        raw_output: bool = False,
-        limit: int = -1,
-    ) -> HistoryGenerator:
-        """
-        Stream account history in reverse chronological order.
-
-        This generator yields history items which may be in list or dict form depending on ``raw_output``.
-        Output is similar to :py:func:`history`.
-
-        :param str,list filter_by: filter out all but these operations
-        :param int batch_size: (Optional) request as many items from API in each chunk
-        :param bool raw_output: (Defaults to False). If True, return history in
-            steemd format (unchanged).
-        :param int limit: (Optional) limit number of filtered items to this amount (-1 means unlimited).
-            This is a rough limit, actual results could be a bit longer
-        :return: number of ops
         """
         op_count = 0
 

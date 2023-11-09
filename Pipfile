@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-graphenelib = ">=1.1.11"
+graphenelib = ">=1.6"
 pycryptodome = "*"
 websockets = "*"
 appdirs = "*"
@@ -15,4 +15,4 @@ PyYAML = "*"
 [dev-packages]
 
 [requires]
-python_version = "3.6"
+python_version = "3.8"
