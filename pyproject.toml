@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "viz-python-lib"
-version = "1.0.0"
+version = "1.0.1"
 description = "Python library for VIZ blockchain"
 authors = ["Vladimir Kamarzin <vvk@vvk.pp.ru>"]
 license = "MIT"
@@ -32,7 +32,8 @@ graphenelib = "^1.6.0"
 toolz = "^0.12.0"
 funcy = "^2.0"
 docker = "^6.1.3"
-aiohttp = "^3.8.6"
+aiohttp = {version = ">=3.9.0b0",  python = ">=3.12"}
+
 
 [tool.poetry.dev-dependencies]
 pre-commit = "^3.5.0"
