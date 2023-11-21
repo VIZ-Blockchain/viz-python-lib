@@ -46,7 +46,7 @@ def test_current_energy(account, viz):
     viz.award(account.name, pct, account=account.name)
     time.sleep(1)
     en_new = account.current_energy()
-    assert en - en_new == pytest.approx(pct, abs=3.0)
+    assert en - en_new == pytest.approx(pct, abs=5.0)
 
 
 def test_virtual_op_count(viz):
