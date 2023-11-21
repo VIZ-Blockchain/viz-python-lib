@@ -27,7 +27,7 @@ jobs:
           poetry install
 
       - name: Build a binary wheel and a source tarball
-        run: python -m build
+        run: poetry build
 
       - name: Store the distribution packages
         uses: actions/upload-artifact@v3
