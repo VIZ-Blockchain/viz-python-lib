@@ -1,6 +1,6 @@
 # Python Library for [VIZ](https://github.com/VIZ-Blockchain)
 
-![tests](https://github.com/VIZ-Blockchain/viz-python-lib/workflows/tests/badge.svg)
+![Tests Status](https://github.com/VIZ-Blockchain/viz-python-lib/actions/workflows/tests.yml/badge.svg)
 [![Documentation Status](https://readthedocs.org/projects/viz-python-lib/badge/?version=latest)](https://viz-python-lib.readthedocs.io/en/latest/?badge=latest)
 
 **This library is in alpha state, API unstable**
@@ -27,7 +27,8 @@ Apple has deprecated use of OpenSSL in favor of its own TLS and crypto libraries
 brew install openssl
 ```
 
-and then use the following commands
+and then use the following commands:
+
 ```sh
 export CFLAGS="-I$(brew --prefix openssl)/include"
 export LDFLAGS="-L$(brew --prefix openssl)/lib"
@@ -53,6 +54,7 @@ poetry install
 ## Usage
 
 Basic read query example:
+
 ```python
 from viz import Client
 from pprint import pprint
@@ -64,6 +66,7 @@ pprint(viz.info())
 ```
 
 Direct RPC calls:
+
 ```python
 viz.rpc.some_rpc_method()
 ```
