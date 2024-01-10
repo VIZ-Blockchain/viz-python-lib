@@ -4,7 +4,7 @@ from collections import defaultdict
 from typing import Any, DefaultDict, Dict, List, Optional, Union
 
 from graphenecommon.chain import AbstractGrapheneChain
-from graphenecommon.exceptions import KeyAlreadyInStoreException
+from graphenecommon.exceptions import KeyAlreadyInStoreException,AccountDoesNotExistsException
 
 from vizapi.noderpc import NodeRPC
 from vizbase import operations
@@ -689,7 +689,7 @@ class Client(AbstractGrapheneChain):
         :raises AccountDoesNotExistsException: if the account does not exist
         """
 
-        # check if account already exists
+        # check if the account does not exist
         try:
             Account(account_name, blockchain_instance=self)
         except Exception:
@@ -704,6 +704,40 @@ class Client(AbstractGrapheneChain):
         op = operations.Account_update(**op)
 
         return self.finalizeOp(ops=op, account=account_name, permission="active")
+    
+    def delegate_vesting_shares(
+        self,
+        delegator: str,
+        delegatee: str,
+        amount: float
+        ) -> dict:
+        """
+        Delegate vesting SHARES to account.
+
+        :param str delegator: account that delegates
+        :param str delegatee: account to which is delegated
+        :param float amount: number of SHARES to be delegated
+        """
+
+        # check if the account does not exist
+        try:
+            Account(delegatee, blockchain_instance=self)
+        except Exception:
+            raise AccountDoesNotExistsException
+
+        op = {
+            "delegator": delegator,
+            "delegatee": delegatee,
+            "vesting_shares": "{:.{prec}f} {asset}".format(
+                    float(amount),
+                    prec=PRECISIONS.get(self.rpc.chain_params["shares_symbol"]),
+                    asset=self.rpc.chain_params["shares_symbol"],
+                ),
+        }
+
+        op = operations.Delegate_vesting_shares(**op)
+
+        return self.finalizeOp(op, delegator, "active")
 
     def _store_keys(self, *args):
         """Store private keys to local storage."""
@@ -714,7 +748,6 @@ class Client(AbstractGrapheneChain):
                 pass
 
     # TODO: Methods to implement:
-    # - delegate_vesting_shares
     # - witness_update
     # - chain_properties_update
     # - allow / disallow
