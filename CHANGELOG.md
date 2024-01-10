@@ -2,6 +2,10 @@
 
 We follow [Semantic Versions](https://semver.org/).
 
+## Version 1.0.2
+
+- Add `delegate_vesting_shares` method
+
 ## Version 1.0.1
 
 - Support Python 3.12
