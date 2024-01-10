@@ -33,7 +33,6 @@ def test_proposal_update(viz, default_account):
 
 
 def test_transfer(viz, default_account):
-
     trx = viz.transfer("null", 1, "VIZ", memo="test_viz", account=default_account)
     assert isinstance(trx, dict)
     viz.transfer(default_account, 1, "VIZ", memo="#encrypted memo", account=default_account)
@@ -52,7 +51,14 @@ def test_fixed_award(viz, default_account):
     viz.fixed_award(default_account, reward_amount=10, max_energy=50, memo="test_viz", account=default_account)
 
     beneficiaries = [{"account": default_account, "weight": 50}]
-    viz.fixed_award(default_account, reward_amount=10, max_energy=50, memo="test_viz", beneficiaries=beneficiaries, account=default_account)
+    viz.fixed_award(
+        default_account,
+        reward_amount=10,
+        max_energy=50,
+        memo="test_viz",
+        beneficiaries=beneficiaries,
+        account=default_account,
+    )
 
 
 def test_custom(viz, default_account):
@@ -132,3 +138,7 @@ def test_create_account(viz):
 
     # referrer
     viz.create_account('jimmy8', password='123', creator='alice', referrer='bob')
+
+
+def test_delegate_vesting_shares(viz):
+    viz.delegate_vesting_shares(delegator='alice', delegatee='bob', amount=10)
