@@ -50,7 +50,7 @@ class Account(dict):
         """Loads account object from blockchain."""
         try:
             account = self.blockchain_instance.rpc.get_account(self.name, protocol)
-        except IndexError as err:
+        except Exception as err:
             raise AccountDoesNotExistsException from err
 
         # load json_metadata
