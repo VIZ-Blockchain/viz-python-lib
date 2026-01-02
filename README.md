@@ -5,7 +5,7 @@
 
 ## Usage examples
 
-Award someone:
+### Award someone
 
 ```python
 from viz import Client
@@ -14,11 +14,12 @@ node = "wss://node.viz.cx/ws"
 viz = Client(node=node, keys=["5...your_private_regular_key..."])
 
 initiator = "your_account"
-percent = 10.5
-viz.award("id", percent, "with love", None, initiator)
+receiver = "id"
+percent = 10.5 # 10.5%
+viz.award(receiver, percent, "with love", None, initiator)
 ```
 
-Award someone with fixed reward:
+### Award someone with fixed reward
 
 ```python
 from viz import Client
@@ -27,12 +28,13 @@ node = "wss://node.viz.cx/ws"
 viz = Client(node=node, keys=["5...your_private_regular_key..."])
 
 initiator = "your_account"
+receiver = "id"
 reward_amount = 3.5 # "3.50 VIZ"
 max_energy = 30 # 30%
-viz.fixed_award("id", reward_amount, max_energy, "with fixed reward", None, initiator)
+viz.fixed_award(receiver, reward_amount, max_energy, "with fixed reward", None, initiator)
 ```
 
-Send a custom operation:
+### Send a custom operation
 
 ```python
 from viz import Client
@@ -41,12 +43,13 @@ node = "wss://node.viz.cx/ws"
 viz = Client(node=node, keys=["5...your_private_regular_key..."])
 
 account = "your_account"
+required_regular_auths = [account]
 protocol = "color.place"
-json = {"x":35, "y":70, "color":"#e50000"}
-viz.custom(protocol, json, None, [account])
+custom_json = {"x": 35, "y": 70, "color": "#e50000"}
+viz.custom(protocol, custom_json, None, required_regular_auths)
 ```
 
-Get account with custom protocol latest block:
+### Get account with custom protocol and latest block
 
 ```python
 from viz import Client
@@ -54,11 +57,11 @@ from viz.account import Account
 from viz.block import Block
 from viz.instance import set_shared_blockchain_instance
 
-viz = Client('wss://node.viz.cx/ws')
+viz = Client("wss://node.viz.cx/ws")
 set_shared_blockchain_instance(viz)
 
 protocol = "V"
-account = Account('id', viz, protocol)
+account = Account("id", viz, protocol)
 counter_inside_protocol = account["custom_sequence"]
 last_used_in_block = account["custom_sequence_block_num"]
 block = Block(last_used_in_block)
@@ -69,7 +72,7 @@ Any direct RPC call:
 ```python
 from viz import Client
 
-viz = Client('wss://node.viz.cx/ws')
+viz = Client("wss://node.viz.cx/ws")
 viz.rpc.get_dynamic_global_properties()
 ```
 
