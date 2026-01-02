@@ -5,16 +5,6 @@
 
 ## Usage examples
 
-Read dynamic global properties:
-
-```python
-from viz import Client
-from pprint import pprint
-
-viz = Client(node="wss://node.viz.cx/ws")
-pprint(viz.info())
-```
-
 Award someone:
 
 ```python
@@ -34,6 +24,7 @@ from viz import Client
 
 node = "wss://node.viz.cx/ws"
 viz = Client(node=node, keys=["5...your_private_regular_key..."])
+
 initiator = "your_account"
 reward_amount = 3.5 # "3.50 VIZ"
 max_energy = 30 # 30%
@@ -47,6 +38,7 @@ from viz import Client
 
 node = "wss://node.viz.cx/ws"
 viz = Client(node=node, keys=["5...your_private_regular_key..."])
+
 account = "your_account"
 protocol = "color.place"
 json = {"x":35, "y":70, "color":"#e50000"}
@@ -74,7 +66,10 @@ block = Block(last_used_in_block)
 Any direct RPC call:
 
 ```python
-viz.rpc.some_rpc_method()
+from viz import Client
+
+viz = Client('wss://node.viz.cx/ws')
+viz.rpc.get_dynamic_global_properties()
 ```
 
 ## Installation
