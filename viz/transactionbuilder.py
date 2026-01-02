@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # We don't have own Asset class because it is unneeded
 import struct
 from binascii import unhexlify
@@ -39,9 +38,9 @@ class ProposalBuilder(GrapheneProposalBuilder):
         self, author, title, memo, proposal_expiration=None, proposal_review=None, parent=None, *args, **kwargs
     ):
         self.define_classes()
-        assert self.operation_class
-        assert self.operations
-        assert self.account_class
+        assert self.operation_class is not None
+        assert self.operations is not None
+        assert self.account_class is not None
 
         self.proposal_expiration = proposal_expiration or 2 * 24 * 60 * 60
         self.proposal_review = proposal_review
@@ -62,12 +61,12 @@ class ProposalBuilder(GrapheneProposalBuilder):
             return
         ops = [self.operations.Op_wrapper(op=o) for o in list(self.ops)]
         data = {
-            'author': self.proposer,
-            'title': self.title,
-            'memo': self.memo,
-            'proposed_operations': [o.json() for o in ops],
-            'expiration_time': formatTimeFromNow(self.proposal_expiration),
-            'extensions': [],
+            "author": self.proposer,
+            "title": self.title,
+            "memo": self.memo,
+            "proposed_operations": [o.json() for o in ops],
+            "expiration_time": formatTimeFromNow(self.proposal_expiration),
+            "extensions": [],
         }
         if self.proposal_review:
             data.update({"review_period_time": formatTimeFromNow(self.proposal_review)})
@@ -123,7 +122,7 @@ class TransactionBuilder(GrapheneTransactionBuilder):
                 else:
                     accountObj = self.account_class(account, blockchain_instance=self.blockchain)  # noqa: N806
                     # TODO: method overriden because of _authority
-                    field = "{}_authority".format(permission)
+                    field = f"{permission}_authority"
                     required_treshold = accountObj[field]["weight_threshold"]
                     keys = self._fetchkeys(accountObj, field, required_treshold=required_treshold)
                     # If we couldn't find an active key, let's try overwrite it

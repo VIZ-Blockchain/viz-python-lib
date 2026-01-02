@@ -106,7 +106,7 @@ class Rpc(GrapheneRpc):
     """
 
     def __init__(self, *args, **kwargs):
-        super(Rpc, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def __getattr__(self, name):
         """Map all methods to RPC calls and pass through the arguments."""
@@ -114,7 +114,7 @@ class Rpc(GrapheneRpc):
         def method(*args, **kwargs):
             api = kwargs.get("api", API.get(name))
             if not api:
-                raise exceptions.NoSuchAPI('Cannot find API for you request "{}"'.format(name))
+                raise exceptions.NoSuchAPI(f'Cannot find API for you request "{name}"')
 
             # Fix wrong api name hardcoded in graphenecommon.TransactionBuilder
             if api == "network_broadcast":

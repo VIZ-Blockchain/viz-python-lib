@@ -1,32 +1,14 @@
-# -*- coding: utf-8 -*-
 import json
 from collections import OrderedDict
 
 from graphenebase.types import (
     Array,
     Bool,
-    Bytes,
-    Fixed_array,
-    Id,
-    Int16,
-    Int64,
-    Map,
     Optional,
     PointInTime,
-    Ripemd160,
-    Set,
-    Sha1,
-    Sha256,
-    Signature,
-    Static_variant,
     String,
-    Uint8,
     Uint16,
-    Uint32,
     Uint64,
-    Varint32,
-    Void,
-    VoteId,
 )
 
 from .account import PublicKey
@@ -37,7 +19,6 @@ from .objects import (
     ChainPropertiesVariant,
     GrapheneObject,
     Op_wrapper,
-    Operation,
     Permission,
     isArgsThisClass,
 )
@@ -129,7 +110,14 @@ class Account_metadata(GrapheneObject):
                 else:
                     meta = kwargs["json_metadata"]
 
-            super().__init__(OrderedDict([("account", String(kwargs["account"])), ("json_metadata", String(meta)),]))
+            super().__init__(
+                OrderedDict(
+                    [
+                        ("account", String(kwargs["account"])),
+                        ("json_metadata", String(meta)),
+                    ]
+                )
+            )
 
 
 class Award(GrapheneObject):
@@ -150,7 +138,10 @@ class Award(GrapheneObject):
                         ("energy", Uint16(kwargs["energy"])),
                         ("custom_sequence", Uint64(kwargs["custom_sequence"])),
                         ("memo", String(kwargs["memo"])),
-                        ("beneficiaries", Array([Beneficiary(o) for o in kwargs["beneficiaries"]]),),
+                        (
+                            "beneficiaries",
+                            Array([Beneficiary(o) for o in kwargs["beneficiaries"]]),
+                        ),
                     ]
                 )
             )
@@ -175,7 +166,10 @@ class Fixed_award(GrapheneObject):
                         ("max_energy", Uint16(kwargs["max_energy"])),
                         ("custom_sequence", Uint64(kwargs["custom_sequence"])),
                         ("memo", String(kwargs["memo"])),
-                        ("beneficiaries", Array([Beneficiary(o) for o in kwargs["beneficiaries"]]),),
+                        (
+                            "beneficiaries",
+                            Array([Beneficiary(o) for o in kwargs["beneficiaries"]]),
+                        ),
                     ]
                 )
             )
@@ -229,7 +223,10 @@ class Withdraw_vesting(GrapheneObject):
                 kwargs = args[0]
             super().__init__(
                 OrderedDict(
-                    [("account", String(kwargs["account"])), ("vesting_shares", Amount(kwargs["vesting_shares"])),]
+                    [
+                        ("account", String(kwargs["account"])),
+                        ("vesting_shares", Amount(kwargs["vesting_shares"])),
+                    ]
                 )
             )
 
@@ -264,7 +261,7 @@ class Set_withdraw_vesting_route(GrapheneObject):
                     [
                         ("from_account", String(kwargs["from_account"])),
                         ("to_account", String(kwargs["to_account"])),
-                        ("percent", Uint16((kwargs["percent"]))),
+                        ("percent", Uint16(kwargs["percent"])),
                         ("auto_vest", Bool(kwargs["auto_vest"])),
                     ]
                 )
@@ -281,7 +278,7 @@ class Witness_update(GrapheneObject):
             prefix = kwargs.pop("prefix", DEFAULT_PREFIX)
 
             if not kwargs["block_signing_key"]:
-                kwargs["block_signing_key"] = "{}1111111111111111111111111111111114T1Anm".format(prefix)
+                kwargs["block_signing_key"] = f"{prefix}1111111111111111111111111111111114T1Anm"
             super().__init__(
                 OrderedDict(
                     [
@@ -383,11 +380,17 @@ class Proposal_update(GrapheneObject):
                         ("author", String(kwargs["author"])),
                         ("title", String(kwargs["title"])),
                         ("active_approvals_to_add", Array(active_approvals_to_add)),
-                        ("active_approvals_to_remove", Array(active_approvals_to_remove),),
+                        (
+                            "active_approvals_to_remove",
+                            Array(active_approvals_to_remove),
+                        ),
                         ("master_approvals_to_add", Array(master_approvals_to_add)),
                         ("master_approvals_to_remove", Array(master_approvals_to_remove)),
                         ("regular_approvals_to_add", Array(regular_approvals_to_add)),
-                        ("regular_approvals_to_remove", Array(regular_approvals_to_remove),),
+                        (
+                            "regular_approvals_to_remove",
+                            Array(regular_approvals_to_remove),
+                        ),
                         ("key_approvals_to_add", Array(key_approvals_to_add)),
                         ("key_approvals_to_remove", Array(key_approvals_to_remove)),
                         ("extensions", Array(kwargs.get("extensions") or [])),
@@ -434,8 +437,14 @@ class Custom(GrapheneObject):
             super().__init__(
                 OrderedDict(
                     [
-                        ("required_active_auths", Array([String(o) for o in kwargs["required_active_auths"]]),),
-                        ("required_regular_auths", Array([String(o) for o in kwargs["required_regular_auths"]]),),
+                        (
+                            "required_active_auths",
+                            Array([String(o) for o in kwargs["required_active_auths"]]),
+                        ),
+                        (
+                            "required_regular_auths",
+                            Array([String(o) for o in kwargs["required_regular_auths"]]),
+                        ),
                         ("id", String(kwargs["id"])),
                         ("json", String(js)),
                     ]

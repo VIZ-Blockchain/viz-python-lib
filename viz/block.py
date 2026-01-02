@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from graphenecommon.block import Block as GrapheneBlock
 from graphenecommon.block import BlockHeader as GrapheneBlockHeader
 

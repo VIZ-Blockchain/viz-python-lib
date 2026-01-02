@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import hashlib
 import struct
 from binascii import hexlify, unhexlify
@@ -110,8 +109,8 @@ def decode_memo(priv, message):
     message = aes.decrypt(unhexlify(bytes(message, "ascii")))
     try:
         return _unpad(message.decode("utf8"), 16)
-    except Exception:
-        raise ValueError(message)
+    except Exception as err:
+        raise ValueError(message) from err
 
 
 def involved_keys(message):

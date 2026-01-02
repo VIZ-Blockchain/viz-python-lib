@@ -1,27 +1,17 @@
-# -*- coding: utf-8 -*-
 import struct
 from collections import OrderedDict
 
-from graphenebase.objects import GrapheneObject
+from graphenebase.objects import GrapheneObject, isArgsThisClass
 from graphenebase.objects import Operation as GrapheneOperation
-from graphenebase.objects import isArgsThisClass
 from graphenebase.types import (
     Bytes,
     Int16,
     Map,
-    Optional,
-    PointInTime,
-    Set,
-    Signature,
     Static_variant,
     String,
-    Uint8,
     Uint16,
     Uint32,
     Uint64,
-    Varint32,
-    Void,
-    VoteId,
 )
 
 from .account import PublicKey
@@ -50,7 +40,7 @@ class Amount:
     def __bytes__(self):
         # padding
         asset = self.asset + "\x00" * (7 - len(self.asset))
-        amount = round(float(self.amount) * 10 ** self.precision)
+        amount = round(float(self.amount) * 10**self.precision)
         return struct.pack("<q", amount) + struct.pack("<b", self.precision) + bytes(asset, "ascii")
 
     def __str__(self):
@@ -65,7 +55,12 @@ class Beneficiary(GrapheneObject):
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
             super().__init__(
-                OrderedDict([("account", String(kwargs["account"])), ("weight", Int16(kwargs["weight"])),])
+                OrderedDict(
+                    [
+                        ("account", String(kwargs["account"])),
+                        ("weight", Int16(kwargs["weight"])),
+                    ]
+                )
             )
 
 
@@ -101,7 +96,11 @@ class Permission(GrapheneObject):
 
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
-            kwargs["key_auths"] = sorted(kwargs["key_auths"], key=lambda x: x[0], reverse=False,)
+            kwargs["key_auths"] = sorted(
+                kwargs["key_auths"],
+                key=lambda x: x[0],
+                reverse=False,
+            )
             accountAuths = Map([[String(e[0]), Uint16(e[1])] for e in kwargs["account_auths"]])
             keyAuths = Map([[PublicKey(e[0], prefix=prefix), Uint16(e[1])] for e in kwargs["key_auths"]])
             super().__init__(
@@ -117,7 +116,6 @@ class Permission(GrapheneObject):
 
 class ChainPropertiesVariant(Static_variant):
     def __init__(self, props):
-
         version = 3
         data = ChainProperties(**props)
 

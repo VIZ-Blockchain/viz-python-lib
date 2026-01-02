@@ -6,7 +6,7 @@ from vizbase.account import PrivateKey
 
 @pytest.fixture()
 def _add_liquid_to_alice(viz, default_account):
-    viz.transfer('alice', 1000, 'VIZ', account=default_account)
+    viz.transfer("alice", 1000, "VIZ", account=default_account)
 
 
 def test_info(viz):
@@ -14,20 +14,20 @@ def test_info(viz):
 
 
 def test_new_proposal(viz, default_account):
-    proposal = viz.new_proposal('title', 'test proposal', account='alice')
+    proposal = viz.new_proposal("title", "test proposal", account="alice")
     viz.transfer("null", 1, "VIZ", memo="test transfer proposal", account=default_account, append_to=proposal)
     proposal.broadcast()
-    proposals = viz.rpc.get_proposed_transactions('alice', 0, 100)
+    proposals = viz.rpc.get_proposed_transactions("alice", 0, 100)
     assert len(proposals) > 0
 
 
 def test_proposal_update(viz, default_account):
-    proposer = 'alice'
-    title = 'test update 1'
+    proposer = "alice"
+    title = "test update 1"
     proposal = viz.new_proposal(title, account=proposer)
     viz.transfer("null", 1, "VIZ", memo="test_proposal_update", account=default_account, append_to=proposal)
     proposal.broadcast()
-    viz.proposal_update(proposer, title, approve=True, permission='active', account=default_account)
+    viz.proposal_update(proposer, title, approve=True, permission="active", account=default_account)
     # TODO: need multisig to test disapproval; fix after implementing viz.allow()
     # viz.proposal_update(proposer, title, approve=False, permission='active', account=default_account)
 
@@ -85,29 +85,29 @@ def test_get_withdraw_vesting_routes(viz):
     viz.get_withdraw_vesting_routes("bob")
 
 
-@pytest.mark.usefixtures('_add_liquid_to_alice')
+@pytest.mark.usefixtures("_add_liquid_to_alice")
 def test_create_account(viz):
     # normal case
-    viz.create_account('jimmy', password='123', creator='alice')
+    viz.create_account("jimmy", password="123", creator="alice")
 
     # invalid args
-    with pytest.raises(ValueError, match='Account name must be at most'):
-        viz.create_account('longname' * 100, password='123', creator='alice')
+    with pytest.raises(ValueError, match="Account name must be at most"):
+        viz.create_account("longname" * 100, password="123", creator="alice")
 
-    with pytest.raises(ValueError, match='You cannot use'):
-        viz.create_account('jimmy', password='123', active_key='wtf', creator='alice')
+    with pytest.raises(ValueError, match="You cannot use"):
+        viz.create_account("jimmy", password="123", active_key="wtf", creator="alice")
 
     with pytest.raises(ValueError, match="Call incomplete! Provide either a password or public keys!"):
-        viz.create_account('jimmy2', creator='alice')
+        viz.create_account("jimmy2", creator="alice")
 
     with pytest.raises(AccountExistsException):
-        viz.create_account('bob', password='123', creator='alice')
+        viz.create_account("bob", password="123", creator="alice")
 
     # manually provide keys
     pubkeys = [format(PrivateKey().pubkey, viz.prefix) for _ in range(0, 4)]
     viz.create_account(
-        'jimmy3',
-        creator='alice',
+        "jimmy3",
+        creator="alice",
         master_key=pubkeys[0],
         active_key=pubkeys[1],
         regular_key=pubkeys[2],
@@ -116,29 +116,29 @@ def test_create_account(viz):
 
     # additional key and account auths
     viz.create_account(
-        'jimmy4',
-        password='123',
-        creator='alice',
+        "jimmy4",
+        password="123",
+        creator="alice",
         additional_master_keys=[pubkeys[0]],
         additional_active_keys=[pubkeys[1]],
         additional_regular_keys=[pubkeys[2]],
     )
     viz.create_account(
-        'jimmy5',
-        password='123',
-        creator='alice',
-        additional_master_accounts=['bob'],
-        additional_active_accounts=['bob'],
-        additional_regular_accounts=['bob'],
+        "jimmy5",
+        password="123",
+        creator="alice",
+        additional_master_accounts=["bob"],
+        additional_active_accounts=["bob"],
+        additional_regular_accounts=["bob"],
     )
 
     # custom fee and delegation
-    viz.create_account('jimmy6', password='123', creator='alice', fee=5)
-    viz.create_account('jimmy7', password='123', creator='alice', delegation=100)
+    viz.create_account("jimmy6", password="123", creator="alice", fee=5)
+    viz.create_account("jimmy7", password="123", creator="alice", delegation=100)
 
     # referrer
-    viz.create_account('jimmy8', password='123', creator='alice', referrer='bob')
+    viz.create_account("jimmy8", password="123", creator="alice", referrer="bob")
 
 
 def test_delegate_vesting_shares(viz):
-    viz.delegate_vesting_shares(delegator='alice', delegatee='bob', amount=10)
+    viz.delegate_vesting_shares(delegator="alice", delegatee="bob", amount=10)

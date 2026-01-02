@@ -2,6 +2,12 @@
 
 We follow [Semantic Versions](https://semver.org/).
 
+## Version 1.1.0
+
+- Refactoring and support for Python from 3.8 to 3.14
+- Update dependencies
+- Fix docs build
+
 ## Version 1.0.2
 
 - Add `delegate_vesting_shares` method

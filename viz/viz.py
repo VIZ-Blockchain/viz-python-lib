@@ -1,10 +1,9 @@
-# -*- coding: utf-8 -*-
 import logging
 from collections import defaultdict
 from typing import Any, DefaultDict, Dict, List, Optional, Union
 
 from graphenecommon.chain import AbstractGrapheneChain
-from graphenecommon.exceptions import KeyAlreadyInStoreException, AccountDoesNotExistsException
+from graphenecommon.exceptions import AccountDoesNotExistsException, KeyAlreadyInStoreException
 
 from vizapi.noderpc import NodeRPC
 from vizbase import operations
@@ -89,11 +88,11 @@ class Client(AbstractGrapheneChain):
     def new_proposal(
         self,
         title: str,
-        memo: str = '',
+        memo: str = "",
         parent: Optional[TransactionBuilder] = None,
         expiration_time: int = 2 * 24 * 60 * 60,
         review_period_time: Optional[int] = None,
-        account: str = None,
+        account: Optional[str] = None,
         **kwargs: Any,
     ) -> ProposalBuilder:
         """
@@ -148,11 +147,11 @@ class Client(AbstractGrapheneChain):
         self,
         author: str,
         title: str,
-        approver: Union[str, list] = None,
-        keys: Union[str, list] = None,
+        approver: Optional[Union[str, list]] = None,
+        keys: Optional[Union[str, list]] = None,
         permission: str = "regular",
         approve: bool = True,
-        account: str = None,
+        account: Optional[str] = None,
     ) -> dict:
         """
         Update proposal (approve or disapprove)
@@ -214,7 +213,7 @@ class Client(AbstractGrapheneChain):
         if not account:
             raise ValueError("You need to provide an account")
 
-        _amount = Amount("{} {}".format(amount, asset))
+        _amount = Amount(f"{amount} {asset}")
 
         if memo and memo[0] == "#":
             from .memo import Memo
@@ -222,7 +221,7 @@ class Client(AbstractGrapheneChain):
             memo_obj = Memo(from_account=account, to_account=to, blockchain_instance=self)
             memo = memo_obj.encrypt(memo)
 
-        op = operations.Transfer(**{"from": account, "to": to, "amount": "{}".format(str(_amount)), "memo": memo})
+        op = operations.Transfer(**{"from": account, "to": to, "amount": f"{str(_amount)}", "memo": memo})
 
         return self.finalizeOp(op, account, "active", **kwargs)
 
@@ -232,7 +231,7 @@ class Client(AbstractGrapheneChain):
         energy: float,
         memo: str = "",
         beneficiaries: Optional[List[Dict[str, Union[str, int]]]] = None,
-        account: str = None,
+        account: Optional[str] = None,
         **kwargs: Any,
     ) -> dict:
         """
@@ -257,7 +256,7 @@ class Client(AbstractGrapheneChain):
             **{
                 "initiator": account,
                 "receiver": receiver,
-                "energy": int(energy * self.rpc.config['CHAIN_1_PERCENT']),
+                "energy": int(energy * self.rpc.config["CHAIN_1_PERCENT"]),
                 "custom_sequence": kwargs.get("custom_sequence", 0),
                 "memo": memo,
                 "beneficiaries": beneficiaries,
@@ -273,7 +272,7 @@ class Client(AbstractGrapheneChain):
         max_energy: float,
         memo: str = "",
         beneficiaries: Optional[List[Dict[str, Union[str, int]]]] = None,
-        account: str = None,
+        account: Optional[str] = None,
         **kwargs: Any,
     ) -> dict:
         """
@@ -301,8 +300,8 @@ class Client(AbstractGrapheneChain):
             **{
                 "initiator": account,
                 "receiver": receiver,
-                "reward_amount": "{}".format(str(_amount)),
-                "max_energy": int(max_energy * self.rpc.config['CHAIN_1_PERCENT']),
+                "reward_amount": f"{str(_amount)}",
+                "max_energy": int(max_energy * self.rpc.config["CHAIN_1_PERCENT"]),
                 "custom_sequence": kwargs.get("custom_sequence", 0),
                 "memo": memo,
                 "beneficiaries": beneficiaries,
@@ -356,7 +355,7 @@ class Client(AbstractGrapheneChain):
         )
         return self.finalizeOp(op, account, required_key_type)
 
-    def withdraw_vesting(self, amount: float, account: str = None) -> dict:
+    def withdraw_vesting(self, amount: float, account: Optional[str] = None) -> dict:
         """
         Withdraw SHARES from the vesting account.
 
@@ -382,7 +381,7 @@ class Client(AbstractGrapheneChain):
 
         return self.finalizeOp(op, account, "active")
 
-    def transfer_to_vesting(self, amount: float, to: str = None, account: str = None) -> dict:
+    def transfer_to_vesting(self, amount: float, to: Optional[str] = None, account: Optional[str] = None) -> dict:
         """
         Vest free VIZ into vesting.
 
@@ -414,7 +413,7 @@ class Client(AbstractGrapheneChain):
         return self.finalizeOp(op, account, "active")
 
     def set_withdraw_vesting_route(
-        self, to: str, percentage: float = 100, account: str = None, auto_vest: bool = False
+        self, to: str, percentage: float = 100, account: Optional[str] = None, auto_vest: bool = False
     ) -> dict:
         """
         Set up a vesting withdraw route. When vesting shares are withdrawn, they will be routed to these accounts based
@@ -445,7 +444,7 @@ class Client(AbstractGrapheneChain):
             **{
                 "from_account": account,
                 "to_account": to,
-                "percent": int(percentage * self.rpc.config['CHAIN_1_PERCENT']),
+                "percent": int(percentage * self.rpc.config["CHAIN_1_PERCENT"]),
                 "auto_vest": auto_vest,
             }
         )
@@ -469,11 +468,11 @@ class Client(AbstractGrapheneChain):
         self,
         account_name: str,
         json_meta: Optional[Dict[str, Any]] = None,
-        password: str = None,
-        master_key: str = None,
-        active_key: str = None,
-        regular_key: str = None,
-        memo_key: str = None,
+        password: Optional[str] = None,
+        master_key: Optional[str] = None,
+        active_key: Optional[str] = None,
+        regular_key: Optional[str] = None,
+        memo_key: Optional[str] = None,
         additional_master_keys: Optional[List[str]] = None,
         additional_active_keys: Optional[List[str]] = None,
         additional_regular_keys: Optional[List[str]] = None,
@@ -482,9 +481,9 @@ class Client(AbstractGrapheneChain):
         additional_regular_accounts: Optional[List[str]] = None,
         store_keys: bool = True,
         fee: float = 0,
-        delegation: float = None,
-        creator: str = None,
-        referrer: str = '',
+        delegation: Optional[float] = None,
+        creator: Optional[str] = None,
+        referrer: str = "",
     ) -> dict:
         """
         Create new account.
@@ -535,9 +534,9 @@ class Client(AbstractGrapheneChain):
         :param str referrer: account who will be set as referrer, defaults to creator
         :raises AccountExistsException: if the account already exists on the blockchain
         """
-        max_length = self.rpc.config['CHAIN_MAX_ACCOUNT_NAME_LENGTH']
+        max_length = self.rpc.config["CHAIN_MAX_ACCOUNT_NAME_LENGTH"]
         if len(account_name) > max_length:
-            raise ValueError("Account name must be at most {} chars long".format(max_length))
+            raise ValueError(f"Account name must be at most {max_length} chars long")
 
         if not creator and self.config["default_account"]:
             creator = self.config["default_account"]
@@ -571,41 +570,41 @@ class Client(AbstractGrapheneChain):
         # Generate new keys from password
         from vizbase.account import PasswordKey, PublicKey
 
-        key_roles = ['regular', 'active', 'master', 'memo']
+        key_roles = ["regular", "active", "master", "memo"]
         keys: DefaultDict[str, Union[PasswordKey, Dict]] = defaultdict(dict)
 
         if password:
             for role in key_roles:
                 passkey = PasswordKey(account_name, password, role=role)
-                keys['pubkeys'][role] = passkey.get_public_key()
-                keys['privkeys'][role] = passkey.get_private_key()
+                keys["pubkeys"][role] = passkey.get_public_key()
+                keys["privkeys"][role] = passkey.get_private_key()
                 # store private keys
                 if store_keys:
-                    self._store_keys(keys['privkeys'][role])
+                    self._store_keys(keys["privkeys"][role])
         elif master_key and regular_key and active_key and memo_key:
-            keys['pubkeys']['regular'] = PublicKey(regular_key, prefix=self.prefix)
-            keys['pubkeys']['active'] = PublicKey(active_key, prefix=self.prefix)
-            keys['pubkeys']['master'] = PublicKey(master_key, prefix=self.prefix)
-            keys['pubkeys']['memo'] = PublicKey(memo_key, prefix=self.prefix)
+            keys["pubkeys"]["regular"] = PublicKey(regular_key, prefix=self.prefix)
+            keys["pubkeys"]["active"] = PublicKey(active_key, prefix=self.prefix)
+            keys["pubkeys"]["master"] = PublicKey(master_key, prefix=self.prefix)
+            keys["pubkeys"]["memo"] = PublicKey(memo_key, prefix=self.prefix)
         else:
             raise ValueError("Call incomplete! Provide either a password or public keys!")
 
         # main key authorities
-        authority: Union[str, List] = ''
+        authority: Union[str, List] = ""
         for role in key_roles:
-            if role == 'memo':
-                authority = format(keys['pubkeys'][role], self.prefix)
+            if role == "memo":
+                authority = format(keys["pubkeys"][role], self.prefix)
             else:
-                authority = [[format(keys['pubkeys'][role], self.prefix), 1]]
-            keys['authorities'][role] = authority
+                authority = [[format(keys["pubkeys"][role], self.prefix), 1]]
+            keys["authorities"][role] = authority
 
         # additional key authorities
         for key in additional_master_keys:
-            keys['authorities']['master'].append([key, 1])
+            keys["authorities"]["master"].append([key, 1])
         for key in additional_active_keys:
-            keys['authorities']['active'].append([key, 1])
+            keys["authorities"]["active"].append([key, 1])
         for key in additional_regular_keys:
-            keys['authorities']['regular'].append([key, 1])
+            keys["authorities"]["regular"].append([key, 1])
 
         # account authorities
         owner_accounts_authority = []
@@ -622,12 +621,12 @@ class Client(AbstractGrapheneChain):
         props = self.rpc.get_chain_properties()
 
         if not fee:
-            required_fee = Amount(props['account_creation_fee']).amount
+            required_fee = Amount(props["account_creation_fee"]).amount
         else:
             required_fee = fee
 
         if delegation is None:
-            delegation_ratio = props['create_account_delegation_ratio']
+            delegation_ratio = props["create_account_delegation_ratio"]
             cv = Converter(blockchain_instance=self)
             shares_price = cv.core_per_share()
             delegation = required_fee * delegation_ratio * shares_price
@@ -647,20 +646,20 @@ class Client(AbstractGrapheneChain):
             "new_account_name": account_name,
             "master": {
                 "account_auths": owner_accounts_authority,
-                "key_auths": keys['authorities']['master'],
+                "key_auths": keys["authorities"]["master"],
                 "weight_threshold": 1,
             },
             "active": {
                 "account_auths": active_accounts_authority,
-                "key_auths": keys['authorities']['active'],
+                "key_auths": keys["authorities"]["active"],
                 "weight_threshold": 1,
             },
             "regular": {
                 "account_auths": posting_accounts_authority,
-                "key_auths": keys['authorities']['regular'],
+                "key_auths": keys["authorities"]["regular"],
                 "weight_threshold": 1,
             },
-            "memo_key": keys['authorities']['memo'],
+            "memo_key": keys["authorities"]["memo"],
             "json_metadata": json_meta or {},
             "referrer": referrer,
             "prefix": self.prefix,
@@ -692,8 +691,8 @@ class Client(AbstractGrapheneChain):
         # check if the account does not exist
         try:
             Account(account_name, blockchain_instance=self)
-        except Exception:
-            raise AccountDoesNotExistsException
+        except Exception as err:
+            raise AccountDoesNotExistsException from err
 
         op = {
             "account": account_name,
@@ -719,8 +718,8 @@ class Client(AbstractGrapheneChain):
         # check if the account does not exist
         try:
             Account(delegatee, blockchain_instance=self)
-        except Exception:
-            raise AccountDoesNotExistsException
+        except Exception as err:
+            raise AccountDoesNotExistsException from err
 
         op = {
             "delegator": delegator,

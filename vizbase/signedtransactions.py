@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 from graphenebase.signedtransactions import Signed_Transaction as GrapheneSigned_Transaction
 
 from .chains import DEFAULT_PREFIX, KNOWN_CHAINS
-from .operations import Operation
+from .objects import Operation
 
 
 class Signed_Transaction(GrapheneSigned_Transaction):

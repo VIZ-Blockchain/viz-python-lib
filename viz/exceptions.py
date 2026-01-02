@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 class BaseException(Exception):
     """Base excepsion class."""
 

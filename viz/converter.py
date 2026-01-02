@@ -2,7 +2,7 @@ from .amount import Amount
 from .instance import shared_blockchain_instance
 
 
-class Converter(object):
+class Converter:
     """
     Converter simplifies the handling of different metrics of the blockchain.
 
