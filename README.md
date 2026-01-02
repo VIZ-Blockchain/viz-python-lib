@@ -12,6 +12,7 @@ from viz import Client
 
 node = "wss://node.viz.cx/ws"
 viz = Client(node=node, keys=["5...your_private_regular_key..."])
+
 initiator = "your_account"
 percent = 10.5
 viz.award("id", percent, "with love", None, initiator)
