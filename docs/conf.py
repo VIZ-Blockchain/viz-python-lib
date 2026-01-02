@@ -57,7 +57,7 @@ extensions = [
     # Used to write beautiful docstrings:
     "sphinx.ext.napoleon",
     # Used to include .md files:
-    "m2r",
+    "m2r2",
     # Auto-generate API documentation
     "autoapi.extension",
 ]
