@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from .viz import Client  # noqa: F401
 
 __all__ = [

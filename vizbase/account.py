@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
 from graphenebase.account import Address as GPHAddress
 from graphenebase.account import BrainKey as GPHBrainKey
 from graphenebase.account import PasswordKey as GPHPasswordKey

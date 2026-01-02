@@ -1,6 +1,8 @@
 import time
+
 import pytest
 from graphenecommon.exceptions import AccountDoesNotExistsException
+
 from viz.account import Account
 
 
@@ -9,10 +11,10 @@ def account(viz, default_account):
     return Account(default_account)
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def _make_ops(viz, default_account):
     # Sent to different destinations to avoid transaction dupe check fail
-    dests = ['null', 'alice', 'bob']
+    dests = ["null", "alice", "bob"]
     for dest in dests:
         viz.transfer(dest, 1, "VIZ", memo="test_account", account=default_account)
 
@@ -24,12 +26,12 @@ def test_account_not_found(viz, default_account):
     Account(default_account)
 
     with pytest.raises(AccountDoesNotExistsException):
-        Account('dfsdsffdfdfd')
+        Account("dfsdsffdfdfd")
 
 
 def test_balances(account):
     balance = account.balances
-    assert balance['VIZ'] > 0
+    assert balance["VIZ"] > 0
 
 
 def test_energy(account):
@@ -50,21 +52,21 @@ def test_current_energy(account, viz):
 
 
 def test_virtual_op_count(viz):
-    account = Account('committee')
+    account = Account("committee")
     count = account.virtual_op_count()
     assert count > 0
 
 
 def test_get_withdraw_routes(viz):
-    name = 'alice'
+    name = "alice"
     account = Account(name)
     viz.set_withdraw_vesting_route("bob", account=name)
     routes = account.get_withdraw_routes()
-    assert routes[0]['from_account'] == name
+    assert routes[0]["from_account"] == name
 
 
-@pytest.mark.usefixtures('_make_ops')
-def test_history_reverse(account: Account):
+@pytest.mark.usefixtures("_make_ops")
+def test_history_reverse(account: Account) -> None:
     time.sleep(2)
     history = list(account.history_reverse(batch_size=1, limit=2))
     assert len(history) == 2

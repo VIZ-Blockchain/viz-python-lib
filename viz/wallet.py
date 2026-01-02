@@ -1,13 +1,3 @@
-# -*- coding: utf-8 -*-
-from graphenecommon.exceptions import (
-    InvalidWifError,
-    KeyAlreadyInStoreException,
-    KeyNotFound,
-    NoWalletException,
-    OfflineHasNoRPCException,
-    WalletExists,
-    WalletLocked,
-)
 from graphenecommon.wallet import Wallet as GrapheneWallet
 
 from vizbase.account import PrivateKey

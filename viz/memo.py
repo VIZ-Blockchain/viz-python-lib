@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import secrets
 
 from graphenecommon.exceptions import KeyNotFound, MissingKeyError
@@ -76,9 +75,9 @@ class Memo(GrapheneMemo):
                 "Memo private key {} for {} could not be found".format(
                     self.from_account["memo_key"], self.from_account["name"]
                 )
-            )
+            ) from None
         if not memo_wif:
-            raise MissingKeyError("Memo key for %s missing!" % self.from_account["name"])
+            raise MissingKeyError("Memo key for {} missing!".format(self.from_account["name"]))
 
         if not hasattr(self, "chain_prefix"):
             self.chain_prefix = self.blockchain.prefix
@@ -105,10 +104,10 @@ class Memo(GrapheneMemo):
         keys = memo.involved_keys(message)
         wif = None
         for key in keys:
-            try: 
+            try:
                 wif = self.blockchain.wallet.getPrivateKeyForPublicKey(str(key))
                 break
-            except: 
+            except Exception:
                 continue
         if not wif:
             raise MissingKeyError("None of the required memo keys are installed!")

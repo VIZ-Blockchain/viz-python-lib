@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from graphenecommon.witness import Witness as GrapheneWitness
 from graphenecommon.witness import Witnesses as GrapheneWitnesses
 

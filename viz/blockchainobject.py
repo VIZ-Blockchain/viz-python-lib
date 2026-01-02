@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from graphenecommon.blockchainobject import BlockchainObject as GrapheneBlockchainObject
 from graphenecommon.blockchainobject import Object as GrapheneChainObject
 

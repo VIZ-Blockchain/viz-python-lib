@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 DEFAULT_PREFIX = "VIZ"
 KNOWN_CHAINS = {
     "VIZ": {

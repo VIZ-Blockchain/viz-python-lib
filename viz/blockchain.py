@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import hashlib
 import json
 import time
@@ -201,7 +200,6 @@ class Blockchain(GrapheneBlockchain):
             for op in self.stream_from(
                 full_blocks=False, only_virtual_ops=only_virtual_ops, start_block=start_block, end_block=end_block
             ):
-
                 if not filter_by or op["op"][0] in filter_by:
                     if raw_output:
                         yield op

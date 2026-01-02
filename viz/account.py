@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING, Generator, List, Optional, Union
 from warnings import warn
+
 from graphenecommon.exceptions import AccountDoesNotExistsException
 from toolz import dissoc
 
@@ -23,7 +24,7 @@ class Account(dict):
              instance
     """
 
-    def __init__(self, account_name: str, blockchain_instance: Optional['Client'] = None) -> None:
+    def __init__(self, account_name: str, blockchain_instance: Optional["Client"] = None) -> None:
         self.blockchain_instance = blockchain_instance or shared_blockchain_instance()
         self.name = account_name
 
@@ -38,18 +39,18 @@ class Account(dict):
     def energy(self):
         """Account energy at the moment of last use (stale)"""
         cfg = self.blockchain_instance.rpc.config
-        return self['energy'] / cfg['CHAIN_1_PERCENT']
+        return self["energy"] / cfg["CHAIN_1_PERCENT"]
 
     def refresh(self):
         """Loads account object from blockchain."""
         try:
             account = self.blockchain_instance.rpc.get_accounts([self.name])[0]
-        except IndexError:
-            raise AccountDoesNotExistsException
+        except IndexError as err:
+            raise AccountDoesNotExistsException from err
 
         # load json_metadata
         account = json_expand(account, "json_metadata")
-        super(Account, self).__init__(account)
+        super().__init__(account)
 
     def get_balances(self) -> dict:
         """
@@ -65,14 +66,14 @@ class Account(dict):
     def current_energy(self) -> float:
         """Returns current account energy (actual data, counts regenerated energy)"""
         self.refresh()
-        last_vote_time = parse_time(self['last_vote_time'])
+        last_vote_time = parse_time(self["last_vote_time"])
         elapsed_time = time_elapsed(last_vote_time)
         cfg = self.blockchain_instance.rpc.config
         regenerated_energy = (
-            cfg['CHAIN_100_PERCENT'] * elapsed_time.total_seconds() / cfg['CHAIN_ENERGY_REGENERATION_SECONDS']
+            cfg["CHAIN_100_PERCENT"] * elapsed_time.total_seconds() / cfg["CHAIN_ENERGY_REGENERATION_SECONDS"]
         )
-        current_energy = self['energy'] + regenerated_energy
-        energy = min(current_energy, cfg['CHAIN_100_PERCENT']) / cfg['CHAIN_1_PERCENT']
+        current_energy = self["energy"] + regenerated_energy
+        energy = min(current_energy, cfg["CHAIN_100_PERCENT"]) / cfg["CHAIN_1_PERCENT"]
 
         return energy
 
@@ -85,7 +86,7 @@ class Account(dict):
         else:
             return last_item
 
-    def get_withdraw_routes(self, type_: str = 'all') -> dict:
+    def get_withdraw_routes(self, type_: str = "all") -> dict:
         """
         Get vesting withdraw routes.
 
@@ -155,7 +156,7 @@ class Account(dict):
             # removes specified key from dict
             block_props = dissoc(event, "op")
 
-            def construct_op(account_name):
+            def construct_op(account_name, index, op_type, block_props, op, item):
                 # verbatim output from steemd
                 if raw_output:
                     return item
@@ -170,7 +171,7 @@ class Account(dict):
                 return immutable
 
             if filter_by is None or op_type in filter_by:
-                yield construct_op(self.name)
+                yield construct_op(self.name, index, op_type, block_props, op, item)
                 op_count += 1
 
         return op_count
@@ -186,7 +187,7 @@ class Account(dict):
         """
         THIS FUNCTION IS DEPRECATED. PLEASE USE :py:func:`history_reverse` INSTEAD.
 
-        Stream account history in chronological order. 
+        Stream account history in chronological order.
 
         This generator yields history items which may be in list or dict form depending on ``raw_output``.
         Output is similar to :py:func:`history_reverse`.
@@ -297,7 +298,11 @@ class Account(dict):
             if i - batch_size < 0:
                 batch_size = i
             count = yield from self.get_account_history(
-                index=i, limit=batch_size, order=-1, filter_by=filter_by, raw_output=raw_output,
+                index=i,
+                limit=batch_size,
+                order=-1,
+                filter_by=filter_by,
+                raw_output=raw_output,
             )
             i -= batch_size + 1
             op_count += count

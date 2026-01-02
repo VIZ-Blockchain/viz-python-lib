@@ -65,7 +65,7 @@ OPS = [
     "fixed_award",
     "target_account_sale",
     "bid",
-    "outbid"
+    "outbid",
 ]
 operations = {o: OPS.index(o) for o in OPS}
 
@@ -91,5 +91,5 @@ VIRTUAL_OPS = [
     "cancel_paid_subscription",
     "expire_escrow_ratification",
     "bid",
-    "outbid"
+    "outbid",
 ]

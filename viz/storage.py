@@ -1,12 +1,6 @@
-# -*- coding: utf-8 -*-
 from graphenestorage import (
-    InRamConfigurationStore,
-    InRamEncryptedKeyStore,
-    InRamPlainKeyStore,
     SqliteConfigurationStore,
     SqliteEncryptedKeyStore,
-    SQLiteFile,
-    SqlitePlainKeyStore,
 )
 
 from vizbase.chains import DEFAULT_PREFIX
