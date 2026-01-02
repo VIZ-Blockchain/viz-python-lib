@@ -20,7 +20,7 @@ Award someone:
 ```python
 from viz import Client
 
-node = "https://node.viz.cx/"
+node = "wss://node.viz.cx/ws"
 viz = Client(node=node, keys=["5...your_private_regular_key..."])
 initiator = "your_account"
 percent = 10.5
