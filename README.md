@@ -11,7 +11,7 @@ Read dynamic global properties:
 from viz import Client
 from pprint import pprint
 
-viz = Client(node='https://api.viz.world/')
+viz = Client(node="wss://node.viz.cx/ws")
 pprint(viz.info())
 ```
 
@@ -51,6 +51,24 @@ account = "your_account"
 protocol = "color.place"
 json = {"x":35, "y":70, "color":"#e50000"}
 viz.custom(protocol, json, None, [account])
+```
+
+Get account with custom protocol latest block:
+
+```python
+from viz import Client
+from viz.account import Account
+from viz.block import Block
+from viz.instance import set_shared_blockchain_instance
+
+viz = Client('wss://node.viz.cx/ws')
+set_shared_blockchain_instance(viz)
+
+protocol = "V"
+account = Account('id', viz, protocol)
+counter_inside_protocol = account["custom_sequence"]
+last_used_in_block = account["custom_sequence_block_num"]
+block = Block(last_used_in_block)
 ```
 
 Any direct RPC call:

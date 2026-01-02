@@ -106,8 +106,8 @@ API = {
     "get_witnesses_by_vote": "witness_api",
     "get_witness_count": "witness_api",
     "lookup_witness_accounts": "witness_api",
+    "get_account": "custom_protocol_api",
     "test_api_a": "test_api",
     "test_api_b": "test_api",
     "api_name": "json_rpc",
-    "get_account": "custom_protocol_api",
 }

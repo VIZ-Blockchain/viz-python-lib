@@ -24,11 +24,16 @@ class Account(dict):
              instance
     """
 
-    def __init__(self, account_name: str, blockchain_instance: Optional["Client"] = None) -> None:
+    def __init__(
+        self,
+        account_name: str,
+        blockchain_instance: Optional["Client"] = None,
+        protocol: str = "",
+    ) -> None:
         self.blockchain_instance = blockchain_instance or shared_blockchain_instance()
         self.name = account_name
 
-        self.refresh()
+        self.refresh(protocol)
 
     @property
     def balances(self):
@@ -41,10 +46,10 @@ class Account(dict):
         cfg = self.blockchain_instance.rpc.config
         return self["energy"] / cfg["CHAIN_1_PERCENT"]
 
-    def refresh(self):
+    def refresh(self, protocol: str = "") -> None:
         """Loads account object from blockchain."""
         try:
-            account = self.blockchain_instance.rpc.get_accounts([self.name])[0]
+            account = self.blockchain_instance.rpc.get_account(self.name, protocol)
         except IndexError as err:
             raise AccountDoesNotExistsException from err
 
@@ -201,7 +206,11 @@ class Account(dict):
             This is a rough limit, actual results could be a bit longer
         :return: number of ops
         """
-        warn("Function `history` is not recommened. Use `history_reverse` instead.", DeprecationWarning, stacklevel=2)
+        warn(
+            "Function `history` is not recommened. Use `history_reverse` instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
 
         op_count = 0
 
