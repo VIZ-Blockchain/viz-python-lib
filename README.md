@@ -49,25 +49,46 @@ custom_json = {"x": 35, "y": 70, "color": "#e50000"}
 viz.custom(protocol, custom_json, None, required_regular_auths)
 ```
 
-### Get account with custom protocol and latest block
+### Get data from custom protocol
 
 ```python
 from viz import Client
 from viz.account import Account
 from viz.block import Block
 from viz.instance import set_shared_blockchain_instance
+import json
 
 viz = Client("wss://node.viz.cx/ws")
 set_shared_blockchain_instance(viz)
 
+account_name = "id"
 protocol = "V"
-account = Account("id", viz, protocol)
+account = Account(account_name, protocol=protocol)
+
 counter_inside_protocol = account["custom_sequence"]
 last_used_in_block = account["custom_sequence_block_num"]
+
 block = Block(last_used_in_block)
+
+for tx in block["transactions"]:
+    for op_type, op_data in tx["operations"]:
+        if op_type != "custom":
+            continue
+        if op_data.get("id") != protocol:
+            continue
+        if account_name not in op_data.get("required_regular_auths", []):
+            continue
+
+        raw_json = op_data.get("json")
+        try:
+            json_from_protocol = json.loads(raw_json) if raw_json else None
+        except json.JSONDecodeError:
+            json_from_protocol = None
+
+        print(json_from_protocol)
 ```
 
-Any direct RPC call:
+### Any direct RPC call
 
 ```python
 from viz import Client
