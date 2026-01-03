@@ -1,7 +1,7 @@
 # Python Library for [VIZ](https://github.com/VIZ-Blockchain)
 
 ![Tests Status](https://github.com/VIZ-Blockchain/viz-python-lib/actions/workflows/tests.yml/badge.svg)
-[![Documentation Status](https://readthedocs.org/projects/viz-python-lib/badge/?version=latest)](https://viz-python-lib.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/viz-python/badge/?version=latest)](https://viz-python.readthedocs.io/en/latest/?badge=latest)
 
 ## Usage examples
 
