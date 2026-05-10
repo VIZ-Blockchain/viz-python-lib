@@ -121,7 +121,7 @@ poetry install
 #### Linux dependencies
 
 ```sh
-sudo apt-get install libffi-dev libssl-dev python-dev
+sudo apt-get install libffi-dev libssl-dev python3-dev
 ```
 
 #### Windows dependencies

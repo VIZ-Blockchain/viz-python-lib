@@ -1,6 +1,6 @@
 import logging
 from collections import defaultdict
-from typing import Any, DefaultDict, Dict, List, Optional, Union
+from typing import Any, Optional, Union
 
 from graphenecommon.chain import AbstractGrapheneChain
 from graphenecommon.exceptions import AccountDoesNotExistsException, KeyAlreadyInStoreException
@@ -16,8 +16,6 @@ from .converter import Converter
 from .exceptions import AccountExistsException
 from .transactionbuilder import ProposalBuilder, TransactionBuilder
 from .wallet import Wallet
-
-# from .utils import formatTime
 
 log = logging.getLogger(__name__)
 
@@ -230,7 +228,7 @@ class Client(AbstractGrapheneChain):
         receiver: str,
         energy: float,
         memo: str = "",
-        beneficiaries: Optional[List[Dict[str, Union[str, int]]]] = None,
+        beneficiaries: Optional[list[dict[str, Union[str, int]]]] = None,
         account: Optional[str] = None,
         **kwargs: Any,
     ) -> dict:
@@ -271,7 +269,7 @@ class Client(AbstractGrapheneChain):
         reward_amount: float,
         max_energy: float,
         memo: str = "",
-        beneficiaries: Optional[List[Dict[str, Union[str, int]]]] = None,
+        beneficiaries: Optional[list[dict[str, Union[str, int]]]] = None,
         account: Optional[str] = None,
         **kwargs: Any,
     ) -> dict:
@@ -313,9 +311,9 @@ class Client(AbstractGrapheneChain):
     def custom(
         self,
         id_: str,
-        json: Union[Dict, List],
-        required_active_auths: Optional[List[str]] = None,
-        required_regular_auths: Optional[List[str]] = None,
+        json: Union[dict, list],
+        required_active_auths: Optional[list[str]] = None,
+        required_regular_auths: Optional[list[str]] = None,
     ) -> dict:
         """
         Create a custom operation.
@@ -467,18 +465,18 @@ class Client(AbstractGrapheneChain):
     def create_account(
         self,
         account_name: str,
-        json_meta: Optional[Dict[str, Any]] = None,
+        json_meta: Optional[dict[str, Any]] = None,
         password: Optional[str] = None,
         master_key: Optional[str] = None,
         active_key: Optional[str] = None,
         regular_key: Optional[str] = None,
         memo_key: Optional[str] = None,
-        additional_master_keys: Optional[List[str]] = None,
-        additional_active_keys: Optional[List[str]] = None,
-        additional_regular_keys: Optional[List[str]] = None,
-        additional_master_accounts: Optional[List[str]] = None,
-        additional_active_accounts: Optional[List[str]] = None,
-        additional_regular_accounts: Optional[List[str]] = None,
+        additional_master_keys: Optional[list[str]] = None,
+        additional_active_keys: Optional[list[str]] = None,
+        additional_regular_keys: Optional[list[str]] = None,
+        additional_master_accounts: Optional[list[str]] = None,
+        additional_active_accounts: Optional[list[str]] = None,
+        additional_regular_accounts: Optional[list[str]] = None,
         store_keys: bool = True,
         fee: float = 0,
         delegation: Optional[float] = None,
@@ -571,7 +569,7 @@ class Client(AbstractGrapheneChain):
         from vizbase.account import PasswordKey, PublicKey
 
         key_roles = ["regular", "active", "master", "memo"]
-        keys: DefaultDict[str, Union[PasswordKey, Dict]] = defaultdict(dict)
+        keys: defaultdict[str, Union[PasswordKey, dict]] = defaultdict(dict)
 
         if password:
             for role in key_roles:
@@ -590,7 +588,7 @@ class Client(AbstractGrapheneChain):
             raise ValueError("Call incomplete! Provide either a password or public keys!")
 
         # main key authorities
-        authority: Union[str, List] = ""
+        authority: Union[str, list] = ""
         for role in key_roles:
             if role == "memo":
                 authority = format(keys["pubkeys"][role], self.prefix)
@@ -673,7 +671,7 @@ class Client(AbstractGrapheneChain):
         self,
         account_name: str,
         memo_key: str,
-        json_meta: Optional[Dict[str, Any]] = None,
+        json_meta: Optional[dict[str, Any]] = None,
     ) -> dict:
         """
         Update account profile.

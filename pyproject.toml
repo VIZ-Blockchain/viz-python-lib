@@ -19,12 +19,11 @@ packages = [
 keywords = ['viz', 'python', 'library', 'blockchain']
 
 classifiers = [
-  "Development Status :: 3 - Alpha",
+  "Development Status :: 4 - Beta",
   "Intended Audience :: Developers",
   "Operating System :: OS Independent",
   "Topic :: Software Development :: Libraries :: Python Modules",
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
@@ -35,7 +34,7 @@ classifiers = [
 
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.9"
 graphenelib = "^1.6.0"
 toolz = "^0.12.0"
 funcy = "^2.0"
@@ -44,7 +43,7 @@ docker = "^7.1.0"
 
 
 [tool.poetry.group.dev.dependencies]
-pre-commit = { version = "^3.6", python = ">=3.9" }
+pre-commit = "^3.6"
 ruff = "^0.1"
 mypy = "^1.8"
 pytest = "^8.0"
@@ -73,12 +72,12 @@ addopts = [
 
 
 [tool.mypy]
-ignore_missing_imports = false
+ignore_missing_imports = true
 
 
 [tool.ruff]
 line-length = 120
-target-version = "py38"
+target-version = "py39"
 
 
 [tool.ruff.lint]

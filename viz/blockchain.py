@@ -1,7 +1,8 @@
 import hashlib
 import json
 import time
-from typing import Iterator, List, Optional, Union
+from collections.abc import Iterator
+from typing import Optional, Union
 
 from graphenecommon.blockchain import Blockchain as GrapheneBlockchain
 
@@ -108,7 +109,7 @@ class Blockchain(GrapheneBlockchain):
 
     def stream(
         self,
-        filter_by: Optional[Union[str, List[str]]] = None,
+        filter_by: Optional[Union[str, list[str]]] = None,
         start_block: Optional[int] = None,
         end_block: Optional[int] = None,
         raw_output: bool = False,

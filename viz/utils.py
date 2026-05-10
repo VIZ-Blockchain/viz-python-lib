@@ -1,12 +1,12 @@
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 
 from toolz import assoc, update_in
 
 
 def json_expand(json_op, key_name="json"):
     """Convert a string json object to Python dict in an op."""
-    if type(json_op) is dict and key_name in json_op and json_op[key_name]:
+    if isinstance(json_op, dict) and key_name in json_op and json_op[key_name]:
         try:
             return update_in(json_op, [key_name], json.loads)
         except json.JSONDecodeError:
@@ -19,7 +19,9 @@ def time_elapsed(event_time):
     """Takes a string time from blockchain event, and returns a time delta from now."""
     if isinstance(event_time, str):
         event_time = parse_time(event_time)
-    return datetime.utcnow() - event_time
+    if event_time.tzinfo is None:
+        event_time = event_time.replace(tzinfo=timezone.utc)
+    return datetime.now(timezone.utc) - event_time
 
 
 def parse_time(event_time):

@@ -1,12 +1,3 @@
-from .viz import Client  # noqa: F401
+from .viz import Client
 
-__all__ = [
-    "viz",
-    "account",
-    "amount",
-    "block",
-    "blockchain",
-    "storage",
-    "utils",
-    "wallet",
-]
+__all__ = ["Client"]
