@@ -68,3 +68,6 @@ target/
 
 .mypy_cache/
 .vscode
+
+# macOS
+.DS_Store

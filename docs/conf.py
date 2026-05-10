@@ -31,8 +31,8 @@ def _get_project_meta():
 
 pkg_meta = _get_project_meta()
 project = pkg_meta["name"]
-copyright = "2019-2020, Vladimir Kamarzin"  # noqa: WPS125,VNE003
-author = "Vladimir Kamarzin"
+copyright = "2019-2026, Vladimir Kamarzin, Vladimir Babin"  # noqa: WPS125,VNE003
+author = "Vladimir Kamarzin, Vladimir Babin"
 
 # The short X.Y version
 version = pkg_meta["version"]
