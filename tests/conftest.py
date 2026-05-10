@@ -57,7 +57,7 @@ def docker_manager():
 
 def _resolve_vizd_image(docker_manager):
     """Pick the first available vizd image tag from a preferred list."""
-    for tag in ("pr-87-merge", "latest", "fix-witness"):
+    for tag in ("pr-85-merge", "latest", "fix-witness"):
         image = f"vizblockchain/vizd:{tag}"
         try:
             docker_manager.images.pull(image)
