@@ -47,7 +47,6 @@ def test_award(viz, default_account):
 
 @pytest.mark.skip(reason="too long to wait HF 11")
 def test_fixed_award(viz, default_account):
-    yield
     viz.fixed_award(default_account, reward_amount=10, max_energy=50, memo="test_viz", account=default_account)
 
     beneficiaries = [{"account": default_account, "weight": 50}]
