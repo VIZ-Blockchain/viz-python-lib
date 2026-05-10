@@ -55,13 +55,25 @@ def docker_manager():
     return docker.from_env(version="auto")
 
 
+def _resolve_vizd_image(docker_manager):
+    """Pick the first available vizd image tag from a preferred list."""
+    for tag in ("fix-witness", "latest"):
+        image = f"vizblockchain/vizd:{tag}"
+        try:
+            docker_manager.images.pull(image)
+        except docker.errors.APIError:
+            continue
+        return image
+    raise RuntimeError("No usable vizblockchain/vizd image found (tried: fix-witness, latest)")
+
+
 @pytest.fixture(scope="session")
 def viz_testnet(session_id, unused_port, docker_manager):
     """Run vizd inside local docker container."""
     port_http = unused_port()
     port_ws = unused_port()
     container = docker_manager.containers.run(
-        image="vizblockchain/vizd:testnet",
+        image=_resolve_vizd_image(docker_manager),
         name=f"viz-testnet-{session_id}",
         ports={"8090": port_http, "8091": port_ws},
         detach=True,
