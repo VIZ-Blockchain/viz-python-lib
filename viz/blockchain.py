@@ -2,7 +2,6 @@ import hashlib
 import json
 import time
 from collections.abc import Iterator
-from typing import Optional, Union
 
 from graphenecommon.blockchain import Blockchain as GrapheneBlockchain
 
@@ -43,8 +42,8 @@ class Blockchain(GrapheneBlockchain):
 
     def stream_from(
         self,
-        start_block: Optional[int] = None,
-        end_block: Optional[int] = None,
+        start_block: int | None = None,
+        end_block: int | None = None,
         batch_operations: bool = False,
         full_blocks: bool = False,
         only_virtual_ops: bool = False,
@@ -109,9 +108,9 @@ class Blockchain(GrapheneBlockchain):
 
     def stream(
         self,
-        filter_by: Optional[Union[str, list[str]]] = None,
-        start_block: Optional[int] = None,
-        end_block: Optional[int] = None,
+        filter_by: str | list[str] | None = None,
+        start_block: int | None = None,
+        end_block: int | None = None,
         raw_output: bool = False,
     ) -> Iterator[dict]:
         """

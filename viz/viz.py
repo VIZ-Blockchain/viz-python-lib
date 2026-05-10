@@ -1,6 +1,6 @@
 import logging
 from collections import defaultdict
-from typing import Any, Optional, Union
+from typing import Any
 
 from graphenecommon.chain import AbstractGrapheneChain
 from graphenecommon.exceptions import AccountDoesNotExistsException, KeyAlreadyInStoreException
@@ -87,10 +87,10 @@ class Client(AbstractGrapheneChain):
         self,
         title: str,
         memo: str = "",
-        parent: Optional[TransactionBuilder] = None,
+        parent: TransactionBuilder | None = None,
         expiration_time: int = 2 * 24 * 60 * 60,
-        review_period_time: Optional[int] = None,
-        account: Optional[str] = None,
+        review_period_time: int | None = None,
+        account: str | None = None,
         **kwargs: Any,
     ) -> ProposalBuilder:
         """
@@ -145,11 +145,11 @@ class Client(AbstractGrapheneChain):
         self,
         author: str,
         title: str,
-        approver: Optional[Union[str, list]] = None,
-        keys: Optional[Union[str, list]] = None,
+        approver: str | list | None = None,
+        keys: str | list | None = None,
         permission: str = "regular",
         approve: bool = True,
-        account: Optional[str] = None,
+        account: str | None = None,
     ) -> dict:
         """
         Update proposal (approve or disapprove)
@@ -192,7 +192,7 @@ class Client(AbstractGrapheneChain):
         return self.finalizeOp(op, account, permission)
 
     def transfer(
-        self, to: str, amount: float, asset: str, memo: str = "", account: Optional[str] = None, **kwargs: Any
+        self, to: str, amount: float, asset: str, memo: str = "", account: str | None = None, **kwargs: Any
     ) -> dict:
         """
         Transfer an asset to another account.
@@ -228,8 +228,8 @@ class Client(AbstractGrapheneChain):
         receiver: str,
         energy: float,
         memo: str = "",
-        beneficiaries: Optional[list[dict[str, Union[str, int]]]] = None,
-        account: Optional[str] = None,
+        beneficiaries: list[dict[str, str | int]] | None = None,
+        account: str | None = None,
         **kwargs: Any,
     ) -> dict:
         """
@@ -269,8 +269,8 @@ class Client(AbstractGrapheneChain):
         reward_amount: float,
         max_energy: float,
         memo: str = "",
-        beneficiaries: Optional[list[dict[str, Union[str, int]]]] = None,
-        account: Optional[str] = None,
+        beneficiaries: list[dict[str, str | int]] | None = None,
+        account: str | None = None,
         **kwargs: Any,
     ) -> dict:
         """
@@ -311,9 +311,9 @@ class Client(AbstractGrapheneChain):
     def custom(
         self,
         id_: str,
-        json: Union[dict, list],
-        required_active_auths: Optional[list[str]] = None,
-        required_regular_auths: Optional[list[str]] = None,
+        json: dict | list,
+        required_active_auths: list[str] | None = None,
+        required_regular_auths: list[str] | None = None,
     ) -> dict:
         """
         Create a custom operation.
@@ -353,7 +353,7 @@ class Client(AbstractGrapheneChain):
         )
         return self.finalizeOp(op, account, required_key_type)
 
-    def withdraw_vesting(self, amount: float, account: Optional[str] = None) -> dict:
+    def withdraw_vesting(self, amount: float, account: str | None = None) -> dict:
         """
         Withdraw SHARES from the vesting account.
 
@@ -379,7 +379,7 @@ class Client(AbstractGrapheneChain):
 
         return self.finalizeOp(op, account, "active")
 
-    def transfer_to_vesting(self, amount: float, to: Optional[str] = None, account: Optional[str] = None) -> dict:
+    def transfer_to_vesting(self, amount: float, to: str | None = None, account: str | None = None) -> dict:
         """
         Vest free VIZ into vesting.
 
@@ -411,7 +411,7 @@ class Client(AbstractGrapheneChain):
         return self.finalizeOp(op, account, "active")
 
     def set_withdraw_vesting_route(
-        self, to: str, percentage: float = 100, account: Optional[str] = None, auto_vest: bool = False
+        self, to: str, percentage: float = 100, account: str | None = None, auto_vest: bool = False
     ) -> dict:
         """
         Set up a vesting withdraw route. When vesting shares are withdrawn, they will be routed to these accounts based
@@ -465,22 +465,22 @@ class Client(AbstractGrapheneChain):
     def create_account(
         self,
         account_name: str,
-        json_meta: Optional[dict[str, Any]] = None,
-        password: Optional[str] = None,
-        master_key: Optional[str] = None,
-        active_key: Optional[str] = None,
-        regular_key: Optional[str] = None,
-        memo_key: Optional[str] = None,
-        additional_master_keys: Optional[list[str]] = None,
-        additional_active_keys: Optional[list[str]] = None,
-        additional_regular_keys: Optional[list[str]] = None,
-        additional_master_accounts: Optional[list[str]] = None,
-        additional_active_accounts: Optional[list[str]] = None,
-        additional_regular_accounts: Optional[list[str]] = None,
+        json_meta: dict[str, Any] | None = None,
+        password: str | None = None,
+        master_key: str | None = None,
+        active_key: str | None = None,
+        regular_key: str | None = None,
+        memo_key: str | None = None,
+        additional_master_keys: list[str] | None = None,
+        additional_active_keys: list[str] | None = None,
+        additional_regular_keys: list[str] | None = None,
+        additional_master_accounts: list[str] | None = None,
+        additional_active_accounts: list[str] | None = None,
+        additional_regular_accounts: list[str] | None = None,
         store_keys: bool = True,
         fee: float = 0,
-        delegation: Optional[float] = None,
-        creator: Optional[str] = None,
+        delegation: float | None = None,
+        creator: str | None = None,
         referrer: str = "",
     ) -> dict:
         """
@@ -569,7 +569,7 @@ class Client(AbstractGrapheneChain):
         from vizbase.account import PasswordKey, PublicKey
 
         key_roles = ["regular", "active", "master", "memo"]
-        keys: defaultdict[str, Union[PasswordKey, dict]] = defaultdict(dict)
+        keys: defaultdict[str, PasswordKey | dict] = defaultdict(dict)
 
         if password:
             for role in key_roles:
@@ -588,7 +588,7 @@ class Client(AbstractGrapheneChain):
             raise ValueError("Call incomplete! Provide either a password or public keys!")
 
         # main key authorities
-        authority: Union[str, list] = ""
+        authority: str | list = ""
         for role in key_roles:
             if role == "memo":
                 authority = format(keys["pubkeys"][role], self.prefix)
@@ -671,7 +671,7 @@ class Client(AbstractGrapheneChain):
         self,
         account_name: str,
         memo_key: str,
-        json_meta: Optional[dict[str, Any]] = None,
+        json_meta: dict[str, Any] | None = None,
     ) -> dict:
         """
         Update account profile.

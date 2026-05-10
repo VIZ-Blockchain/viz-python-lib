@@ -1,5 +1,5 @@
 from collections.abc import Generator
-from typing import TYPE_CHECKING, Optional, Union
+from typing import TYPE_CHECKING, Optional
 from warnings import warn
 
 from graphenecommon.exceptions import AccountDoesNotExistsException
@@ -13,7 +13,7 @@ from .utils import json_expand, parse_time, time_elapsed
 if TYPE_CHECKING:
     from .viz import Client  # noqa: F401
 
-HistoryGenerator = Generator[Union[dict, list], None, int]
+HistoryGenerator = Generator[dict | list, None, int]
 
 
 class Account(dict):
@@ -118,10 +118,10 @@ class Account(dict):
         self,
         index: int,
         limit: int,
-        start: Optional[int] = None,
-        stop: Optional[int] = None,
+        start: int | None = None,
+        stop: int | None = None,
         order: int = -1,
-        filter_by: Optional[Union[str, list[str]]] = None,
+        filter_by: str | list[str] | None = None,
         raw_output: bool = False,
     ) -> HistoryGenerator:
         """
@@ -184,7 +184,7 @@ class Account(dict):
 
     def history(
         self,
-        filter_by: Optional[Union[str, list[str]]] = None,
+        filter_by: str | list[str] | None = None,
         start: int = 0,
         batch_size: int = 1000,
         raw_output: bool = False,
@@ -241,7 +241,7 @@ class Account(dict):
 
     def history_reverse(
         self,
-        filter_by: Optional[Union[str, list[str]]] = None,
+        filter_by: str | list[str] | None = None,
         batch_size: int = 1000,
         raw_output: bool = False,
         limit: int = -1,
