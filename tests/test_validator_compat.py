@@ -196,3 +196,43 @@ def test_witness_update_and_validator_update_serialize_identically():
         a = bytes(Validator_update(**kwargs))
         b = bytes(Witness_update(**kwargs))
     assert a == b
+
+
+def test_account_validator_vote_serializes_new_kwargs():
+    from vizbase.operations import Account_validator_vote
+
+    op = Account_validator_vote(account="alice", validator="bob", approve=True)
+    j = op.json()
+    assert j == {"account": "alice", "validator": "bob", "approve": True}
+
+
+def test_account_validator_vote_accepts_old_witness_kwarg_with_warning():
+    from vizbase.operations import Account_validator_vote
+
+    with pytest.warns(DeprecationWarning, match=r"'witness' is deprecated"):
+        op = Account_validator_vote(account="alice", witness="bob", approve=True)
+    j = op.json()
+    assert j == {"account": "alice", "validator": "bob", "approve": True}
+
+
+def test_account_witness_vote_alias_class_works():
+    from vizbase.operations import _DeprecatedAlias
+
+    _DeprecatedAlias._warned.discard("Account_witness_vote")
+
+    from vizbase.operations import Account_validator_vote, Account_witness_vote
+
+    with pytest.warns(DeprecationWarning):
+        op = Account_witness_vote(account="alice", witness="bob", approve=True)
+    assert isinstance(op, Account_validator_vote)
+    assert op.json() == {"account": "alice", "validator": "bob", "approve": True}
+
+
+def test_account_validator_vote_old_and_new_serialize_identically():
+    from vizbase.operations import Account_validator_vote
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        a = bytes(Account_validator_vote(account="alice", validator="bob", approve=True))
+        b = bytes(Account_validator_vote(account="alice", witness="bob", approve=True))
+    assert a == b

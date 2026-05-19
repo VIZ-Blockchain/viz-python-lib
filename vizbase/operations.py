@@ -23,6 +23,7 @@ from .objects import (
     Permission,
     isArgsThisClass,
 )
+from .validator_compat import OP_FIELD_ALIASES, translate_kwargs
 
 # You can find operations definitions in
 # libraries/protocol/include/graphene/protocol/chain_operations.hpp
@@ -336,18 +337,23 @@ class Versioned_chain_properties_update(GrapheneObject):
             super().__init__(OrderedDict([("owner", String(kwargs["owner"])), ("props", props)]))
 
 
-class Account_witness_vote(GrapheneObject):
+class Account_validator_vote(GrapheneObject):
     def __init__(self, *args, **kwargs):
         if isArgsThisClass(self, args):
             self.data = args[0].data
         else:
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
+            kwargs = translate_kwargs(
+                kwargs,
+                OP_FIELD_ALIASES["account_validator_vote"],
+                context="Account_validator_vote",
+            )
             super().__init__(
                 OrderedDict(
                     [
                         ("account", String(kwargs["account"])),
-                        ("witness", String(kwargs["witness"])),
+                        ("validator", String(kwargs["validator"])),
                         ("approve", Bool(bool(kwargs["approve"]))),
                     ]
                 )
@@ -481,3 +487,4 @@ class Custom(GrapheneObject):
 # Deprecated witness-named aliases. Subclasses that warn once per process
 # on first instantiation. Remove during Phase C cleanup.
 Witness_update = _DeprecatedAlias.make("Witness_update", Validator_update)
+Account_witness_vote = _DeprecatedAlias.make("Account_witness_vote", Account_validator_vote)
