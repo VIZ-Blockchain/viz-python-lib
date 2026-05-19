@@ -342,3 +342,95 @@ def test_no_such_method_exception_exists():
     from vizapi.exceptions import NoSuchMethod, RPCError
 
     assert issubclass(NoSuchMethod, RPCError)
+
+
+def test_post_process_exception_raises_no_such_method():
+    from vizapi.exceptions import NoSuchMethod
+    from vizapi.noderpc import NodeRPC
+
+    rpc = NodeRPC.__new__(NodeRPC)
+
+    class FakeError(Exception):
+        pass
+
+    err = FakeError("foo bar (123)\nCould not find method get_active_validators\n\n")
+    with pytest.raises(NoSuchMethod):
+        rpc.post_process_exception(err)
+
+
+def _build_rpc_with_runner(runner):
+    """Build a Rpc with rpcexec stubbed and a request-id counter, no network."""
+    from vizapi.noderpc import Rpc
+
+    rpc = Rpc.__new__(Rpc)
+    rpc._uses_legacy_witness_api = None
+    rpc._request_id = 0
+
+    def get_request_id():
+        rpc._request_id += 1
+        return rpc._request_id
+
+    def parse_response(resp):
+        return resp["result"]
+
+    rpc.get_request_id = get_request_id
+    rpc.rpcexec = runner
+    rpc.parse_response = parse_response
+    return rpc
+
+
+def test_dispatcher_inbound_translates_old_method_name_with_warning():
+    seen = []
+
+    def runner(query):
+        seen.append(query["params"])
+        return {"result": ["alice", "bob"]}
+
+    rpc = _build_rpc_with_runner(runner)
+    with pytest.warns(DeprecationWarning, match=r"get_active_witnesses.*deprecated"):
+        result = rpc.get_active_witnesses()
+    assert result == ["alice", "bob"]
+    assert seen[0] == ["validator_api", "get_active_validators", []]
+
+
+def test_dispatcher_falls_back_to_witness_api_on_no_such_method():
+    from vizapi.exceptions import NoSuchMethod
+
+    calls = []
+
+    def runner(query):
+        calls.append(query["params"])
+        if query["params"][1] == "get_active_validators":
+            raise NoSuchMethod("Could not find method")
+        return {"result": ["alice"]}
+
+    rpc = _build_rpc_with_runner(runner)
+    with pytest.warns(DeprecationWarning, match=r"witness_api"):
+        result = rpc.get_active_validators()
+    assert result == ["alice"]
+    assert calls[0] == ["validator_api", "get_active_validators", []]
+    assert calls[1] == ["witness_api", "get_active_witnesses", []]
+    assert rpc._uses_legacy_witness_api is True
+
+
+def test_dispatcher_uses_cached_legacy_on_subsequent_calls():
+    from vizapi.exceptions import NoSuchMethod
+
+    calls = []
+
+    def runner(query):
+        calls.append(query["params"])
+        if query["params"][1] == "get_active_validators":
+            raise NoSuchMethod("Could not find method")
+        return {"result": ["alice"]}
+
+    rpc = _build_rpc_with_runner(runner)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        rpc.get_active_validators()
+        rpc.get_active_validators()
+
+    # First call: tried new then fell back -> 2 calls.
+    # Second call: skipped new attempt -> 1 call. Total: 3.
+    assert len(calls) == 3
+    assert calls[2] == ["witness_api", "get_active_witnesses", []]
