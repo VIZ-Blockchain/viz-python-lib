@@ -304,3 +304,35 @@ def test_chain_properties_old_field_names_warn_and_serialize_identically():
     old_bytes = bytes(op_old)
 
     assert new_bytes == old_bytes
+
+
+def test_consts_api_has_validator_methods():
+    from vizapi.consts import API
+
+    assert API["get_active_validators"] == "validator_api"
+    assert API["get_validator_schedule"] == "validator_api"
+    assert API["get_validators"] == "validator_api"
+    assert API["get_validator_by_account"] == "validator_api"
+    assert API["get_validators_by_vote"] == "validator_api"
+    assert API["get_validators_by_counted_vote"] == "validator_api"
+    assert API["get_validator_count"] == "validator_api"
+    assert API["lookup_validator_accounts"] == "validator_api"
+    assert API["get_miner_queue"] == "validator_api"
+    assert API["debug_get_validator_schedule"] == "debug_node"
+
+
+def test_consts_api_does_not_have_old_witness_methods():
+    from vizapi.consts import API
+
+    for old_name in (
+        "get_active_witnesses",
+        "get_witness_schedule",
+        "get_witnesses",
+        "get_witness_by_account",
+        "get_witnesses_by_vote",
+        "get_witnesses_by_counted_vote",
+        "get_witness_count",
+        "lookup_witness_accounts",
+        "debug_get_witness_schedule",
+    ):
+        assert old_name not in API, f"{old_name} should be removed from API map"
