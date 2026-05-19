@@ -236,3 +236,71 @@ def test_account_validator_vote_old_and_new_serialize_identically():
         a = bytes(Account_validator_vote(account="alice", validator="bob", approve=True))
         b = bytes(Account_validator_vote(account="alice", witness="bob", approve=True))
     assert a == b
+
+
+CHAIN_PROPS_NEW = {
+    "account_creation_fee": "1.000 VIZ",
+    "maximum_block_size": 65536,
+    "create_account_delegation_ratio": 2,
+    "create_account_delegation_time": 3600,
+    "min_delegation": "10.000 VIZ",
+    "min_curation_percent": 1000,
+    "max_curation_percent": 2000,
+    "bandwidth_reserve_percent": 1000,
+    "bandwidth_reserve_below": "10.000 SHARES",
+    "flag_energy_additional_cost": 1000,
+    "vote_accounting_min_rshares": 100000,
+    "committee_request_approve_min_percent": 1000,
+    "inflation_validator_percent": 1000,
+    "inflation_ratio_committee_vs_reward_fund": 5000,
+    "inflation_recalc_period": 3600,
+    "data_operations_cost_additional_bandwidth": 0,
+    "validator_miss_penalty_percent": 1000,
+    "validator_miss_penalty_duration": 3600,
+    "create_invite_min_balance": "1.000 VIZ",
+    "committee_create_request_fee": "1.000 VIZ",
+    "create_paid_subscription_fee": "1.000 VIZ",
+    "account_on_sale_fee": "1.000 VIZ",
+    "subaccount_on_sale_fee": "1.000 VIZ",
+    "validator_declaration_fee": "1.000 VIZ",
+    "withdraw_intervals": 10,
+}
+
+CHAIN_PROPS_OLD = {
+    **{
+        k: v
+        for k, v in CHAIN_PROPS_NEW.items()
+        if k
+        not in {
+            "inflation_validator_percent",
+            "validator_miss_penalty_percent",
+            "validator_miss_penalty_duration",
+            "validator_declaration_fee",
+        }
+    },
+    "inflation_witness_percent": 1000,
+    "witness_miss_penalty_percent": 1000,
+    "witness_miss_penalty_duration": 3600,
+    "witness_declaration_fee": "1.000 VIZ",
+}
+
+
+def test_chain_properties_serializes_with_new_field_names():
+    from vizbase.operations import Versioned_chain_properties_update
+
+    op = Versioned_chain_properties_update(owner="alice", props=CHAIN_PROPS_NEW)
+    bytes(op)
+
+
+def test_chain_properties_old_field_names_warn_and_serialize_identically():
+    from vizbase.operations import Versioned_chain_properties_update
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        new_bytes = bytes(Versioned_chain_properties_update(owner="alice", props=CHAIN_PROPS_NEW))
+
+    with pytest.warns(DeprecationWarning, match=r"'inflation_witness_percent' is deprecated"):
+        op_old = Versioned_chain_properties_update(owner="alice", props=CHAIN_PROPS_OLD)
+    old_bytes = bytes(op_old)
+
+    assert new_bytes == old_bytes
