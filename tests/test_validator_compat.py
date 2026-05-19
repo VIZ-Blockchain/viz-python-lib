@@ -109,3 +109,36 @@ def test_pick_works_on_objects_with_attributes():
         current_validator = "alice"
 
     assert pick(Obj(), "current_validator", "current_witness") == "alice"
+
+
+def test_operations_dict_has_new_names():
+    from vizbase.operationids import operations
+
+    assert operations["validator_update"] == 6
+    assert operations["account_validator_vote"] == 7
+    assert operations["account_validator_proxy"] == 8
+    assert operations["shutdown_validator"] == 30
+    assert operations["validator_reward"] == 42
+
+
+def test_operations_dict_has_old_name_aliases():
+    from vizbase.operationids import operations
+
+    assert operations["witness_update"] == operations["validator_update"] == 6
+    assert operations["account_witness_vote"] == operations["account_validator_vote"] == 7
+    assert operations["account_witness_proxy"] == operations["account_validator_proxy"] == 8
+    assert operations["shutdown_witness"] == operations["shutdown_validator"] == 30
+    assert operations["witness_reward"] == operations["validator_reward"] == 42
+
+
+def test_ops_list_order_preserved():
+    """Operation type IDs are positional; renaming must not shift indices."""
+    from vizbase.operationids import OPS
+
+    assert OPS.index("transfer") == 2
+    assert OPS.index("account_update") == 5
+    assert OPS.index("validator_update") == 6
+    assert OPS.index("account_validator_vote") == 7
+    assert OPS.index("account_validator_proxy") == 8
+    assert OPS.index("shutdown_validator") == 30
+    assert OPS.index("validator_reward") == 42

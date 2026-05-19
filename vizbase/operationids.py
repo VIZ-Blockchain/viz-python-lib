@@ -1,3 +1,5 @@
+from .validator_compat import OP_NAME_ALIASES
+
 #: Operation ids
 # Note: take operations from libraries/protocol/include/graphene/protocol/operations.hpp
 # Beware to keep operations order!
@@ -8,9 +10,9 @@ OPS = [
     "transfer_to_vesting",
     "withdraw_vesting",
     "account_update",
-    "witness_update",
-    "account_witness_vote",
-    "account_witness_proxy",
+    "validator_update",
+    "account_validator_vote",
+    "account_validator_proxy",
     "delete_content",
     "custom",
     "set_withdraw_vesting_route",
@@ -32,7 +34,7 @@ OPS = [
     "curation_reward",
     "content_reward",
     "fill_vesting_withdraw",
-    "shutdown_witness",
+    "shutdown_validator",
     "hardfork",
     "content_payout_update",
     "content_benefactor_reward",
@@ -44,7 +46,7 @@ OPS = [
     "committee_approve_request",
     "committee_payout_request",
     "committee_pay_request",
-    "witness_reward",
+    "validator_reward",
     "create_invite",
     "claim_invite_balance",
     "invite_registration",
@@ -69,13 +71,19 @@ OPS = [
 ]
 operations = {o: OPS.index(o) for o in OPS}
 
+# Phase A dual-support: register old op names as aliases pointing to the
+# same integer ID. Lookup by either old or new name returns the same id.
+# Remove these alias entries during Phase C cleanup.
+for _old, _new in OP_NAME_ALIASES.items():
+    operations[_old] = operations[_new]
+
 # libraries/protocol/include/graphene/protocol/chain_virtual_operations.hpp
 VIRTUAL_OPS = [
     "author_reward",
     "curation_reward",
     "content_reward",
     "fill_vesting_withdraw",
-    "shutdown_witness",
+    "shutdown_validator",
     "hardfork",
     "content_payout_update",
     "content_benefactor_reward",
@@ -84,7 +92,7 @@ VIRTUAL_OPS = [
     "committee_approve_request",
     "committee_payout_request",
     "committee_pay_request",
-    "witness_reward",
+    "validator_reward",
     "receive_award",
     "benefactor_award",
     "paid_subscription_action",
