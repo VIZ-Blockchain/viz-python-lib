@@ -336,3 +336,9 @@ def test_consts_api_does_not_have_old_witness_methods():
         "debug_get_witness_schedule",
     ):
         assert old_name not in API, f"{old_name} should be removed from API map"
+
+
+def test_no_such_method_exception_exists():
+    from vizapi.exceptions import NoSuchMethod, RPCError
+
+    assert issubclass(NoSuchMethod, RPCError)
