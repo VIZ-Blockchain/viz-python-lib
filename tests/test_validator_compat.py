@@ -434,3 +434,13 @@ def test_dispatcher_uses_cached_legacy_on_subsequent_calls():
     # Second call: skipped new attempt -> 1 call. Total: 3.
     assert len(calls) == 3
     assert calls[2] == ["witness_api", "get_active_witnesses", []]
+
+
+def test_validator_class_importable():
+    from graphenecommon.witness import Witness as GrapheneWitness
+    from graphenecommon.witness import Witnesses as GrapheneWitnesses
+
+    from viz.validator import Validator, Validators
+
+    assert issubclass(Validator, GrapheneWitness)
+    assert issubclass(Validators, GrapheneWitnesses)
