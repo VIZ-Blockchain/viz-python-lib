@@ -1,4 +1,5 @@
 import json
+import warnings
 from collections import OrderedDict
 
 from graphenebase.types import (
@@ -25,6 +26,31 @@ from .objects import (
 
 # You can find operations definitions in
 # libraries/protocol/include/graphene/protocol/chain_operations.hpp
+
+
+class _DeprecatedAlias:
+    """Warn once-per-process on first instantiation of a deprecated class name."""
+
+    _warned: set[str] = set()
+
+    @classmethod
+    def make(cls, old_name: str, new_class: type) -> type:
+        warned = cls._warned
+
+        class _Alias(new_class):
+            def __init__(self, *args, **kwargs):
+                if old_name not in warned:
+                    warnings.warn(
+                        f"{old_name} is deprecated; use {new_class.__name__} instead",
+                        DeprecationWarning,
+                        stacklevel=2,
+                    )
+                    warned.add(old_name)
+                super().__init__(*args, **kwargs)
+
+        _Alias.__name__ = old_name
+        _Alias.__qualname__ = old_name
+        return _Alias
 
 
 class Account_create(GrapheneObject):
@@ -268,7 +294,7 @@ class Set_withdraw_vesting_route(GrapheneObject):
             )
 
 
-class Witness_update(GrapheneObject):
+class Validator_update(GrapheneObject):
     def __init__(self, *args, **kwargs):
         if isArgsThisClass(self, args):
             self.data = args[0].data
@@ -450,3 +476,8 @@ class Custom(GrapheneObject):
                     ]
                 )
             )
+
+
+# Deprecated witness-named aliases. Subclasses that warn once per process
+# on first instantiation. Remove during Phase C cleanup.
+Witness_update = _DeprecatedAlias.make("Witness_update", Validator_update)

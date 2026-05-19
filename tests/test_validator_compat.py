@@ -142,3 +142,57 @@ def test_ops_list_order_preserved():
     assert OPS.index("account_validator_proxy") == 8
     assert OPS.index("shutdown_validator") == 30
     assert OPS.index("validator_reward") == 42
+
+
+def test_validator_update_class_exists_and_serializes():
+    from vizbase.operations import Validator_update
+
+    op = Validator_update(
+        owner="alice",
+        url="https://alice.example",
+        block_signing_key="VIZ1111111111111111111111111111111114T1Anm",
+    )
+    j = op.json()
+    assert j["owner"] == "alice"
+    assert j["url"] == "https://alice.example"
+    assert j["block_signing_key"] == "VIZ1111111111111111111111111111111114T1Anm"
+
+
+def test_witness_update_alias_emits_deprecation_warning_once():
+    from vizbase.operations import _DeprecatedAlias
+
+    _DeprecatedAlias._warned.discard("Witness_update")
+
+    from vizbase.operations import Validator_update, Witness_update
+
+    with pytest.warns(DeprecationWarning, match=r"Witness_update is deprecated"):
+        op1 = Witness_update(
+            owner="alice",
+            url="https://x",
+            block_signing_key="VIZ1111111111111111111111111111111114T1Anm",
+        )
+    assert isinstance(op1, Validator_update)
+
+    # Second instantiation: no warning.
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        Witness_update(
+            owner="alice",
+            url="https://x",
+            block_signing_key="VIZ1111111111111111111111111111111114T1Anm",
+        )
+
+
+def test_witness_update_and_validator_update_serialize_identically():
+    from vizbase.operations import Validator_update, Witness_update
+
+    kwargs = {
+        "owner": "alice",
+        "url": "https://alice.example",
+        "block_signing_key": "VIZ1111111111111111111111111111111114T1Anm",
+    }
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        a = bytes(Validator_update(**kwargs))
+        b = bytes(Witness_update(**kwargs))
+    assert a == b
