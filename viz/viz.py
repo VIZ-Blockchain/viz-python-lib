@@ -742,14 +742,14 @@ class Client(AbstractGrapheneChain):
                 pass
 
     # TODO: Methods to implement:
-    # - witness_update
+    # - validator_update
     # - chain_properties_update
     # - allow / disallow
     # - update_memo_key
-    # - approve_witness / disapprove_witness
+    # - approve_validator / disapprove_validator
     # - account_metadata
     # - proposal_create / proposal_update / proposal_delete
-    # - witness_proxy
+    # - validator_proxy
     # - recover-related methods
     # - escrow-related methods
     # - worker create / cancel / vote

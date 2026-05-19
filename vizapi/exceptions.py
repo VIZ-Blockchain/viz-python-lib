@@ -36,3 +36,9 @@ class ReadLockFail(RPCError):
 
 class UnknownNetwork(RPCError):
     pass
+
+
+class NoSuchMethod(RPCError):
+    """Raised when the node reports the requested method is not available on the API."""
+
+    pass

@@ -1,36 +1,22 @@
-from graphenecommon.witness import Witness as GrapheneWitness
-from graphenecommon.witness import Witnesses as GrapheneWitnesses
+"""
+Deprecated module: use viz.validator instead.
 
-from .account import Account
-from .instance import BlockchainInstance
+This shim re-exports Validator/Validators under their old witness names
+to preserve backward compatibility during the witness -> validator
+terminology migration. Remove during Phase C cleanup.
+"""
 
+import warnings
 
-@BlockchainInstance.inject
-class Witness(GrapheneWitness):
-    """
-    Read data about a witness in the chain.
+from .validator import Validator, Validators
 
-    :param str account_name: Name of the witness
-    :param viz blockchain_instance: Client() instance to use when
-           accesing a RPC
-    """
+warnings.warn(
+    "viz.witness is deprecated; import from viz.validator instead",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
-    def define_classes(self):
-        self.account_class = Account
-        self.type_ids = [6, 2]
+Witness = Validator
+Witnesses = Validators
 
-
-@BlockchainInstance.inject
-class Witnesses(GrapheneWitnesses):
-    """
-    Obtain a list of **active** witnesses and the current schedule.
-
-    :param bool only_active: (False) Only return witnesses that are
-        actively producing blocks
-    :param viz blockchain_instance: Client() instance to use when
-        accesing a RPC
-    """
-
-    def define_classes(self):
-        self.account_class = Account
-        self.witness_class = Witness
+__all__ = ["Witness", "Witnesses"]

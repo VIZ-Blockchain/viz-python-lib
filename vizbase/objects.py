@@ -18,6 +18,7 @@ from .account import PublicKey
 from .chains import DEFAULT_PREFIX, PRECISIONS
 from .exceptions import AssetUnknown
 from .operationids import operations
+from .validator_compat import CHAIN_PROPS_FIELD_ALIASES, translate_kwargs
 
 
 class Operation(GrapheneOperation):
@@ -130,6 +131,12 @@ class ChainProperties(GrapheneObject):
             if len(args) == 1 and len(kwargs) == 0:
                 kwargs = args[0]
 
+            kwargs = translate_kwargs(
+                kwargs,
+                CHAIN_PROPS_FIELD_ALIASES,
+                context="chain_properties_update",
+            )
+
             super().__init__(
                 OrderedDict(
                     [
@@ -150,7 +157,7 @@ class ChainProperties(GrapheneObject):
                             Uint16(kwargs["committee_request_approve_min_percent"]),
                         ),
                         # chain_properties_hf4, version 1
-                        ("inflation_witness_percent", Uint16(kwargs["inflation_witness_percent"])),
+                        ("inflation_validator_percent", Uint16(kwargs["inflation_validator_percent"])),
                         (
                             "inflation_ratio_committee_vs_reward_fund",
                             Uint16(kwargs["inflation_ratio_committee_vs_reward_fund"]),
@@ -161,15 +168,15 @@ class ChainProperties(GrapheneObject):
                             "data_operations_cost_additional_bandwidth",
                             Uint32(kwargs["data_operations_cost_additional_bandwidth"]),
                         ),
-                        ("witness_miss_penalty_percent", Uint16(kwargs["witness_miss_penalty_percent"])),
-                        ("witness_miss_penalty_duration", Uint32(kwargs["witness_miss_penalty_duration"])),
+                        ("validator_miss_penalty_percent", Uint16(kwargs["validator_miss_penalty_percent"])),
+                        ("validator_miss_penalty_duration", Uint32(kwargs["validator_miss_penalty_duration"])),
                         # chain_properties_hf9: version 3
                         ("create_invite_min_balance", Amount(kwargs["create_invite_min_balance"])),
                         ("committee_create_request_fee", Amount(kwargs["committee_create_request_fee"])),
                         ("create_paid_subscription_fee", Amount(kwargs["create_paid_subscription_fee"])),
                         ("account_on_sale_fee", Amount(kwargs["account_on_sale_fee"])),
                         ("subaccount_on_sale_fee", Amount(kwargs["subaccount_on_sale_fee"])),
-                        ("witness_declaration_fee", Amount(kwargs["witness_declaration_fee"])),
+                        ("validator_declaration_fee", Amount(kwargs["validator_declaration_fee"])),
                         ("withdraw_intervals", Uint16(kwargs["withdraw_intervals"])),
                     ]
                 )

@@ -6,9 +6,19 @@ from collections.abc import Iterator
 from graphenecommon.blockchain import Blockchain as GrapheneBlockchain
 
 from vizbase import operationids
+from vizbase.validator_compat import OP_NAME_ALIASES
 
 from .block import Block
 from .instance import BlockchainInstance
+
+
+def _canonical_filter(filter_by):
+    """Translate deprecated witness_* op names to validator_*; pass through others."""
+    if filter_by is None:
+        return None
+    if isinstance(filter_by, str):
+        return OP_NAME_ALIASES.get(filter_by, filter_by)
+    return [OP_NAME_ALIASES.get(name, name) for name in filter_by]
 
 
 @BlockchainInstance.inject
@@ -138,11 +148,11 @@ class Blockchain(GrapheneBlockchain):
 
             {
                 '_id': 'e2fabb498706edfccd1114921f05d95e8fd64e4c',
-                'type': 'witness_reward',
+                'type': 'validator_reward',
                 'timestamp': '2020-05-29T19:07:48',
                 'block_num': 1,
                 'trx_id': '0000000000000000000000000000000000000000',
-                'witness': 'committee',
+                'validator': 'committee',
                 'shares': '0.032999 SHARES',
             }
 
@@ -157,7 +167,7 @@ class Blockchain(GrapheneBlockchain):
                 'op_in_trx': 0,
                 'virtual_op': 1,
                 'timestamp': '2020-05-29T19:28:08',
-                'op': ['witness_reward', {'witness': 'committee', 'shares': '0.032999 SHARES'}],
+                'op': ['validator_reward', {'validator': 'committee', 'shares': '0.032999 SHARES'}],
             }
 
 
@@ -175,6 +185,7 @@ class Blockchain(GrapheneBlockchain):
                 'memo': 'test stream',
             }
         """
+        filter_by = _canonical_filter(filter_by)
         if filter_by is None:
             filter_by = []
 

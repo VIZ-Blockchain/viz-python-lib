@@ -9,18 +9,18 @@ def blockchain(viz):
 
 
 def test_stream_virtual_ops(blockchain):
-    stream = blockchain.stream(start_block=1, end_block=2, filter_by="witness_reward")
+    stream = blockchain.stream(start_block=1, end_block=2, filter_by="validator_reward")
     for op in stream:
-        assert op["type"] == "witness_reward"
+        assert op["type"] == "validator_reward"
         assert "shares" in op
 
 
 def test_stream_virtual_ops_raw_output(blockchain):
-    stream = blockchain.stream(start_block=1, end_block=2, filter_by="witness_reward", raw_output=True)
+    stream = blockchain.stream(start_block=1, end_block=2, filter_by="validator_reward", raw_output=True)
     for op in stream:
         print(op)
         assert "block" in op
-        assert op["op"][0] == "witness_reward"
+        assert op["op"][0] == "validator_reward"
 
 
 def test_stream_real_ops(blockchain, viz, default_account):
