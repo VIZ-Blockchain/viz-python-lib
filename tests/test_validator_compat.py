@@ -477,3 +477,23 @@ def test_filter_canonicalization_helper_handles_list():
         "transfer",
     ]
     assert _canonical_filter([]) == []
+
+
+@pytest.mark.parametrize("old,new", list(OP_NAME_ALIASES.items()))
+def test_every_op_alias_resolves(old, new):
+    from vizbase.operationids import operations
+
+    assert operations[old] == operations[new]
+
+
+@pytest.mark.parametrize("old,new", list(API_METHOD_ALIASES.items()))
+def test_every_api_alias_in_reverse_map(old, new):
+    from vizapi.noderpc import _REVERSE_API_METHOD
+
+    assert _REVERSE_API_METHOD[new] == old
+
+
+@pytest.mark.parametrize("old,new", list(CHAIN_PROPS_FIELD_ALIASES.items()))
+def test_every_chain_props_alias_translatable(old, new):
+    out = translate_kwargs({old: 1}, CHAIN_PROPS_FIELD_ALIASES, context="ctx")
+    assert out == {new: 1}
