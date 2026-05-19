@@ -458,3 +458,12 @@ def test_viz_witness_shim_emits_warning_and_reexports():
 
     assert viz.witness.Witness is Validator
     assert viz.witness.Witnesses is Validators
+
+
+def test_filter_canonicalization_helper():
+    from viz.blockchain import _canonical_filter
+
+    assert _canonical_filter("witness_reward") == "validator_reward"
+    assert _canonical_filter("validator_reward") == "validator_reward"
+    assert _canonical_filter("transfer") == "transfer"
+    assert _canonical_filter(None) is None
