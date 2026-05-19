@@ -16,7 +16,9 @@ def _canonical_filter(filter_by):
     """Translate deprecated witness_* op names to validator_*; pass through others."""
     if filter_by is None:
         return None
-    return OP_NAME_ALIASES.get(filter_by, filter_by)
+    if isinstance(filter_by, str):
+        return OP_NAME_ALIASES.get(filter_by, filter_by)
+    return [OP_NAME_ALIASES.get(name, name) for name in filter_by]
 
 
 @BlockchainInstance.inject

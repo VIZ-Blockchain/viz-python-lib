@@ -467,3 +467,13 @@ def test_filter_canonicalization_helper():
     assert _canonical_filter("validator_reward") == "validator_reward"
     assert _canonical_filter("transfer") == "transfer"
     assert _canonical_filter(None) is None
+
+
+def test_filter_canonicalization_helper_handles_list():
+    from viz.blockchain import _canonical_filter
+
+    assert _canonical_filter(["witness_reward", "transfer"]) == [
+        "validator_reward",
+        "transfer",
+    ]
+    assert _canonical_filter([]) == []
