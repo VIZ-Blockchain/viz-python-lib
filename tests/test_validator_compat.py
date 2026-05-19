@@ -444,3 +444,17 @@ def test_validator_class_importable():
 
     assert issubclass(Validator, GrapheneWitness)
     assert issubclass(Validators, GrapheneWitnesses)
+
+
+def test_viz_witness_shim_emits_warning_and_reexports():
+    import sys
+
+    sys.modules.pop("viz.witness", None)
+
+    with pytest.warns(DeprecationWarning, match=r"viz.witness is deprecated"):
+        import viz.witness  # noqa: F401
+
+    from viz.validator import Validator, Validators
+
+    assert viz.witness.Witness is Validator
+    assert viz.witness.Witnesses is Validators
