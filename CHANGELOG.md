@@ -2,6 +2,20 @@
 
 We follow [Semantic Versions](https://semver.org/).
 
+## Unreleased
+
+- HF14 (Onix) Prediction Markets support:
+  - Serializers for all 23 broadcastable `pm_*` operations and `set_reward_sharing`;
+    `operationids.py` extended to match the node's `pm`-branch operation order
+    (op-id == static_variant index)
+  - `versioned_chain_properties` variants 4 (`chain_properties_hf13`) and 5
+    (`chain_properties_pm`, ~47 PM governance params); variant auto-selected from
+    the fields present
+  - `prediction_market_api` read methods registered in the RPC API map
+- Serialization verified byte-for-byte against viz-php-lib and the live testnet
+  node's `get_transaction_hex` (23 PM ops + chain-props v3/v4/v5); regression
+  tests added for op-ids and byte output
+
 ## Version 1.2.0
 
 - Drop Python 3.8 and 3.9 support (both EOL); minimum is now 3.10
