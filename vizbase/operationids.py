@@ -68,6 +68,49 @@ OPS = [
     "target_account_sale",
     "bid",
     "outbid",
+    "set_reward_sharing",
+    "stakeholder_reward",
+    # HF14 Prediction Markets (Onix). Order = the single `operation` static_variant in
+    # libraries/protocol/include/graphene/protocol/operations.hpp on the `pm` branch; the
+    # variant index IS the consensus op-id. Virtual ops (never broadcast, no serializer) MUST
+    # stay listed in-place so the broadcastable ids keep their exact offsets.
+    "pm_oracle_register",          # 66
+    "pm_oracle_update",            # 67
+    "pm_create_market",            # 68
+    "pm_oracle_accept_market",     # 69
+    "pm_place_bet",                # 70
+    "pm_commit_bet",               # 71
+    "pm_reveal_bet",               # 72
+    "pm_cancel_bet",               # 73
+    "pm_add_liquidity",            # 74
+    "pm_withdraw_liquidity",       # 75
+    "pm_resolve_market",           # 76
+    "pm_no_contest",               # 77
+    "pm_dispute_create",           # 78
+    "pm_dispute_vote",             # 79
+    "pm_dispute_resolve",          # 80
+    "pm_transfer_position",        # 81
+    "pm_lazy_deposit",             # 82
+    "pm_lazy_withdraw",            # 83
+    "pm_batch_settle",             # 84 (virtual)
+    "pm_commit_forfeit",           # 85 (virtual)
+    "pm_auto_payout",              # 86 (virtual)
+    "pm_dispute_finalize",         # 87 (virtual)
+    "pm_dispute_auto_close",       # 88 (virtual)
+    "pm_oracle_missed_penalty",    # 89 (virtual)
+    "pm_lazy_recall",              # 90 (virtual)
+    "pm_leverage_open",            # 91
+    "pm_leverage_close",           # 92
+    "pm_leverage_convert",         # 93
+    "pm_leverage_liquidate",       # 94 (virtual)
+    "pm_leverage_resolve",         # 95 (virtual)
+    "pm_market_accepted",          # 96 (virtual)
+    "pm_payout",                   # 97 (virtual)
+    "pm_dispute_oracle_respond",   # 98
+    "pm_unban",                    # 99
+    "pm_ban_expired",              # 100 (virtual)
+    "pm_market_expired",           # 101 (virtual)
+    "pm_dispute_opened",           # 102 (virtual)
 ]
 operations = {o: OPS.index(o) for o in OPS}
 
@@ -100,4 +143,19 @@ VIRTUAL_OPS = [
     "expire_escrow_ratification",
     "bid",
     "outbid",
+    "stakeholder_reward",
+    "pm_batch_settle",
+    "pm_commit_forfeit",
+    "pm_auto_payout",
+    "pm_dispute_finalize",
+    "pm_dispute_auto_close",
+    "pm_oracle_missed_penalty",
+    "pm_lazy_recall",
+    "pm_leverage_liquidate",
+    "pm_leverage_resolve",
+    "pm_market_accepted",
+    "pm_payout",
+    "pm_ban_expired",
+    "pm_market_expired",
+    "pm_dispute_opened",
 ]
