@@ -50,7 +50,13 @@ class TestSerialization:
         self.do_test(op)
 
     @pytest.mark.xfail(
-        reason="testnet image pr-85-merge predates witness->validator rename; awaiting vizd:latest rebuild",
+        reason="local docker test node (vizblockchain/vizd:pr-85-merge) predates the "
+        "witness->validator rename, so its get_transaction_hex rejects validator_* prop "
+        "names. The vizd:pm image has the new schema but a different genesis (test accounts/"
+        "keys absent -> MissingKeyError across the stateful suite), so it is not a drop-in "
+        "swap. Needs a rebuilt image with the new schema AND the test genesis. NOTE: the "
+        "serializer itself is verified -- v3/v4/v5 match viz-php-lib byte-for-byte "
+        "(test_versioned_chain_properties.py) and the live testnet node's get_transaction_hex.",
         strict=False,
     )
     def test_versioned_chain_properties_update(self):
