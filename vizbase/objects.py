@@ -229,6 +229,7 @@ def _chain_properties_pm_items(kwargs):
         ("pm_leverage_funding_rate_ppm_per_day", Uint32(kwargs["pm_leverage_funding_rate_ppm_per_day"])),
         ("pm_conversion_profit_cost_percent", Uint16(kwargs["pm_conversion_profit_cost_percent"])),
         ("pm_closed_market_retention_sec", Uint32(kwargs["pm_closed_market_retention_sec"])),
+        ("pm_early_exit_reward_cap_percent", Uint16(kwargs["pm_early_exit_reward_cap_percent"])),
     ]
 
 
