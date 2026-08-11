@@ -144,6 +144,7 @@ API = {
     "get_lazy_allocations": "prediction_market_api",
     "get_market_lazy_allocation": "prediction_market_api",
     "get_lazy_withdraw_requests": "prediction_market_api",
+    "get_account_commits": "prediction_market_api",
     "get_pm_chain_properties": "prediction_market_api",
     "test_api_a": "test_api",
     "test_api_b": "test_api",
