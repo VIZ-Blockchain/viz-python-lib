@@ -230,6 +230,11 @@ def _chain_properties_pm_items(kwargs):
         ("pm_conversion_profit_cost_percent", Uint16(kwargs["pm_conversion_profit_cost_percent"])),
         ("pm_closed_market_retention_sec", Uint32(kwargs["pm_closed_market_retention_sec"])),
         ("pm_early_exit_reward_cap_percent", Uint16(kwargs["pm_early_exit_reward_cap_percent"])),
+        # #432: minimum bet of the instant path and the per-block row budget of the incremental
+        # settlement sweep. Appended at the END, matching FC_REFLECT_DERIVED(chain_properties_pm)
+        # in the node — this list IS the wire order.
+        ("pm_min_bet", Amount(kwargs["pm_min_bet"])),
+        ("pm_settle_rows_per_block", Uint32(kwargs["pm_settle_rows_per_block"])),
     ]
 
 

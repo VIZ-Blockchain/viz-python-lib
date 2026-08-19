@@ -90,6 +90,10 @@ _PM = {
     "pm_conversion_profit_cost_percent": 50,
     "pm_closed_market_retention_sec": 432000,
     "pm_early_exit_reward_cap_percent": 3300,
+    # #432: appended at the end of chain_properties_pm in the node, so they are the last two
+    # fields on the wire as well.
+    "pm_min_bet": "1.000 VIZ",
+    "pm_settle_rows_per_block": 2000,
 }
 
 _V4_HEX = (
@@ -110,6 +114,9 @@ _V5_HEX = (
     "0f00000000000356495a00000000c0a80000c0a800000075120080f40300e803f40188133075000014000000c8000000d"
     "007e8030000000000000356495a0000000001c800000001d007581b803a0900e8038813c800000a0014000a0001000a00"
     "404b4c00000000000356495a00000000050080510100320032000000320080970600e40c"
+    # #432 tail: pm_min_bet = 1.000 VIZ (int64 1000 | precision 3 | "VIZ" padded to 7 bytes),
+    # then pm_settle_rows_per_block = 2000 as uint32.
+    "e8030000000000000356495a00000000d0070000"
 )
 
 
