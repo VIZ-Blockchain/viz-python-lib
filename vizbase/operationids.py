@@ -111,6 +111,8 @@ OPS = [
     "pm_ban_expired",              # 100 (virtual)
     "pm_market_expired",           # 101 (virtual)
     "pm_dispute_opened",           # 102 (virtual)
+    "pm_early_exit_claim_paid",    # 103 (virtual)
+    "pm_lp_payout",                # 104 (virtual)
 ]
 operations = {o: OPS.index(o) for o in OPS}
 
@@ -158,4 +160,6 @@ VIRTUAL_OPS = [
     "pm_ban_expired",
     "pm_market_expired",
     "pm_dispute_opened",
+    "pm_early_exit_claim_paid",
+    "pm_lp_payout",
 ]

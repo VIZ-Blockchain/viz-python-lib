@@ -39,6 +39,8 @@ PM_OP_IDS = {
     "pm_dispute_oracle_respond": 98,
     "pm_unban": 99,
     "pm_dispute_opened": 102,  # virtual, id only
+    "pm_early_exit_claim_paid": 103,  # virtual, id only (F1/#300)
+    "pm_lp_payout": 104,  # virtual, id only (#442/#681)
 }
 
 
