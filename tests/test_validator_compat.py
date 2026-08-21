@@ -264,8 +264,6 @@ CHAIN_PROPS_NEW = {
     "subaccount_on_sale_fee": "1.000 VIZ",
     "validator_declaration_fee": "1.000 VIZ",
     "withdraw_intervals": 10,
-    "committee_votes_per_request": 100000,
-    "committee_vote_min_vesting": "1000.000 VIZ",
 }
 
 CHAIN_PROPS_OLD = {

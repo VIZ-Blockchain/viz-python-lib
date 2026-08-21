@@ -168,8 +168,6 @@ def _chain_properties_hf9_items(kwargs):
         ("subaccount_on_sale_fee", Amount(kwargs["subaccount_on_sale_fee"])),
         ("validator_declaration_fee", Amount(kwargs["validator_declaration_fee"])),
         ("withdraw_intervals", Uint16(kwargs["withdraw_intervals"])),
-        ("committee_votes_per_request", Uint32(kwargs["committee_votes_per_request"])),
-        ("committee_vote_min_vesting", Amount(kwargs["committee_vote_min_vesting"])),
     ]
 
 
@@ -237,6 +235,8 @@ def _chain_properties_pm_items(kwargs):
         # in the node — this list IS the wire order.
         ("pm_min_bet", Amount(kwargs["pm_min_bet"])),
         ("pm_settle_rows_per_block", Uint32(kwargs["pm_settle_rows_per_block"])),
+        ("committee_votes_per_request", Uint32(kwargs["committee_votes_per_request"])),
+        ("committee_vote_min_vesting", Amount(kwargs["committee_vote_min_vesting"])),
         ("pm_dispute_votes_per_market", Uint32(kwargs["pm_dispute_votes_per_market"])),
         ("pm_dispute_vote_min_vesting", Amount(kwargs["pm_dispute_vote_min_vesting"])),
     ]
