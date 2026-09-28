@@ -1025,6 +1025,32 @@ class Pm_unban(GrapheneObject):
         )
 
 
+class Set_agent_permission(GrapheneObject):
+    """105 — HF15 agent access (active: account). Empty operations and addons =
+    revoke; expiration epoch = perpetual. Sets are flat_set<string> on the node,
+    so they are sorted and de-duplicated before serialization."""
+
+    def __init__(self, *args, **kwargs):
+        kw = _prep_kwargs(self, args, kwargs)
+        if kw is None:
+            self.data = args[0].data
+            return
+        prefix = kw.get("prefix", DEFAULT_PREFIX)
+        super().__init__(
+            OrderedDict(
+                [
+                    ("account", String(kw["account"])),
+                    ("agent_name", String(kw["agent_name"])),
+                    ("agent_key", PublicKey(kw["agent_key"], prefix=prefix)),
+                    ("operations", Array([String(o) for o in sorted(set(kw.get("operations") or []))])),
+                    ("expiration", PointInTime(kw.get("expiration") or "1970-01-01T00:00:00")),
+                    ("addons", Array([String(a) for a in sorted(set(kw.get("addons") or []))])),
+                    ("extensions", Array([])),
+                ]
+            )
+        )
+
+
 # Deprecated witness-named aliases. Subclasses that warn once per process
 # on first instantiation. Remove during Phase C cleanup.
 Witness_update = _DeprecatedAlias.make("Witness_update", Validator_update)

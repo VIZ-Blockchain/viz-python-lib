@@ -195,3 +195,33 @@ PM_CASES = [
 @pytest.mark.parametrize("name,kwargs,expected", PM_CASES)
 def test_pm_op_serialization(name, kwargs, expected):
     assert bytes(Operation([name, kwargs])).hex() == expected
+
+
+# HF15 agent access (op-id 105). Expected hex == viz-php-lib build_set_agent_permission.
+AGENT_KEY = "VIZ7oJEnuvoyrEkUL63V3xM6aCYhzCsnov8kLhxGnbJh1Gva8EdPW"
+
+
+def test_set_agent_permission_id():
+    assert Operation("set_agent_permission").id == 105
+
+
+@pytest.mark.parametrize(
+    "kwargs,expected",
+    [
+        (
+            # unsorted input: flat_set on the node, so the lib must sort
+            {"account": "alice", "agent_name": "bot-1", "agent_key": AGENT_KEY,
+             "operations": ["transfer", "pm_place_bet"], "expiration": "2030-01-01T00:00:00", "addons": ["vizhub"]},
+            "6905616c69636505626f742d31037f4ccf1fbf6ac708bd357dc400c7640cf908578294a520d287dbbbf4a00bfc5102"
+            "0c706d5f706c6163655f626574087472616e7366657280d8db70010676697a68756200",
+        ),
+        (
+            # revoke: null key, empty lists, epoch expiration
+            {"account": "alice", "agent_name": "bot-1", "agent_key": "VIZ1111111111111111111111111111111114T1Anm"},
+            "6905616c69636505626f742d31" + "00" * 33 + "00" + "00000000" + "00" + "00",
+        ),
+    ],
+)
+def test_set_agent_permission_bytes(kwargs, expected):
+    from binascii import hexlify
+    assert hexlify(bytes(Operation(["set_agent_permission", kwargs]))).decode() == expected

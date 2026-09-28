@@ -4,6 +4,8 @@ We follow [Semantic Versions](https://semver.org/).
 
 ## Unreleased
 
+- HF15: `set_agent_permission` (op-id 105) serializer, byte-identical to viz-php-lib;
+  read-API `get_agent_permissions`, `get_key_history`, `get_key_history_by_key`
 - HF14 (Onix) Prediction Markets support:
   - Serializers for all 23 broadcastable `pm_*` operations and `set_reward_sharing`;
     `operationids.py` extended to match the node's `pm`-branch operation order

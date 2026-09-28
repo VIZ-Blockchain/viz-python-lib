@@ -113,6 +113,7 @@ OPS = [
     "pm_dispute_opened",           # 102 (virtual)
     "pm_early_exit_claim_paid",    # 103 (virtual)
     "pm_lp_payout",                # 104 (virtual)
+    "set_agent_permission",        # 105 (HF15)
 ]
 operations = {o: OPS.index(o) for o in OPS}
 
