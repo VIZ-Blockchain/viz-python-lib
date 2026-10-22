@@ -47,8 +47,15 @@ class Blockchain(GrapheneBlockchain):
         self.operationids = operationids
 
     def get_block_interval(self) -> int:
-        """Override class from graphenelib because our API is different."""
-        return self.blockchain.rpc.config.get("CHAIN_BLOCK_INTERVAL")
+        """Override class from graphenelib because our API is different.
+
+        Asked live, not from the config cached at connect: since HF16 the node reports the
+        CURRENT slot (3 s before the fork, 1 s after), so a cached value goes stale at the fork.
+        """
+        try:
+            return int(self.blockchain.rpc.get_config()["CHAIN_BLOCK_INTERVAL"])
+        except Exception:
+            return self.blockchain.rpc.config.get("CHAIN_BLOCK_INTERVAL")
 
     def stream_from(
         self,
