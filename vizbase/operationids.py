@@ -114,6 +114,7 @@ OPS = [
     "pm_early_exit_claim_paid",    # 103 (virtual)
     "pm_lp_payout",                # 104 (virtual)
     "set_agent_permission",        # 105 (HF15)
+    "validator_equivocation",      # 106 (virtual, HF16 QC)
 ]
 operations = {o: OPS.index(o) for o in OPS}
 
@@ -163,4 +164,5 @@ VIRTUAL_OPS = [
     "pm_dispute_opened",
     "pm_early_exit_claim_paid",
     "pm_lp_payout",
+    "validator_equivocation",
 ]
