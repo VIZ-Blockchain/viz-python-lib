@@ -42,10 +42,10 @@ docker = "^7.2.0"
 
 
 [tool.poetry.group.dev.dependencies]
-pre-commit = [
-    { version = "^4.6.2", python = ">=3.10,<3.11" },
-    { version = "^4.7.0", python = ">=3.11" },
-]
+# Patched filelock requires Python 3.11+. Keep runtime/test support for 3.10,
+# but run the optional pre-commit tooling on a supported patched interpreter.
+pre-commit = { version = "^4.7.0", python = ">=3.11" }
+filelock = { version = ">=4.2.1,<5", python = ">=3.11" }
 ruff = "^0.17.2"
 mypy = "^2.4"
 pytest = "^9.1.1"
