@@ -175,3 +175,14 @@ and then use the following commands:
 export CFLAGS="-I$(brew --prefix openssl)/include"
 export LDFLAGS="-L$(brew --prefix openssl)/lib"
 ```
+
+## HF16 compatibility
+
+The block stream reads the current block interval from the node, including the
+3-second to 1-second HF16 transition. Block and header API responses retain QC,
+timeout and equivocation extensions as JSON; this library does not serialize or
+sign block headers. `validator_equivocation` is virtual operation 106.
+
+`committee_worker_create_request` uses the existing transaction wire format.
+From HF16 the node limits the maximum requested amount to 1% of `current_supply`
+at creation (rounded down to the smallest VIZ unit), rather than a fixed 500,000 VIZ.

@@ -2,6 +2,15 @@
 
 We follow [Semantic Versions](https://semver.org/).
 
+## Version 1.4.0
+
+- Refresh all runtime, development and documentation dependencies and regenerate the lockfile.
+  Keep Python 3.10 support with explicit latest-compatible Sphinx/pre-commit variants.
+- Add DAO request serialization without the obsolete fixed 500,000 VIZ client ceiling;
+  the node checks the HF16 limit (1% of current supply). Wire bytes match the PHP library.
+- Pin HF16 virtual-operation index 106 and live block-interval changes in offline tests.
+- Update Ruff/mypy hooks and documentation tooling.
+
 ## Unreleased
 
 - HF15: `set_agent_permission` (op-id 105) serializer, byte-identical to viz-php-lib;

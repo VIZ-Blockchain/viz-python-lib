@@ -1051,6 +1051,26 @@ class Set_agent_permission(GrapheneObject):
         )
 
 
+class Committee_worker_create_request(GrapheneObject):
+    """DAO request. HF16's supply-dependent ceiling is enforced by the node."""
+
+    def __init__(self, *args, **kwargs):
+        kw = _prep_kwargs(self, args, kwargs)
+        if kw is None:
+            self.data = args[0].data
+            return
+        super().__init__(
+            OrderedDict([
+                ("creator", String(kw["creator"])),
+                ("url", String(kw["url"])),
+                ("worker", String(kw["worker"])),
+                ("required_amount_min", Amount(kw["required_amount_min"])),
+                ("required_amount_max", Amount(kw["required_amount_max"])),
+                ("duration", Uint32(kw["duration"])),
+            ])
+        )
+
+
 # Deprecated witness-named aliases. Subclasses that warn once per process
 # on first instantiation. Remove during Phase C cleanup.
 Witness_update = _DeprecatedAlias.make("Witness_update", Validator_update)
