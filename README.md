@@ -15,7 +15,7 @@ viz = Client(node=node, keys=["5...your_private_regular_key..."])
 
 initiator = "your_account"
 receiver = "id"
-percent = 10.5 # 10.5%
+percent = 10.5  # 10.5%
 viz.award(receiver, percent, "with love", None, initiator)
 ```
 
@@ -29,8 +29,8 @@ viz = Client(node=node, keys=["5...your_private_regular_key..."])
 
 initiator = "your_account"
 receiver = "id"
-reward_amount = 3.5 # "3.50 VIZ"
-max_energy = 30 # 30%
+reward_amount = 3.5  # "3.50 VIZ"
+max_energy = 30  # 30%
 viz.fixed_award(receiver, reward_amount, max_energy, "with fixed reward", None, initiator)
 ```
 
@@ -73,7 +73,7 @@ bet = operations.Pm_place_bet(
     outcome_index=-1,
     amount="1.500 VIZ",
     min_tokens=0,  # slippage floor (0 = none)
-    mode=0,        # 0 instant, 1 batch
+    mode=0,  # 0 instant, 1 batch
 )
 viz.finalizeOp(bet, account, "active")
 ```
@@ -81,6 +81,28 @@ viz.finalizeOp(bet, account, "active")
 Chain governance uses the versioned variant: `versioned_chain_properties_update`
 serializes variant 3 (`chain_properties_hf9`), 4 (`chain_properties_hf13`) or 5
 (`chain_properties_pm`, the HF14 PM params) automatically from the fields you pass.
+
+### Agent keys (HF15)
+
+An agent is a label plus a public key that may sign an explicit list of a principal's
+operations. It never appears in the account's authorities, so check "authority OR agent":
+
+```python
+from viz import Client, agent
+
+viz = Client(node="wss://node.viz.cx/ws")
+
+result = agent.check("alice", "VIZ...public_key...", "transfer", blockchain_instance=viz)
+# {"allowed": True, "source": "agent", "role": None, "agent": {...row...}, "operation": "transfer"}
+
+# off-chain scope of your own service
+row = agent.find("alice", "VIZ...public_key...", viz)
+if row and agent.addon_matches(row, "my-service"):
+    ...
+```
+
+Grant or revoke with `operations.Set_agent_permission` via `finalizeOp(op, account, "active")`.
+To broadcast as an agent, sign with the agent key directly: `tx.appendWif(agent_wif)`.
 
 ### Get data from custom protocol
 

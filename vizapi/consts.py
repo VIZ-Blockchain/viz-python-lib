@@ -17,7 +17,8 @@ API = {
     "lookup_account_names": "database_api",
     "lookup_accounts": "database_api",
     "get_account_count": "database_api",
-    "get_owner_history": "database_api",
+    "get_owner_history": "database_api",  # pre-rename nodes
+    "get_master_history": "database_api",
     "get_agent_permissions": "database_api",
     "get_key_history": "database_api",
     "get_key_history_by_key": "database_api",
@@ -147,6 +148,7 @@ API = {
     "get_lazy_allocations": "prediction_market_api",
     "get_market_lazy_allocation": "prediction_market_api",
     "get_lazy_withdraw_requests": "prediction_market_api",
+    "get_deferred_claims": "prediction_market_api",
     "get_account_commits": "prediction_market_api",
     "get_pm_chain_properties": "prediction_market_api",
     "test_api_a": "test_api",

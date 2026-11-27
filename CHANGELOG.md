@@ -10,6 +10,10 @@ We follow [Semantic Versions](https://semver.org/).
   the node checks the HF16 limit (1% of current supply). Wire bytes match the PHP library.
 - Pin HF16 virtual-operation index 106 and live block-interval changes in offline tests.
 - Update Ruff/mypy hooks and documentation tooling.
+- Add `viz.agent`: read-side helper for HF15 agent keys (`check`, `find`, `has`, `grants`,
+  `addon_matches`, ...), mirroring `agent.js` of viz-js-lib and `VIZ\\Agent` of viz-php-lib.
+- Route `get_deferred_claims` (`prediction_market_api`) and `get_master_history`
+  (`database_api`, the node's current name of `get_owner_history`).
 
 ## Unreleased
 
