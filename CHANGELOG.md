@@ -11,12 +11,9 @@ We follow [Semantic Versions](https://semver.org/).
 - Pin HF16 virtual-operation index 106 and live block-interval changes in offline tests.
 - Update Ruff/mypy hooks and documentation tooling.
 - Add `viz.agent`: read-side helper for HF15 agent keys (`check`, `find`, `has`, `grants`,
-  `addon_matches`, ...), mirroring `agent.js` of viz-js-lib and `VIZ\\Agent` of viz-php-lib.
+  `addon_matches`, ...), mirroring `agent.js` of viz-js-lib and `VIZ\Agent` of viz-php-lib.
 - Route `get_deferred_claims` (`prediction_market_api`) and `get_master_history`
   (`database_api`, the node's current name of `get_owner_history`).
-
-## Unreleased
-
 - HF15: `set_agent_permission` (op-id 105) serializer, byte-identical to viz-php-lib;
   read-API `get_agent_permissions`, `get_key_history`, `get_key_history_by_key`
 - HF14 (Onix) Prediction Markets support:
