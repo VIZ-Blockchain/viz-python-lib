@@ -2,10 +2,13 @@
 
 We follow [Semantic Versions](https://semver.org/).
 
-## Unreleased
+## Version 1.4.2
 
 - Fix `Account.virtual_op_count()` (and `history_reverse()`) on nodes that reject
   `get_account_history` with `limit=0` (viz-cpp-node since 2026-03).
+- Package metadata moved to the standard `[project]` table: SPDX license expression,
+  no longer advertises untested Python 3.15.
+- Releases now also create a GitHub Release with the wheel and sdist attached.
 
 ## Version 1.4.1
 
