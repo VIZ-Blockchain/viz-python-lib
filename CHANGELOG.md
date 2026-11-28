@@ -28,6 +28,19 @@ We follow [Semantic Versions](https://semver.org/).
   node's `get_transaction_hex` (23 PM ops + chain-props v3/v4/v5); regression
   tests added for op-ids and byte output
 
+## Version 1.3.0
+
+- Witness → validator rename, following the node. Operations, chain-property fields and
+  `validator_api` methods use the new names on the wire:
+  - `Validator_update`, `Account_validator_vote`; `viz.validator` with `Validator`/`Validators`
+  - Old names (`Witness_update`, `Account_witness_vote`, `witness=` kwargs, `viz.witness`)
+    still work and emit `DeprecationWarning`
+  - The RPC dispatcher translates old `witness_*` method names and falls back to `witness_api`
+    on nodes that predate the rename
+- Add `NoSuchMethod` exception for method-not-found RPC errors
+- `Blockchain.stream(filter_by=...)` accepts old and new operation names, including lists
+- Bump idna 3.13 → 3.15 and aiohttp 3.13.5 → 3.14.0
+
 ## Version 1.2.0
 
 - Drop Python 3.8 and 3.9 support (both EOL); minimum is now 3.10
