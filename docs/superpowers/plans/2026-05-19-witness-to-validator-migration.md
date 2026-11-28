@@ -49,6 +49,7 @@ Create `tests/test_validator_compat.py` with this content:
 
 ```python
 """Unit tests for the witness -> validator compatibility layer."""
+
 import warnings
 
 import pytest
@@ -156,6 +157,7 @@ def test_pick_default_when_none_present():
 def test_pick_works_on_objects_with_attributes():
     class O:
         current_validator = "alice"
+
     assert pick(O(), "current_validator", "current_witness") == "alice"
 ```
 
@@ -175,42 +177,43 @@ Witness -> Validator migration compatibility layer.
 Single source of truth for old -> new name translation. When the migration
 is complete (Phase C), delete this file and remove all imports from it.
 """
+
 import warnings
 
 # Wire-format op name aliases (old -> new).
 OP_NAME_ALIASES = {
-    "witness_update":         "validator_update",
-    "account_witness_vote":   "account_validator_vote",
-    "account_witness_proxy":  "account_validator_proxy",
-    "shutdown_witness":       "shutdown_validator",
-    "witness_reward":         "validator_reward",
+    "witness_update": "validator_update",
+    "account_witness_vote": "account_validator_vote",
+    "account_witness_proxy": "account_validator_proxy",
+    "shutdown_witness": "shutdown_validator",
+    "witness_reward": "validator_reward",
 }
 
 # JSON-RPC API method aliases (old -> new).
 API_METHOD_ALIASES = {
-    "get_active_witnesses":           "get_active_validators",
-    "get_witness_schedule":           "get_validator_schedule",
-    "get_witnesses":                  "get_validators",
-    "get_witness_by_account":         "get_validator_by_account",
-    "get_witnesses_by_vote":          "get_validators_by_vote",
-    "get_witnesses_by_counted_vote":  "get_validators_by_counted_vote",
-    "get_witness_count":              "get_validator_count",
-    "lookup_witness_accounts":        "lookup_validator_accounts",
-    "debug_get_witness_schedule":     "debug_get_validator_schedule",
+    "get_active_witnesses": "get_active_validators",
+    "get_witness_schedule": "get_validator_schedule",
+    "get_witnesses": "get_validators",
+    "get_witness_by_account": "get_validator_by_account",
+    "get_witnesses_by_vote": "get_validators_by_vote",
+    "get_witnesses_by_counted_vote": "get_validators_by_counted_vote",
+    "get_witness_count": "get_validator_count",
+    "lookup_witness_accounts": "lookup_validator_accounts",
+    "debug_get_witness_schedule": "debug_get_validator_schedule",
 }
 
 # Chain-properties field aliases (old -> new). Applies to chain_properties_hf4/hf6/hf9.
 CHAIN_PROPS_FIELD_ALIASES = {
-    "inflation_witness_percent":      "inflation_validator_percent",
-    "witness_miss_penalty_percent":   "validator_miss_penalty_percent",
-    "witness_miss_penalty_duration":  "validator_miss_penalty_duration",
-    "witness_declaration_fee":        "validator_declaration_fee",
+    "inflation_witness_percent": "inflation_validator_percent",
+    "witness_miss_penalty_percent": "validator_miss_penalty_percent",
+    "witness_miss_penalty_duration": "validator_miss_penalty_duration",
+    "witness_declaration_fee": "validator_declaration_fee",
 }
 
 # Per-op kwarg field aliases (old -> new), keyed by canonical new op name.
 OP_FIELD_ALIASES = {
     "account_validator_vote": {"witness": "validator"},
-    "validator_reward":       {"witness": "validator"},  # virtual op; reserved for future use
+    "validator_reward": {"witness": "validator"},  # virtual op; reserved for future use
 }
 
 
@@ -227,7 +230,8 @@ def translate_kwargs(kwargs: dict, alias_map: dict, *, context: str) -> dict:
         if old in out:
             warnings.warn(
                 f"{context}: '{old}' is deprecated; use '{new}' instead",
-                DeprecationWarning, stacklevel=3,
+                DeprecationWarning,
+                stacklevel=3,
             )
             if new not in out:
                 out[new] = out.pop(old)
@@ -278,6 +282,7 @@ Append to `tests/test_validator_compat.py`:
 ```python
 def test_operations_dict_has_new_names():
     from vizbase.operationids import operations
+
     assert operations["validator_update"] == 6
     assert operations["account_validator_vote"] == 7
     assert operations["account_validator_proxy"] == 8
@@ -287,6 +292,7 @@ def test_operations_dict_has_new_names():
 
 def test_operations_dict_has_old_name_aliases():
     from vizbase.operationids import operations
+
     assert operations["witness_update"] == operations["validator_update"] == 6
     assert operations["account_witness_vote"] == operations["account_validator_vote"] == 7
     assert operations["account_witness_proxy"] == operations["account_validator_proxy"] == 8
@@ -297,6 +303,7 @@ def test_operations_dict_has_old_name_aliases():
 def test_ops_list_order_preserved():
     """Operation type IDs are positional; renaming must not shift indices."""
     from vizbase.operationids import OPS
+
     assert OPS.index("transfer") == 2
     assert OPS.index("account_update") == 5
     assert OPS.index("validator_update") == 6
@@ -448,6 +455,7 @@ Append to `tests/test_validator_compat.py`:
 ```python
 def test_validator_update_class_exists_and_serializes():
     from vizbase.operations import Validator_update
+
     op = Validator_update(
         owner="alice",
         url="https://alice.example",
@@ -461,12 +469,15 @@ def test_validator_update_class_exists_and_serializes():
 
 def test_witness_update_alias_emits_deprecation_warning_once():
     from vizbase.operations import _DeprecatedAlias
+
     _DeprecatedAlias._warned.discard("Witness_update")
 
     from vizbase.operations import Validator_update, Witness_update
+
     with pytest.warns(DeprecationWarning, match=r"Witness_update is deprecated"):
         op1 = Witness_update(
-            owner="alice", url="https://x",
+            owner="alice",
+            url="https://x",
             block_signing_key="VIZ1111111111111111111111111111111114T1Anm",
         )
     assert isinstance(op1, Validator_update)
@@ -475,13 +486,15 @@ def test_witness_update_alias_emits_deprecation_warning_once():
     with warnings.catch_warnings():
         warnings.simplefilter("error")
         Witness_update(
-            owner="alice", url="https://x",
+            owner="alice",
+            url="https://x",
             block_signing_key="VIZ1111111111111111111111111111111114T1Anm",
         )
 
 
 def test_witness_update_and_validator_update_serialize_identically():
     from vizbase.operations import Validator_update, Witness_update
+
     kwargs = dict(
         owner="alice",
         url="https://alice.example",
@@ -521,7 +534,8 @@ class _DeprecatedAlias:
                 if old_name not in warned:
                     warnings.warn(
                         f"{old_name} is deprecated; use {new_class.__name__} instead",
-                        DeprecationWarning, stacklevel=2,
+                        DeprecationWarning,
+                        stacklevel=2,
                     )
                     warned.add(old_name)
                 super().__init__(*args, **kwargs)
@@ -591,6 +605,7 @@ Append to `tests/test_validator_compat.py`:
 ```python
 def test_account_validator_vote_serializes_new_kwargs():
     from vizbase.operations import Account_validator_vote
+
     op = Account_validator_vote(account="alice", validator="bob", approve=True)
     j = op.json()
     assert j == {"account": "alice", "validator": "bob", "approve": True}
@@ -598,6 +613,7 @@ def test_account_validator_vote_serializes_new_kwargs():
 
 def test_account_validator_vote_accepts_old_witness_kwarg_with_warning():
     from vizbase.operations import Account_validator_vote
+
     with pytest.warns(DeprecationWarning, match=r"'witness' is deprecated"):
         op = Account_validator_vote(account="alice", witness="bob", approve=True)
     j = op.json()
@@ -606,9 +622,11 @@ def test_account_validator_vote_accepts_old_witness_kwarg_with_warning():
 
 def test_account_witness_vote_alias_class_works():
     from vizbase.operations import _DeprecatedAlias
+
     _DeprecatedAlias._warned.discard("Account_witness_vote")
 
     from vizbase.operations import Account_validator_vote, Account_witness_vote
+
     with pytest.warns(DeprecationWarning):
         op = Account_witness_vote(account="alice", witness="bob", approve=True)
     assert isinstance(op, Account_validator_vote)
@@ -617,6 +635,7 @@ def test_account_witness_vote_alias_class_works():
 
 def test_account_validator_vote_old_and_new_serialize_identically():
     from vizbase.operations import Account_validator_vote
+
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         a = bytes(Account_validator_vote(account="alice", validator="bob", approve=True))
@@ -723,13 +742,17 @@ CHAIN_PROPS_NEW = {
 }
 
 CHAIN_PROPS_OLD = {
-    **{k: v for k, v in CHAIN_PROPS_NEW.items()
-       if k not in {
-           "inflation_validator_percent",
-           "validator_miss_penalty_percent",
-           "validator_miss_penalty_duration",
-           "validator_declaration_fee",
-       }},
+    **{
+        k: v
+        for k, v in CHAIN_PROPS_NEW.items()
+        if k
+        not in {
+            "inflation_validator_percent",
+            "validator_miss_penalty_percent",
+            "validator_miss_penalty_duration",
+            "validator_declaration_fee",
+        }
+    },
     "inflation_witness_percent": 1000,
     "witness_miss_penalty_percent": 1000,
     "witness_miss_penalty_duration": 3600,
@@ -739,12 +762,14 @@ CHAIN_PROPS_OLD = {
 
 def test_chain_properties_serializes_with_new_field_names():
     from vizbase.operations import Versioned_chain_properties_update
+
     op = Versioned_chain_properties_update(owner="alice", props=CHAIN_PROPS_NEW)
     bytes(op)
 
 
 def test_chain_properties_old_field_names_warn_and_serialize_identically():
     from vizbase.operations import Versioned_chain_properties_update
+
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         new_bytes = bytes(Versioned_chain_properties_update(owner="alice", props=CHAIN_PROPS_NEW))
@@ -772,57 +797,59 @@ from .validator_compat import CHAIN_PROPS_FIELD_ALIASES, translate_kwargs
 In the chain-properties `__init__` (around lines 130-176), insert a `translate_kwargs` call before the `OrderedDict` build, and rename the four field names. The full block becomes:
 
 ```python
-            if len(args) == 1 and len(kwargs) == 0:
-                kwargs = args[0]
+if len(args) == 1 and len(kwargs) == 0:
+    kwargs = args[0]
 
-            kwargs = translate_kwargs(
-                kwargs, CHAIN_PROPS_FIELD_ALIASES, context="chain_properties_update",
-            )
+kwargs = translate_kwargs(
+    kwargs,
+    CHAIN_PROPS_FIELD_ALIASES,
+    context="chain_properties_update",
+)
 
-            super().__init__(
-                OrderedDict(
-                    [
-                        # initial, version 0
-                        ("account_creation_fee", Amount(kwargs["account_creation_fee"])),
-                        ("maximum_block_size", Uint32(kwargs["maximum_block_size"])),
-                        ("create_account_delegation_ratio", Uint32(kwargs["create_account_delegation_ratio"])),
-                        ("create_account_delegation_time", Uint32(kwargs["create_account_delegation_time"])),
-                        ("min_delegation", Amount(kwargs["min_delegation"])),
-                        ("min_curation_percent", Uint16(kwargs["min_curation_percent"])),
-                        ("max_curation_percent", Uint16(kwargs["max_curation_percent"])),
-                        ("bandwidth_reserve_percent", Uint16(kwargs["bandwidth_reserve_percent"])),
-                        ("bandwidth_reserve_below", Amount(kwargs["bandwidth_reserve_below"])),
-                        ("flag_energy_additional_cost", Uint16(kwargs["flag_energy_additional_cost"])),
-                        ("vote_accounting_min_rshares", Uint32(kwargs["vote_accounting_min_rshares"])),
-                        (
-                            "committee_request_approve_min_percent",
-                            Uint16(kwargs["committee_request_approve_min_percent"]),
-                        ),
-                        # chain_properties_hf4, version 1
-                        ("inflation_validator_percent", Uint16(kwargs["inflation_validator_percent"])),
-                        (
-                            "inflation_ratio_committee_vs_reward_fund",
-                            Uint16(kwargs["inflation_ratio_committee_vs_reward_fund"]),
-                        ),
-                        ("inflation_recalc_period", Uint32(kwargs["inflation_recalc_period"])),
-                        # chain_properties_hf6: version 2
-                        (
-                            "data_operations_cost_additional_bandwidth",
-                            Uint32(kwargs["data_operations_cost_additional_bandwidth"]),
-                        ),
-                        ("validator_miss_penalty_percent", Uint16(kwargs["validator_miss_penalty_percent"])),
-                        ("validator_miss_penalty_duration", Uint32(kwargs["validator_miss_penalty_duration"])),
-                        # chain_properties_hf9: version 3
-                        ("create_invite_min_balance", Amount(kwargs["create_invite_min_balance"])),
-                        ("committee_create_request_fee", Amount(kwargs["committee_create_request_fee"])),
-                        ("create_paid_subscription_fee", Amount(kwargs["create_paid_subscription_fee"])),
-                        ("account_on_sale_fee", Amount(kwargs["account_on_sale_fee"])),
-                        ("subaccount_on_sale_fee", Amount(kwargs["subaccount_on_sale_fee"])),
-                        ("validator_declaration_fee", Amount(kwargs["validator_declaration_fee"])),
-                        ("withdraw_intervals", Uint16(kwargs["withdraw_intervals"])),
-                    ]
-                )
-            )
+super().__init__(
+    OrderedDict(
+        [
+            # initial, version 0
+            ("account_creation_fee", Amount(kwargs["account_creation_fee"])),
+            ("maximum_block_size", Uint32(kwargs["maximum_block_size"])),
+            ("create_account_delegation_ratio", Uint32(kwargs["create_account_delegation_ratio"])),
+            ("create_account_delegation_time", Uint32(kwargs["create_account_delegation_time"])),
+            ("min_delegation", Amount(kwargs["min_delegation"])),
+            ("min_curation_percent", Uint16(kwargs["min_curation_percent"])),
+            ("max_curation_percent", Uint16(kwargs["max_curation_percent"])),
+            ("bandwidth_reserve_percent", Uint16(kwargs["bandwidth_reserve_percent"])),
+            ("bandwidth_reserve_below", Amount(kwargs["bandwidth_reserve_below"])),
+            ("flag_energy_additional_cost", Uint16(kwargs["flag_energy_additional_cost"])),
+            ("vote_accounting_min_rshares", Uint32(kwargs["vote_accounting_min_rshares"])),
+            (
+                "committee_request_approve_min_percent",
+                Uint16(kwargs["committee_request_approve_min_percent"]),
+            ),
+            # chain_properties_hf4, version 1
+            ("inflation_validator_percent", Uint16(kwargs["inflation_validator_percent"])),
+            (
+                "inflation_ratio_committee_vs_reward_fund",
+                Uint16(kwargs["inflation_ratio_committee_vs_reward_fund"]),
+            ),
+            ("inflation_recalc_period", Uint32(kwargs["inflation_recalc_period"])),
+            # chain_properties_hf6: version 2
+            (
+                "data_operations_cost_additional_bandwidth",
+                Uint32(kwargs["data_operations_cost_additional_bandwidth"]),
+            ),
+            ("validator_miss_penalty_percent", Uint16(kwargs["validator_miss_penalty_percent"])),
+            ("validator_miss_penalty_duration", Uint32(kwargs["validator_miss_penalty_duration"])),
+            # chain_properties_hf9: version 3
+            ("create_invite_min_balance", Amount(kwargs["create_invite_min_balance"])),
+            ("committee_create_request_fee", Amount(kwargs["committee_create_request_fee"])),
+            ("create_paid_subscription_fee", Amount(kwargs["create_paid_subscription_fee"])),
+            ("account_on_sale_fee", Amount(kwargs["account_on_sale_fee"])),
+            ("subaccount_on_sale_fee", Amount(kwargs["subaccount_on_sale_fee"])),
+            ("validator_declaration_fee", Amount(kwargs["validator_declaration_fee"])),
+            ("withdraw_intervals", Uint16(kwargs["withdraw_intervals"])),
+        ]
+    )
+)
 ```
 
 Field order is preserved. The only changes are the four field renames and the `translate_kwargs` call at the top.
@@ -893,6 +920,7 @@ Append to `tests/test_validator_compat.py`:
 ```python
 def test_consts_api_has_validator_methods():
     from vizapi.consts import API
+
     assert API["get_active_validators"] == "validator_api"
     assert API["get_validator_schedule"] == "validator_api"
     assert API["get_validators"] == "validator_api"
@@ -907,11 +935,17 @@ def test_consts_api_has_validator_methods():
 
 def test_consts_api_does_not_have_old_witness_methods():
     from vizapi.consts import API
+
     for old_name in (
-        "get_active_witnesses", "get_witness_schedule", "get_witnesses",
-        "get_witness_by_account", "get_witnesses_by_vote",
-        "get_witnesses_by_counted_vote", "get_witness_count",
-        "lookup_witness_accounts", "debug_get_witness_schedule",
+        "get_active_witnesses",
+        "get_witness_schedule",
+        "get_witnesses",
+        "get_witness_by_account",
+        "get_witnesses_by_vote",
+        "get_witnesses_by_counted_vote",
+        "get_witness_count",
+        "lookup_witness_accounts",
+        "debug_get_witness_schedule",
     ):
         assert old_name not in API, f"{old_name} should be removed from API map"
 ```
@@ -970,6 +1004,7 @@ Append to `tests/test_validator_compat.py`:
 ```python
 def test_no_such_method_exception_exists():
     from vizapi.exceptions import NoSuchMethod, RPCError
+
     assert issubclass(NoSuchMethod, RPCError)
 ```
 
@@ -985,6 +1020,7 @@ Add a new class:
 ```python
 class NoSuchMethod(RPCError):
     """Raised when the node reports the requested method is not available on the API."""
+
     pass
 ```
 
@@ -1031,6 +1067,7 @@ def test_post_process_exception_raises_no_such_method():
 def _build_rpc_with_runner(runner):
     """Build a Rpc with rpcexec stubbed and a request-id counter, no network."""
     from vizapi.noderpc import Rpc
+
     rpc = Rpc.__new__(Rpc)
     rpc._uses_legacy_witness_api = None
     rpc._request_id = 0
@@ -1139,31 +1176,27 @@ _REVERSE_API_METHOD = {new: old for old, new in API_METHOD_ALIASES.items()}
 Replace the body of `post_process_exception` (around lines 38-63):
 
 ```python
-    def post_process_exception(self, error: Exception) -> None:
-        if isinstance(error, exceptions.NoSuchAPI):
-            raise
+def post_process_exception(self, error: Exception) -> None:
+    if isinstance(error, exceptions.NoSuchAPI):
+        raise
 
-        msg = exceptions.decode_rpc_error_msg(error)
-        msg_lower = msg.lower()
-        if (
-            msg.startswith("Missing Active Authority")
-            or msg.startswith("Missing Master Authority")
-            or msg.startswith("Missing Authority")
-            or msg.startswith("Missing Regular Authority")
-        ):
-            raise exceptions.MissingRequiredAuthority(msg)
-        elif msg == "Unable to acquire READ lock":
-            raise exceptions.ReadLockFail(msg)
-        elif (
-            "could not find method" in msg_lower
-            or "method not found" in msg_lower
-            or "no such method" in msg_lower
-        ):
-            raise exceptions.NoSuchMethod(msg)
-        elif msg:
-            raise exceptions.UnhandledRPCError(msg)
-        else:
-            raise error
+    msg = exceptions.decode_rpc_error_msg(error)
+    msg_lower = msg.lower()
+    if (
+        msg.startswith("Missing Active Authority")
+        or msg.startswith("Missing Master Authority")
+        or msg.startswith("Missing Authority")
+        or msg.startswith("Missing Regular Authority")
+    ):
+        raise exceptions.MissingRequiredAuthority(msg)
+    elif msg == "Unable to acquire READ lock":
+        raise exceptions.ReadLockFail(msg)
+    elif "could not find method" in msg_lower or "method not found" in msg_lower or "no such method" in msg_lower:
+        raise exceptions.NoSuchMethod(msg)
+    elif msg:
+        raise exceptions.UnhandledRPCError(msg)
+    else:
+        raise error
 ```
 
 Replace the `Rpc` class (around lines 101-140) with:
@@ -1195,7 +1228,8 @@ class Rpc(GrapheneRpc):
             if canonical_name != name:
                 warnings.warn(
                     f"API method '{name}' is deprecated; use '{canonical_name}' instead",
-                    DeprecationWarning, stacklevel=2,
+                    DeprecationWarning,
+                    stacklevel=2,
                 )
 
             api = kwargs.get("api", API.get(canonical_name))
@@ -1227,7 +1261,8 @@ class Rpc(GrapheneRpc):
             if self._uses_legacy_witness_api is None:
                 warnings.warn(
                     "Node responded on witness_api; upgrade recommended",
-                    DeprecationWarning, stacklevel=4,
+                    DeprecationWarning,
+                    stacklevel=4,
                 )
             self._uses_legacy_witness_api = True
             return self._call_legacy(canonical_name, params_args)
@@ -1284,6 +1319,7 @@ def test_validator_class_importable():
     from viz.validator import Validator, Validators
     from graphenecommon.witness import Witness as GrapheneWitness
     from graphenecommon.witness import Witnesses as GrapheneWitnesses
+
     assert issubclass(Validator, GrapheneWitness)
     assert issubclass(Validators, GrapheneWitnesses)
 ```
@@ -1377,12 +1413,14 @@ Append to `tests/test_validator_compat.py`:
 ```python
 def test_viz_witness_shim_emits_warning_and_reexports():
     import sys
+
     sys.modules.pop("viz.witness", None)
 
     with pytest.warns(DeprecationWarning, match=r"viz.witness is deprecated"):
         import viz.witness  # noqa: F401
 
     from viz.validator import Validator, Validators
+
     assert viz.witness.Witness is Validator
     assert viz.witness.Witnesses is Validators
 ```
@@ -1402,13 +1440,15 @@ This shim re-exports Validator/Validators under their old witness names
 to preserve backward compatibility during the witness -> validator
 terminology migration. Remove during Phase C cleanup.
 """
+
 import warnings
 
 from .validator import Validator, Validators
 
 warnings.warn(
     "viz.witness is deprecated; import from viz.validator instead",
-    DeprecationWarning, stacklevel=2,
+    DeprecationWarning,
+    stacklevel=2,
 )
 
 Witness = Validator
@@ -1444,6 +1484,7 @@ Append to `tests/test_validator_compat.py`:
 ```python
 def test_filter_canonicalization_helper():
     from viz.blockchain import _canonical_filter
+
     assert _canonical_filter("witness_reward") == "validator_reward"
     assert _canonical_filter("validator_reward") == "validator_reward"
     assert _canonical_filter("transfer") == "transfer"
@@ -1584,12 +1625,14 @@ Append to `tests/test_validator_compat.py`:
 @pytest.mark.parametrize("old,new", list(OP_NAME_ALIASES.items()))
 def test_every_op_alias_resolves(old, new):
     from vizbase.operationids import operations
+
     assert operations[old] == operations[new]
 
 
 @pytest.mark.parametrize("old,new", list(API_METHOD_ALIASES.items()))
 def test_every_api_alias_in_reverse_map(old, new):
     from vizapi.noderpc import _REVERSE_API_METHOD
+
     assert _REVERSE_API_METHOD[new] == old
 
 

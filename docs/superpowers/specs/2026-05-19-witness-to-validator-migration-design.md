@@ -41,38 +41,38 @@ import warnings
 
 # Wire-format op name aliases (old -> new)
 OP_NAME_ALIASES = {
-    "witness_update":         "validator_update",
-    "account_witness_vote":   "account_validator_vote",
-    "account_witness_proxy":  "account_validator_proxy",
-    "shutdown_witness":       "shutdown_validator",
-    "witness_reward":         "validator_reward",
+    "witness_update": "validator_update",
+    "account_witness_vote": "account_validator_vote",
+    "account_witness_proxy": "account_validator_proxy",
+    "shutdown_witness": "shutdown_validator",
+    "witness_reward": "validator_reward",
 }
 
 # JSON-RPC API method aliases (old -> new)
 API_METHOD_ALIASES = {
-    "get_active_witnesses":           "get_active_validators",
-    "get_witness_schedule":           "get_validator_schedule",
-    "get_witnesses":                  "get_validators",
-    "get_witness_by_account":         "get_validator_by_account",
-    "get_witnesses_by_vote":          "get_validators_by_vote",
-    "get_witnesses_by_counted_vote":  "get_validators_by_counted_vote",
-    "get_witness_count":              "get_validator_count",
-    "lookup_witness_accounts":        "lookup_validator_accounts",
-    "debug_get_witness_schedule":     "debug_get_validator_schedule",
+    "get_active_witnesses": "get_active_validators",
+    "get_witness_schedule": "get_validator_schedule",
+    "get_witnesses": "get_validators",
+    "get_witness_by_account": "get_validator_by_account",
+    "get_witnesses_by_vote": "get_validators_by_vote",
+    "get_witnesses_by_counted_vote": "get_validators_by_counted_vote",
+    "get_witness_count": "get_validator_count",
+    "lookup_witness_accounts": "lookup_validator_accounts",
+    "debug_get_witness_schedule": "debug_get_validator_schedule",
 }
 
 # Chain-properties field aliases (old -> new). Applies to chain_properties_hf4 / hf6 / hf9.
 CHAIN_PROPS_FIELD_ALIASES = {
-    "inflation_witness_percent":      "inflation_validator_percent",
-    "witness_miss_penalty_percent":   "validator_miss_penalty_percent",
-    "witness_miss_penalty_duration":  "validator_miss_penalty_duration",
-    "witness_declaration_fee":        "validator_declaration_fee",
+    "inflation_witness_percent": "inflation_validator_percent",
+    "witness_miss_penalty_percent": "validator_miss_penalty_percent",
+    "witness_miss_penalty_duration": "validator_miss_penalty_duration",
+    "witness_declaration_fee": "validator_declaration_fee",
 }
 
 # Per-operation kwarg field aliases (old -> new), keyed by canonical new op name.
 OP_FIELD_ALIASES = {
     "account_validator_vote": {"witness": "validator"},
-    "validator_reward":       {"witness": "validator"},  # virtual op; reserved for future
+    "validator_reward": {"witness": "validator"},  # virtual op; reserved for future
 }
 
 
@@ -89,7 +89,8 @@ def translate_kwargs(kwargs: dict, alias_map: dict, *, context: str) -> dict:
         if old in out:
             warnings.warn(
                 f"{context}: '{old}' is deprecated; use '{new}' instead",
-                DeprecationWarning, stacklevel=3,
+                DeprecationWarning,
+                stacklevel=3,
             )
             if new not in out:
                 out[new] = out.pop(old)
@@ -130,13 +131,13 @@ Rename five entries in the `OPS` list (positional order preserved):
 ```python
 OPS = [
     ...,
-    "validator_update",        # 6, was "witness_update"
+    "validator_update",  # 6, was "witness_update"
     "account_validator_vote",  # 7, was "account_witness_vote"
-    "account_validator_proxy", # 8, was "account_witness_proxy"
+    "account_validator_proxy",  # 8, was "account_witness_proxy"
     ...,
-    "shutdown_validator",      # 30, was "shutdown_witness"
+    "shutdown_validator",  # 30, was "shutdown_witness"
     ...,
-    "validator_reward",        # 42, was "witness_reward"
+    "validator_reward",  # 42, was "witness_reward"
     ...,
 ]
 ```
@@ -147,6 +148,7 @@ After building `operations = {o: OPS.index(o) for o in OPS}`, extend the dict wi
 
 ```python
 from .validator_compat import OP_NAME_ALIASES
+
 for old, new in OP_NAME_ALIASES.items():
     operations[old] = operations[new]
 ```
@@ -167,6 +169,7 @@ This makes `operations["witness_update"] == operations["validator_update"] == 6`
 ```python
 from .validator_compat import translate_kwargs, OP_FIELD_ALIASES
 
+
 class Account_validator_vote(GrapheneObject):
     def __init__(self, *args, **kwargs):
         if isArgsThisClass(self, args):
@@ -180,11 +183,13 @@ class Account_validator_vote(GrapheneObject):
                 context="Account_validator_vote",
             )
             super().__init__(
-                OrderedDict([
-                    ("account",   String(kwargs["account"])),
-                    ("validator", String(kwargs["validator"])),
-                    ("approve",   Bool(bool(kwargs["approve"]))),
-                ])
+                OrderedDict(
+                    [
+                        ("account", String(kwargs["account"])),
+                        ("validator", String(kwargs["validator"])),
+                        ("approve", Bool(bool(kwargs["approve"]))),
+                    ]
+                )
             )
 ```
 
@@ -193,6 +198,7 @@ class Account_validator_vote(GrapheneObject):
 ```python
 class _DeprecatedAlias:
     """Warn once-per-process on first instantiation of a deprecated class name."""
+
     _warned: set[str] = set()
 
     @classmethod
@@ -202,15 +208,18 @@ class _DeprecatedAlias:
                 if old_name not in _DeprecatedAlias._warned:
                     warnings.warn(
                         f"{old_name} is deprecated; use {new_class.__name__} instead",
-                        DeprecationWarning, stacklevel=2,
+                        DeprecationWarning,
+                        stacklevel=2,
                     )
                     _DeprecatedAlias._warned.add(old_name)
                 super().__init__(*args, **kwargs)
+
         _Alias.__name__ = old_name
         _Alias.__qualname__ = old_name
         return _Alias
 
-Witness_update       = _DeprecatedAlias.make("Witness_update",       Validator_update)
+
+Witness_update = _DeprecatedAlias.make("Witness_update", Validator_update)
 Account_witness_vote = _DeprecatedAlias.make("Account_witness_vote", Account_validator_vote)
 ```
 
@@ -235,8 +244,11 @@ At the top of the relevant `__init__`:
 
 ```python
 from .validator_compat import translate_kwargs, CHAIN_PROPS_FIELD_ALIASES
+
 kwargs = translate_kwargs(
-    kwargs, CHAIN_PROPS_FIELD_ALIASES, context="chain_properties_update",
+    kwargs,
+    CHAIN_PROPS_FIELD_ALIASES,
+    context="chain_properties_update",
 )
 ```
 
@@ -296,6 +308,7 @@ class Rpc(GrapheneRpc):
             # If self._uses_legacy_witness_api is True, skip the new-name attempt entirely
             # (already-known legacy node).
             ...
+
         return method
 ```
 
@@ -336,8 +349,8 @@ class Validator(GrapheneWitness):
 class Validators(GrapheneWitnesses):
     def define_classes(self):
         self.account_class = Account
-        self.witness_class = Validator         # graphenecommon contract; must stay
-        self.validator_class = Validator       # forward-compat; harmless if upstream ignores
+        self.witness_class = Validator  # graphenecommon contract; must stay
+        self.validator_class = Validator  # forward-compat; harmless if upstream ignores
 ```
 
 **Shim file** at `viz/witness.py`:
@@ -349,7 +362,8 @@ from .validator import Validator, Validators
 
 warnings.warn(
     "viz.witness is deprecated; import from viz.validator instead",
-    DeprecationWarning, stacklevel=2,
+    DeprecationWarning,
+    stacklevel=2,
 )
 
 Witness = Validator
@@ -367,6 +381,7 @@ Two changes:
 
    ```python
    from vizbase.validator_compat import OP_NAME_ALIASES
+
    filter_by_canonical = OP_NAME_ALIASES.get(filter_by, filter_by)
    ```
 

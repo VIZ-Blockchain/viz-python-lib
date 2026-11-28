@@ -1060,14 +1060,16 @@ class Committee_worker_create_request(GrapheneObject):
             self.data = args[0].data
             return
         super().__init__(
-            OrderedDict([
-                ("creator", String(kw["creator"])),
-                ("url", String(kw["url"])),
-                ("worker", String(kw["worker"])),
-                ("required_amount_min", Amount(kw["required_amount_min"])),
-                ("required_amount_max", Amount(kw["required_amount_max"])),
-                ("duration", Uint32(kw["duration"])),
-            ])
+            OrderedDict(
+                [
+                    ("creator", String(kw["creator"])),
+                    ("url", String(kw["url"])),
+                    ("worker", String(kw["worker"])),
+                    ("required_amount_min", Amount(kw["required_amount_min"])),
+                    ("required_amount_max", Amount(kw["required_amount_max"])),
+                    ("duration", Uint32(kw["duration"])),
+                ]
+            )
         )
 
 
