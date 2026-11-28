@@ -53,28 +53,61 @@ def test_pm_op_ids(name, op_id):
 PM_CASES = [
     (
         "pm_oracle_register",
-        {"owner": "alice", "insurance": "5000.000 VIZ", "fee_percent": 250, "fixed_fee": "1.000 VIZ",
-             "rules_url": "http://r", "auto_accept_creator": "", "auto_accept_resolver": "", "auto_accept": True},
-        "4205616c696365404b4c00000000000356495a00000000fa00e8030000000000000356495a00000000"
-        "08687474703a2f2f7200000100",
+        {
+            "owner": "alice",
+            "insurance": "5000.000 VIZ",
+            "fee_percent": 250,
+            "fixed_fee": "1.000 VIZ",
+            "rules_url": "http://r",
+            "auto_accept_creator": "",
+            "auto_accept_resolver": "",
+            "auto_accept": True,
+        },
+        "4205616c696365404b4c00000000000356495a00000000fa00e8030000000000000356495a0000000008687474703a2f2f7200000100",
     ),
     (
         "pm_oracle_update",
-        {"owner": "alice", "insurance_delta": "100.000 VIZ", "fee_percent": None, "fixed_fee": "2.000 VIZ",
-             "rules_url": None, "auto_accept_creator": None, "auto_accept_resolver": None, "auto_accept": False},
-        "4305616c69636501a0860100000000000356495a000000000001d0070000000000000356495a"
-        "00000000000000010000",
+        {
+            "owner": "alice",
+            "insurance_delta": "100.000 VIZ",
+            "fee_percent": None,
+            "fixed_fee": "2.000 VIZ",
+            "rules_url": None,
+            "auto_accept_creator": None,
+            "auto_accept_resolver": None,
+            "auto_accept": False,
+        },
+        "4305616c69636501a0860100000000000356495a000000000001d0070000000000000356495a00000000000000010000",
     ),
     (
         "pm_create_market",
-        {"creator": "cre", "oracle": "ora", "market_type": 1, "outcomes": ["Yes", "No", "Maybe"], "url": "http://u",
-             "oracle_fee_percent": 300, "oracle_fixed_fee": "1.000 VIZ", "creator_fee_percent": 100,
-             "liquidity_fee_percent": 50, "liquidity": "1000.000 VIZ", "lmsr_b": 722,
-             "betting_expiration": "2030-01-01T00:00:00", "result_expiration": "2030-01-02T00:00:00",
-             "time_penalty_type": 1, "time_penalty_value": 86400, "penalty_curve_type": 0,
-             "allow_early_resolution": True, "allow_cancellation": False, "allow_batch": False,
-             "allow_instant_bet": True, "endogeneity_tier": 2, "dispute_mode": 1, "dispute_resolver": "res",
-             "dispute_penalty_percent": -500, "metadata": '{"tags":["x"]}'},
+        {
+            "creator": "cre",
+            "oracle": "ora",
+            "market_type": 1,
+            "outcomes": ["Yes", "No", "Maybe"],
+            "url": "http://u",
+            "oracle_fee_percent": 300,
+            "oracle_fixed_fee": "1.000 VIZ",
+            "creator_fee_percent": 100,
+            "liquidity_fee_percent": 50,
+            "liquidity": "1000.000 VIZ",
+            "lmsr_b": 722,
+            "betting_expiration": "2030-01-01T00:00:00",
+            "result_expiration": "2030-01-02T00:00:00",
+            "time_penalty_type": 1,
+            "time_penalty_value": 86400,
+            "penalty_curve_type": 0,
+            "allow_early_resolution": True,
+            "allow_cancellation": False,
+            "allow_batch": False,
+            "allow_instant_bet": True,
+            "endogeneity_tier": 2,
+            "dispute_mode": 1,
+            "dispute_resolver": "res",
+            "dispute_penalty_percent": -500,
+            "metadata": '{"tags":["x"]}',
+        },
         "4403637265036f7261010303596573024e6f054d6179626508687474703a2f2f752c01e803000000000000"
         "0356495a000000006400320040420f00000000000356495a00000000d20200000000000080d8db70002add70"
         "018051010000010000010201037265730cfe0e7b2274616773223a5b2278225d7d00",
@@ -86,23 +119,41 @@ PM_CASES = [
     ),
     (
         "pm_place_bet",
-        {"account": "alice", "market_id": 42, "side": 1, "outcome_index": -1, "amount": "1.500 VIZ",
-             "min_tokens": 0, "mode": 0},
+        {
+            "account": "alice",
+            "market_id": 42,
+            "side": 1,
+            "outcome_index": -1,
+            "amount": "1.500 VIZ",
+            "min_tokens": 0,
+            "mode": 0,
+        },
         "4605616c6963652a0000000000000001ffffdc050000000000000356495a0000000000000000000000000000",
     ),
     (
         "pm_commit_bet",
-        {"account": "alice", "market_id": 42, "commitment": "ab" * 32, "escrow_amount": "10.000 VIZ",
-             "no_reveal_fee_percent": 2000},
+        {
+            "account": "alice",
+            "market_id": 42,
+            "commitment": "ab" * 32,
+            "escrow_amount": "10.000 VIZ",
+            "no_reveal_fee_percent": 2000,
+        },
         "4705616c6963652a00000000000000abababababababababababababababababababababababababababababab"
         "abab10270000000000000356495a00000000d00700",
     ),
     (
         "pm_reveal_bet",
-        {"account": "alice", "commit_id": 9, "side": 0, "outcome_index": -1, "amount": "5.000 VIZ",
-             "salt": "saltsalt", "min_tokens": 0},
-        "4805616c696365090000000000000000ffff88130000000000000356495a000000000873616c7473616c74"
-        "000000000000000000",
+        {
+            "account": "alice",
+            "commit_id": 9,
+            "side": 0,
+            "outcome_index": -1,
+            "amount": "5.000 VIZ",
+            "salt": "saltsalt",
+            "min_tokens": 0,
+        },
+        "4805616c696365090000000000000000ffff88130000000000000356495a000000000873616c7473616c74000000000000000000",
     ),
     (
         "pm_cancel_bet",
@@ -121,8 +172,13 @@ PM_CASES = [
     ),
     (
         "pm_resolve_market",
-        {"oracle": "ora", "market_id": 42, "winning_outcome": 1, "decision_url": "http://d",
-             "decision_reason": "because"},
+        {
+            "oracle": "ora",
+            "market_id": 42,
+            "winning_outcome": 1,
+            "decision_url": "http://d",
+            "decision_reason": "because",
+        },
         "4c036f72612a00000000000000010008687474703a2f2f64076265636175736500",
     ),
     (
@@ -142,9 +198,16 @@ PM_CASES = [
     ),
     (
         "pm_dispute_resolve",
-        {"resolver": "res", "market_id": 7, "correct_outcome": 1, "penalty_amount": "50.000 VIZ",
-             "ban_oracle": True, "ban_oracle_until": "2027-01-01T00:00:00", "ban_creator": False,
-             "ban_creator_until": "1970-01-01T00:00:00"},
+        {
+            "resolver": "res",
+            "market_id": 7,
+            "correct_outcome": 1,
+            "penalty_amount": "50.000 VIZ",
+            "ban_oracle": True,
+            "ban_oracle_until": "2027-01-01T00:00:00",
+            "ban_creator": False,
+            "ban_creator_until": "1970-01-01T00:00:00",
+        },
         "50037265730700000000000000010050c30000000000000356495a000000000180ec366b000000000000",
     ),
     (
@@ -164,8 +227,15 @@ PM_CASES = [
     ),
     (
         "pm_leverage_open",
-        {"account": "alice", "market_id": 42, "outcome_index": 0, "collateral": "10.000 VIZ",
-             "loan": "40.000 VIZ", "min_tokens": 0, "max_slippage_percent": 1000},
+        {
+            "account": "alice",
+            "market_id": 42,
+            "outcome_index": 0,
+            "collateral": "10.000 VIZ",
+            "loan": "40.000 VIZ",
+            "min_tokens": 0,
+            "max_slippage_percent": 1000,
+        },
         "5b05616c6963652a00000000000000000010270000000000000356495a00000000409c0000000000000356495a"
         "000000000000000000000000e80300",
     ),
@@ -210,8 +280,14 @@ def test_set_agent_permission_id():
     [
         (
             # unsorted input: flat_set on the node, so the lib must sort
-            {"account": "alice", "agent_name": "bot-1", "agent_key": AGENT_KEY,
-             "operations": ["transfer", "pm_place_bet"], "expiration": "2030-01-01T00:00:00", "addons": ["vizhub"]},
+            {
+                "account": "alice",
+                "agent_name": "bot-1",
+                "agent_key": AGENT_KEY,
+                "operations": ["transfer", "pm_place_bet"],
+                "expiration": "2030-01-01T00:00:00",
+                "addons": ["vizhub"],
+            },
             "6905616c69636505626f742d31037f4ccf1fbf6ac708bd357dc400c7640cf908578294a520d287dbbbf4a00bfc5102"
             "0c706d5f706c6163655f626574087472616e7366657280d8db70010676697a68756200",
         ),
@@ -224,4 +300,5 @@ def test_set_agent_permission_id():
 )
 def test_set_agent_permission_bytes(kwargs, expected):
     from binascii import hexlify
+
     assert hexlify(bytes(Operation(["set_agent_permission", kwargs]))).decode() == expected
