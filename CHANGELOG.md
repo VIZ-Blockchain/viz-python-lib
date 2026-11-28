@@ -2,6 +2,11 @@
 
 We follow [Semantic Versions](https://semver.org/).
 
+## Version 1.4.1
+
+- Apply ruff-format across the codebase and fix mypy errors in tests (no behavior change).
+- Add the missing 1.3.0 changelog entry.
+
 ## Version 1.4.0
 
 - Refresh all runtime, development and documentation dependencies and regenerate the lockfile.
