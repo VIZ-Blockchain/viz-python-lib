@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [project]
 name = "viz-python-lib"
-version = "1.4.1"
+version = "1.4.2"
 description = "Python library for VIZ blockchain"
 authors = [
     { name = "Vladimir Kamarzin", email = "vvk@vvk.pp.ru" },
