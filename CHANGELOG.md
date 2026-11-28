@@ -2,6 +2,11 @@
 
 We follow [Semantic Versions](https://semver.org/).
 
+## Unreleased
+
+- Fix `Account.virtual_op_count()` (and `history_reverse()`) on nodes that reject
+  `get_account_history` with `limit=0` (viz-cpp-node since 2026-03).
+
 ## Version 1.4.1
 
 - Apply ruff-format across the codebase and fix mypy errors in tests (no behavior change).

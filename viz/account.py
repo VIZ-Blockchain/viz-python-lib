@@ -86,7 +86,8 @@ class Account(dict):
     def virtual_op_count(self) -> int:
         """Returns number of virtual ops performed by this account."""
         try:
-            last_item = self.blockchain_instance.rpc.get_account_history(self.name, -1, 0)[0][0]
+            # Nodes since 2026-03 reject limit=0; entries come oldest first, so the newest is last.
+            last_item = self.blockchain_instance.rpc.get_account_history(self.name, -1, 1)[-1][0]
         except IndexError:
             return 0
         else:
