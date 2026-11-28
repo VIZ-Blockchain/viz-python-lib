@@ -18,6 +18,15 @@ def test_decode_missing_active_authority():
     assert decoded == 'Missing Active Authority ["viz"]'
 
 
+# viz-cpp-node 695c5582 (2026-05) makes broadcast_transaction log a rejected transaction, relay it
+# and return success, so these errors no longer reach the client. strict: an XPASS means the node
+# reports errors again and the marker should go.
+node_swallows_errors = pytest.mark.xfail(
+    reason="node broadcast_transaction no longer returns validation errors", strict=True
+)
+
+
+@node_swallows_errors
 def test_missing_active_authority(viz, default_account):
     memo = "test"
     op = operations.Transfer(
@@ -27,6 +36,7 @@ def test_missing_active_authority(viz, default_account):
         viz.finalizeOp(op, default_account, "active")
 
 
+@node_swallows_errors
 def test_negative_transfer(viz, default_account):
     with pytest.raises(
         UnhandledRPCError, match=re.escape("amount.amount > 0: Cannot transfer a negative amount (aka: stealing)")
@@ -34,21 +44,25 @@ def test_negative_transfer(viz, default_account):
         viz.transfer("null", -1, "VIZ", memo="test", account=default_account)
 
 
+@node_swallows_errors
 def test_negative_withdraw(viz):
     with pytest.raises(UnhandledRPCError, match="vesting_shares.amount >= 0: Cannot withdraw negative SHARES"):
         viz.withdraw_vesting(-10, account="alice")
 
 
+@node_swallows_errors
 def test_negative_delegate_vesting_shares(viz):
     with pytest.raises(UnhandledRPCError, match="vesting_shares.amount >= 0: Delegation cannot be negative"):
         viz.delegate_vesting_shares(delegator="alice", delegatee="bob", amount=-10)
 
 
+@node_swallows_errors
 def test_self_delegate_vesting_shares(viz, default_account):
     with pytest.raises(UnhandledRPCError, match="delegator != delegatee: You cannot delegate SHARES to yourself"):
         viz.delegate_vesting_shares(delegator=default_account, delegatee=default_account, amount=10)
 
 
+@node_swallows_errors
 def test_too_much_beneficiaries(viz, default_account):
     beneficiaries = [{"account": default_account, "weight": 50}] * 256
 
