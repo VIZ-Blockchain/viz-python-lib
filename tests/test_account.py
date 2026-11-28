@@ -46,8 +46,12 @@ def test_current_energy(account, viz):
     pct = 10
     time.sleep(15)  # wait for HF4 on testnet
     viz.award(account.name, pct, account=account.name)
-    time.sleep(1)
-    en_new = account.current_energy()
+    # the award is visible once it is in a block
+    for _ in range(10):
+        time.sleep(1)
+        en_new = account.current_energy()
+        if en_new < en:
+            break
     assert en - en_new == pytest.approx(pct, abs=5.0)
 
 

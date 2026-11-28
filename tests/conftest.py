@@ -55,16 +55,13 @@ def docker_manager():
     return docker.from_env(version="auto")
 
 
+VIZD_IMAGE = "vizblockchain/vizd:testnet"
+
+
 def _resolve_vizd_image(docker_manager):
-    """Pick the first available vizd image tag from a preferred list."""
-    for tag in ("pr-85-merge", "latest", "fix-witness"):
-        image = f"vizblockchain/vizd:{tag}"
-        try:
-            docker_manager.images.pull(image)
-        except docker.errors.APIError:
-            continue
-        return image
-    raise RuntimeError("No usable vizblockchain/vizd image found (tried: fix-witness, latest)")
+    # The image is published for amd64 only; Apple Silicon runs it under emulation.
+    docker_manager.images.pull(VIZD_IMAGE, platform="linux/amd64")
+    return VIZD_IMAGE
 
 
 @pytest.fixture(scope="session")
