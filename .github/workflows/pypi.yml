@@ -13,6 +13,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
+      - name: Require a CHANGELOG section for the tag
+        run: grep -qxF "## Version ${GITHUB_REF_NAME#v}" CHANGELOG.md
       - name: Install Poetry
         run: pipx install poetry
 
@@ -58,3 +60,28 @@ jobs:
 
       - name: Publish distribution 📦 to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+
+  github-release:
+    name: Create GitHub Release
+    needs:
+      - publish-to-pypi
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v6
+      - name: Download all the dists
+        uses: actions/download-artifact@v8
+        with:
+          name: python-package-distributions
+          path: dist/
+
+      - name: Create release from the CHANGELOG section
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          awk -v h="## Version ${TAG#v}" '$0==h{f=1;next} f&&/^## /{exit} f' CHANGELOG.md > notes.md
+          test -s notes.md || { echo "No '## Version ${TAG#v}' section in CHANGELOG.md"; exit 1; }
+          gh release create "$TAG" dist/* --title "$TAG" --notes-file notes.md --generate-notes --verify-tag
