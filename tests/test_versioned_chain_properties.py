@@ -6,7 +6,8 @@ output, which mirrors FC_REFLECT_DERIVED(chain_properties_hf13 / _pm) in the
 node. Variant index == C++ static_variant index (4 = hf13, 5 = pm/HF14 Onix).
 
 The live round-trip check against a node lives in test_serialization.py
-(test_versioned_chain_properties_update).
+(test_versioned_chain_properties_update, xfail until the testnet image is
+rebuilt with the validator-renamed schema).
 """
 
 from vizbase.objects import Operation

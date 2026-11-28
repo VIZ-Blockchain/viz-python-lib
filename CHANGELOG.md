@@ -6,7 +6,6 @@ We follow [Semantic Versions](https://semver.org/).
 
 - Fix `Account.virtual_op_count()` (and `history_reverse()`) on nodes that reject
   `get_account_history` with `limit=0` (viz-cpp-node since 2026-03).
-- Tests run against the `vizblockchain/vizd:testnet` image (validator-renamed schema).
 
 ## Version 1.4.1
 
